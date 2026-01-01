@@ -3,184 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <title>Booking</title>
-<style>
-/* Reset and base styles */
-html, body {
-  height: 100%;
-  margin: 0;
-  font-family: Arial, sans-serif;
-  background: #f0f0f0;
-}
-
-* {
-  box-sizing: border-box;
-}
-
-/* App container */
-.app {
-  min-height: 100vh;
-  width: 100vw;
-  display: flex;
-  flex-direction: column;
-  background: #fff;
-}
-
-/* Topbar */
-.topbar {
-  display: grid;
-  grid-template-columns: auto 1fr auto;
-  align-items: center;
-  border-bottom: 3px solid #000;
-  padding: 10px 15px;
-  background: #fff;
-}
-
-.logo {
-  font-weight: bold;
-}
-
-.nav {
-  display: flex;
-  justify-content: center;
-  gap: 20px;
-}
-
-.nav button, .drop-btn {
-  background: none;
-  border: none;
-  font-size: 16px;
-  cursor: pointer;
-}
-
-.nav button:hover,
-.drop-btn:hover {
-  background: #eaeaea;
-}
-
-.dropdown {
-  position: relative;
-}
-
-.drop-menu {
-  position: absolute;
-  top: 35px;
-  left: 0;
-  border: 2px solid #000;
-  background: #fff;
-  display: none;
-  min-width: 160px;
-  z-index: 10;
-}
-
-.dropdown:hover .drop-menu {
-  display: block;
-}
-
-.drop-menu div {
-  padding: 8px;
-  border-bottom: 1px solid #000;
-  cursor: pointer;
-}
-
-.drop-menu div:hover {
-  background: #f0f0f0;
-}
-
-.nav-link {
-  text-decoration: none;
-  color: black;
-}
-
-/* Booking body with original column layout */
-.booking-body {
-  display: grid;
-  grid-template-columns: 1.2fr 1.2fr 0.8fr;
-  column-gap: 25px;
-  padding: 20px;
-  flex: 1;
-}
-
-/* Columns */
-.col {
-  display: flex;
-  flex-direction: column;
-}
-
-/* Row layout */
-.row {
-  display: grid;
-  grid-template-columns: 130px 1fr;
-  align-items: center;
-  margin-bottom: 12px;
-}
-
-.row.tight {
-  margin-bottom: 4px;
-}
-
-.row.small-gap {
-  margin-bottom: 8px;
-}
-
-.big-gap {
-  height: 40px;
-}
-
-/* Inputs */
-input[type="text"], input[type="number"], input[type="date"] {
-  padding: 5px;
-}
-
-input {
-  width: 210px; /* preserve original size */
-}
-
-input.small {
-  width: 80px;
-}
-
-/* Fee box */
-.fee-box {
-  border: 2px solid #000;
-  padding: 10px;
-  margin-top: 20px;
-}
-
-.fee-title {
-  text-align: center;
-  font-weight: bold;
-  border-bottom: 1px solid #000;
-  padding-bottom: 5px;
-  margin-bottom: 10px;
-}
-
-/* Actions */
-.actions {
-  display: flex;
-  justify-content: center;
-  gap: 15px;
-  margin: 30px 0;
-}
-
-.actions button {
-  width: 110px;
-  height: 35px;
-  cursor: pointer;
-}
-
-/* Responsive adjustments */
-@media (max-width: 1000px) {
-  .booking-body {
-    grid-template-columns: 1fr;
-  }
-  .row {
-    grid-template-columns: 1fr;
-  }
-  .row label {
-    margin-bottom: 4px;
-  }
-}
-</style>
+<link rel="stylesheet" href="booking.css">
 </head>
 <body>
 <div class="app">
@@ -313,13 +136,17 @@ input.small {
 
   <!-- Action buttons -->
   <div class="actions">
-    <button>Add</button>
-    <button>Edit</button>
-    <button>Delete</button>
-    <button>Print</button>
-    <button>Reset</button>
+    <button id="btnAdd">Add</button>
+    <button id="btnEdit">Edit</button>
+    <button id="btnDelete">Delete</button>
+    <button id="btnPrint">Print</button>
+    <button id="btnPdf">PDF</button>
+    <button id="btnSave">Save</button>
+    <button id="btnReset">Reset</button>
   </div>
 
+
 </div>
+<script src="app.js"></script>
 </body>
 </html>
