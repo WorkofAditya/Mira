@@ -1,3 +1,4 @@
+const LR_START = 1200;
 // ================= DATABASE SETUP =================
 const DB_NAME = "TransportDB";
 const STORE_NAME = "bookings";
@@ -53,8 +54,6 @@ function initBookingPage() {
   branchInput.value = branch;
   branchInput.readOnly = true;
 
-  // Auto-generate IDs for inputs
-  assignInputIDs();
 
   // Lock all other inputs by default
   lockForm();
@@ -69,26 +68,20 @@ function initBookingPage() {
   setupEnterNavigation();
 }
 
-// ================= AUTO-GENERATE IDS =================
-function assignInputIDs() {
-  const inputs = document.querySelectorAll(".booking-body input");
-  inputs.forEach((input, index) => {
-    if (!input.id) {
-      if (input.id !== "branchFrom") input.id = "input_" + index;
-    }
-  });
-}
-
 // ================= LOCK / UNLOCK =================
 function lockForm() {
   document.querySelectorAll(".booking-body input").forEach(input => {
-    if (input.id !== "branchFrom") input.readOnly = true;
+    if (input.id !== "branchFrom" && input.id !== "lrNo") {
+      input.readOnly = true;
+    }
   });
 }
 
 function unlockForm() {
   document.querySelectorAll(".booking-body input").forEach(input => {
-    if (input.id !== "branchFrom") input.readOnly = false;
+    if (input.id !== "branchFrom" && input.id !== "lrNo") {
+      input.readOnly = false;
+    }
   });
 }
 
@@ -102,21 +95,36 @@ function saveData(branch) {
     }
   });
 
+  const lrValue = parseInt(document.getElementById("lrNo").value, 10);
+
   const tx = db.transaction(STORE_NAME, "readwrite");
   const store = tx.objectStore(STORE_NAME);
 
   const getReq = store.get(branch);
+
   getReq.onsuccess = () => {
-    let data = getReq.result || { branch, booking: {} };
+    const data = getReq.result || {
+      branch,
+      booking: {},
+      lastLR: LR_START - 1
+    };
+
     data.booking = booking;
+    data.lastLR = lrValue; // store last used LR
+
     store.put(data);
   };
 
   tx.oncomplete = () => {
     lockForm();
+
+    // prepare next LR immediately
+    document.getElementById("lrNo").value = lrValue + 1;
+
     alert("Booking saved for " + branch);
   };
 }
+
 
 // ================= LOAD DATA =================
 function loadData(branch) {
@@ -125,14 +133,28 @@ function loadData(branch) {
   const req = store.get(branch);
 
   req.onsuccess = () => {
-    if (!req.result) return;
-    const data = req.result.booking;
-    Object.keys(data).forEach(id => {
-      const input = document.getElementById(id);
-      if (input) input.value = data[id];
-    });
+    const record = req.result;
+
+    // If no record exists → first time branch
+    if (!record) {
+      document.getElementById("lrNo").value = LR_START;
+      return;
+    }
+
+    // Fill booking data
+    if (record.booking) {
+      Object.entries(record.booking).forEach(([id, value]) => {
+        const input = document.getElementById(id);
+        if (input) input.value = value;
+      });
+    }
+
+    // Set next LR number
+    const nextLR = (record.lastLR ?? (LR_START - 1)) + 1;
+    document.getElementById("lrNo").value = nextLR;
   };
 }
+
 
 // ================= RESET =================
 function resetForm() {
@@ -147,7 +169,7 @@ function setupButtons(branch) {
   document.getElementById("btnSave").onclick = () => saveData(branch);
   document.getElementById("btnAdd").onclick = () => saveData(branch);
   document.getElementById("btnReset").onclick = resetForm;
-  document.getElementById("btnPrint").onclick = () => window.print();
+  document.getElementById("btnPrint").onclick = printReceipt;
   document.getElementById("btnDelete").onclick = () => alert("Delete logic can be added");
   document.getElementById("btnPdf").onclick = () => alert("PDF logic can be added");
 }
@@ -181,3 +203,67 @@ document.querySelectorAll(".drop-btn").forEach(btn => {
 document.addEventListener("click", () => {
   document.querySelectorAll(".drop-menu").forEach(m => (m.style.display = "none"));
 });
+
+// ================= PRINT RECEIPT =================
+document.getElementById("btnPrint").onclick = printReceipt;
+
+function printReceipt() {
+  const branch = sessionStorage.getItem("selectedBranch");
+  if (!branch) return alert("No branch selected");
+
+  const tx = db.transaction("bookings", "readonly");
+  const store = tx.objectStore("bookings");
+  const req = store.get(branch);
+
+  req.onsuccess = () => {
+    if (!req.result) {
+      alert("No data to print");
+      return;
+    }
+
+    const data = req.result.booking;
+
+    const html = generateReceiptHTML(data);
+
+    document.getElementById("receiptLeft").innerHTML = html;
+    document.getElementById("receiptRight").innerHTML = html;
+
+    document.getElementById("printArea").style.display = "block";
+
+    setTimeout(() => {
+      window.print();
+      document.getElementById("printArea").style.display = "none";
+    }, 300);
+  };
+}
+
+// ================= RECEIPT TEMPLATE =================
+function generateReceiptHTML(d) {
+  return `
+    <div class="receipt-header">
+      <div class="logo">RC</div>
+      <div class="meta">
+        <div>Date : <b>${d.bookingDate || ""}</b></div>
+        <div>Rcpt.No : <b>${d.lrNo || ""}</b></div>
+      </div>
+    </div>
+
+    <div class="route">
+      ${d.branchFrom || ""} &nbsp; TO &nbsp; ${d.branchTo || ""}
+    </div>
+
+    <div class="field"><span>Sender :</span> ${d.sender || ""}</div>
+    <div class="field"><span>Receiver :</span> ${d.receiver || ""}</div>
+    <div class="field"><span>Contact :</span> ${d.mobile || ""}</div>
+    <div class="field"><span>Item :</span> ${d.content || ""}</div>
+    <div class="field"><span>Packing :</span> ${d.pkgDetail || ""}</div>
+    <div class="field"><span>Parcel :</span> ${d.packages || ""}</div>
+    <div class="field"><span>Weight :</span> ${d.weight || ""}</div>
+
+    <div class="to-pay">
+      TO PAY : ${d.total || ""}
+    </div>
+
+    <div class="signature">Receiver's Signature</div>
+  `;
+}
