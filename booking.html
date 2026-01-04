@@ -157,6 +157,36 @@
   </div>
 </div>
 
+<!-- Hidden receipt template -->
+<template id="receiptTemplate">
+  <div class="receipt-header">
+    <div class="logo">RC</div>
+    <div class="meta">
+      <div>Date : <b class="bookingDate"></b></div>
+      <div>Rcpt.No : <b class="lrNo"></b></div>
+    </div>
+  </div>
+
+  <div class="route">
+    <span class="branchFrom"></span> &nbsp; TO &nbsp; <span class="branchTo"></span>
+  </div>
+
+  <div class="field"><span>Sender :</span> <span class="sender"></span></div>
+  <div class="field"><span>Receiver :</span> <span class="receiver"></span></div>
+  <div class="field"><span>Contact :</span> <span class="mobile"></span></div>
+  <div class="field"><span>Item :</span> <span class="content"></span></div>
+  <div class="field"><span>Packing :</span> <span class="pkgDetail"></span></div>
+  <div class="field"><span>Parcel :</span> <span class="packages"></span></div>
+  <div class="field"><span>Weight :</span> <span class="weight"></span></div>
+
+  <div class="to-pay">
+    TO PAY : <span class="total"></span>
+  </div>
+
+  <div class="signature">Receiver's Signature</div>
+</template>
+
+
 <script src="app.js"></script>
 </body>
 </html>
