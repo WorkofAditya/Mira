@@ -173,7 +173,7 @@ function setupButtons(branch) {
   document.getElementById("btnPrint").onclick = printReceipt;
   document.getElementById("btnDelete").onclick = () => alert("Delete later");
   document.getElementById("btnFind").onclick = () => alert("Find later");
-  document.getElementById("btnPreview").onclick = () => alert("Preview later");
+  document.getElementById("btnPreview").onclick = previewReceipt;
 }
 
 // ================= ENTER NAV =================
@@ -291,4 +291,79 @@ function generateReceiptHTML(d) {
 
     <div class="signature">Receiver's Signature</div>
   `;
+}
+
+// ================= PREVIEW RECEIPT =================
+document.getElementById("btnPreview").onclick = previewReceipt;
+
+function previewReceipt() {
+  const branch = sessionStorage.getItem("selectedBranch");
+  if (!branch) return alert("No branch selected");
+
+  const lrNo = document.getElementById("lrNo").value;
+  if (!lrNo) return alert("Enter LR No to preview");
+
+  const tx = db.transaction(STORE_NAME, "readonly");
+  const store = tx.objectStore(STORE_NAME);
+  const req = store.get(branch);
+
+  req.onsuccess = () => {
+    if (!req.result || !req.result.bookings) {
+      alert("No data to preview");
+      return;
+    }
+
+    const data = req.result.bookings[lrNo];
+    if (!data) {
+      alert("No booking found for this LR No");
+      return;
+    }
+
+    // Create preview overlay
+    const overlay = document.createElement("div");
+    overlay.id = "previewOverlay";
+    overlay.style = `
+      position: fixed;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(0,0,0,0.5);
+      display: flex; justify-content: center; align-items: center;
+      z-index: 9999;
+    `;
+
+    const popup = document.createElement("div");
+    popup.style = `
+      background: #fff;
+      padding: 20px;
+      border-radius: 8px;
+      width: 600px;
+      max-height: 90%;
+      overflow-y: auto;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+      position: relative;
+    `;
+
+    const closeBtn = document.createElement("button");
+    closeBtn.innerText = "x";
+    closeBtn.style = `
+      position: absolute;
+      top: -5px; right: 0px;
+      padding: 4px 10px;
+      cursor: pointer;
+      border: none;
+      background: #f00;
+      color: #fff;
+      border-radius: 4px;
+    `;
+    closeBtn.onclick = () => document.body.removeChild(overlay);
+
+    popup.appendChild(closeBtn);
+
+    const receiptHTML = generateReceiptHTML(data);
+    const receiptContainer = document.createElement("div");
+    receiptContainer.innerHTML = receiptHTML;
+
+    popup.appendChild(receiptContainer);
+    overlay.appendChild(popup);
+    document.body.appendChild(overlay);
+  };
 }
