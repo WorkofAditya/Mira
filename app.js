@@ -1,30 +1,30 @@
-const LR_START = 1200;
 // ================= DATABASE SETUP =================
+let isNewBooking = false;
+
 const DB_NAME = "TransportDB";
 const STORE_NAME = "bookings";
 let db;
 
-const request = indexedDB.open(DB_NAME, 2);
+const request = indexedDB.open(DB_NAME, 3);
 
 request.onupgradeneeded = e => {
   db = e.target.result;
-  if (!db.objectStoreNames.contains(STORE_NAME)) {
-    db.createObjectStore(STORE_NAME, { keyPath: "branch" });
+
+  if (!db.objectStoreNames.contains("bookings")) {
+    db.createObjectStore("bookings", { keyPath: "branch" });
+  }
+
+  if (!db.objectStoreNames.contains("counters")) {
+    const counterStore = db.createObjectStore("counters", { keyPath: "name" });
+    counterStore.put({ name: "receiptNo", value: 1200 });
   }
 };
 
 request.onsuccess = e => {
   db = e.target.result;
 
-  // Homepage
-  if (document.getElementById("branchSelect")) {
-    initHomePage();
-  }
-
-  // Booking page
-  if (document.getElementById("branchFrom")) {
-    initBookingPage();
-  }
+  if (document.getElementById("branchSelect")) initHomePage();
+  if (document.getElementById("branchFrom")) initBookingPage();
 };
 
 request.onerror = e => console.error("IndexedDB error:", e);
@@ -34,175 +34,193 @@ function initHomePage() {
   const selectBtn = document.querySelector(".select-btn");
   const branchSelect = document.getElementById("branchSelect");
 
-  selectBtn.addEventListener("click", () => {
+  selectBtn.onclick = () => {
     if (!branchSelect.value) {
       alert("Please select a branch");
       return;
     }
     sessionStorage.setItem("selectedBranch", branchSelect.value);
     window.location.href = "booking.html";
-  });
+  };
 }
 
-// ================= BOOKING =================
+// ================= BOOKING INIT =================
 function initBookingPage() {
   const branch = sessionStorage.getItem("selectedBranch");
   const branchInput = document.getElementById("branchFrom");
 
-  if (!branch) return alert("No branch selected");
+  if (!branch) {
+    alert("No branch selected");
+    return;
+  }
 
   branchInput.value = branch;
   branchInput.readOnly = true;
 
-
-  // Lock all other inputs by default
   lockForm();
-
-  // Load saved data for this branch
-  loadData(branch);
-
-  // Setup buttons
+  loadLatestBooking(branch);
   setupButtons(branch);
-
-  // Enter navigation
   setupEnterNavigation();
 }
 
 // ================= LOCK / UNLOCK =================
 function lockForm() {
-  document.querySelectorAll(".booking-body input").forEach(input => {
-    if (input.id !== "branchFrom" && input.id !== "lrNo") {
-      input.readOnly = true;
-    }
+  document.querySelectorAll(".booking-body input").forEach(i => {
+    if (i.id !== "branchFrom") i.readOnly = true;
   });
 }
 
 function unlockForm() {
-  document.querySelectorAll(".booking-body input").forEach(input => {
-    if (input.id !== "branchFrom" && input.id !== "lrNo") {
-      input.readOnly = false;
-    }
+  document.querySelectorAll(".booking-body input").forEach(i => {
+    if (i.id !== "branchFrom") i.readOnly = false;
   });
 }
 
-// ================= SAVE DATA =================
+// ================= NEW BOOKING =================
+function newBooking() {
+  isNewBooking = true;
+  unlockForm();
+
+  document.querySelectorAll(".booking-body input").forEach(input => {
+    if (input.id !== "branchFrom") input.value = "";
+  });
+
+  const lr = document.getElementById("lrNo");
+  lr.readOnly = false;
+  lr.focus();
+}
+
+
+// ================= SAVE BOOKING =================
 function saveData(branch) {
   const booking = {};
-
   document.querySelectorAll(".booking-body input").forEach(input => {
-    if (input.id && input.id !== "branchFrom") {
-      booking[input.id] = input.value;
-    }
+    if (input.id) booking[input.id] = input.value.trim();
   });
 
-  const lrValue = parseInt(document.getElementById("lrNo").value, 10);
+  booking.branchFrom = branch;
 
-  const tx = db.transaction(STORE_NAME, "readwrite");
-  const store = tx.objectStore(STORE_NAME);
+  if (!booking.lrNo) {
+    alert("LR No is required");
+    return;
+  }
 
-  const getReq = store.get(branch);
+  const doSave = receiptNo => {
+    if (receiptNo !== null) booking.receiptNo = receiptNo;
 
-  getReq.onsuccess = () => {
-    const data = getReq.result || {
-      branch,
-      booking: {},
-      lastLR: LR_START - 1
-    };
+    const tx = db.transaction(STORE_NAME, "readwrite");
+    const store = tx.objectStore(STORE_NAME);
 
-    data.booking = booking;
-    data.lastLR = lrValue; // store last used LR
+    const getReq = store.get(branch);
+    getReq.onsuccess = () => {
+  const data = getReq.result || { branch, bookings: {} };
 
-    store.put(data);
-  };
+  // FIX: ensure bookings exists
+  if (!data.bookings) data.bookings = {};
 
-  tx.oncomplete = () => {
+  data.bookings[booking.lrNo] = booking;
+
+  const putReq = store.put(data);
+
+  putReq.onsuccess = () => {
+    isNewBooking = false;
     lockForm();
-
-    // prepare next LR immediately
-    document.getElementById("lrNo").value = lrValue + 1;
-
-    alert("Booking saved for " + branch);
+    alert("Booking saved successfully");
   };
+
+  putReq.onerror = () => alert("Save failed");
+};
+
+  };
+
+  if (isNewBooking) {
+    // NEW booking: get receipt number
+    getNextReceiptNo(doSave);
+  } else {
+    // EDIT existing: keep receipt number
+    doSave(booking.receiptNo || null);
+  }
 }
 
 
-// ================= LOAD DATA =================
-function loadData(branch) {
+// ================= LOAD LATEST =================
+function loadLatestBooking(branch) {
   const tx = db.transaction(STORE_NAME, "readonly");
   const store = tx.objectStore(STORE_NAME);
   const req = store.get(branch);
 
   req.onsuccess = () => {
-    const record = req.result;
+    if (!req.result || !req.result.bookings) return;
 
-    // If no record exists → first time branch
-    if (!record) {
-      document.getElementById("lrNo").value = LR_START;
-      return;
-    }
+    const bookings = req.result.bookings;
+    const lastLR = Object.keys(bookings).sort().pop();
+    const data = bookings[lastLR];
 
-    // Fill booking data
-    if (record.booking) {
-      Object.entries(record.booking).forEach(([id, value]) => {
-        const input = document.getElementById(id);
-        if (input) input.value = value;
-      });
-    }
+    Object.keys(data).forEach(id => {
+      const input = document.getElementById(id);
+      if (input) input.value = data[id];
+    });
 
-    // Set next LR number
-    const nextLR = (record.lastLR ?? (LR_START - 1)) + 1;
-    document.getElementById("lrNo").value = nextLR;
+    lockForm();
   };
-}
-
-
-// ================= RESET =================
-function resetForm() {
-  document.querySelectorAll(".booking-body input").forEach(input => {
-    if (input.id !== "branchFrom" && !input.readOnly) input.value = "";
-  });
 }
 
 // ================= BUTTONS =================
 function setupButtons(branch) {
+  document.getElementById("btnNew").onclick = newBooking;
   document.getElementById("btnEdit").onclick = unlockForm;
   document.getElementById("btnSave").onclick = () => saveData(branch);
-  document.getElementById("btnAdd").onclick = () => saveData(branch);
-  document.getElementById("btnReset").onclick = resetForm;
   document.getElementById("btnPrint").onclick = printReceipt;
-  document.getElementById("btnDelete").onclick = () => alert("Delete logic can be added");
-  document.getElementById("btnPdf").onclick = () => alert("PDF logic can be added");
+  document.getElementById("btnDelete").onclick = () => alert("Delete later");
+  document.getElementById("btnFind").onclick = () => alert("Find later");
+  document.getElementById("btnPreview").onclick = () => alert("Preview later");
 }
 
-// ================= ENTER KEY NAVIGATION =================
+// ================= ENTER NAV =================
 function setupEnterNavigation() {
   const inputs = [...document.querySelectorAll(".booking-body input")];
   inputs.forEach((input, i) => {
-    input.addEventListener("keydown", e => {
+    input.onkeydown = e => {
       if (e.key === "Enter") {
         e.preventDefault();
-        const next = inputs[i + 1];
-        if (next) next.focus();
+        inputs[i + 1]?.focus();
       }
-    });
+    };
   });
 }
 
-// ================= DROPDOWNS =================
-document.querySelectorAll(".drop-btn").forEach(btn => {
-  btn.addEventListener("click", e => {
-    e.stopPropagation();
-    const menu = btn.nextElementSibling;
-    document.querySelectorAll(".drop-menu").forEach(m => {
-      if (m !== menu) m.style.display = "none";
-    });
-    menu.style.display = menu.style.display === "block" ? "none" : "block";
-  });
-});
+// ================= PRINT =================
+function printReceipt() {
+  const branch = sessionStorage.getItem("selectedBranch");
+  const lrNo = document.getElementById("lrNo").value;
 
-document.addEventListener("click", () => {
-  document.querySelectorAll(".drop-menu").forEach(m => (m.style.display = "none"));
-});
+  if (!lrNo) {
+    alert("Enter LR No to print");
+    return;
+  }
+
+  const tx = db.transaction(STORE_NAME, "readonly");
+  const store = tx.objectStore(STORE_NAME);
+  const req = store.get(branch);
+
+  req.onsuccess = () => {
+    const booking = req.result?.bookings?.[lrNo];
+    if (!booking) {
+      alert("No booking found");
+      return;
+    }
+
+    const html = generateReceiptHTML(booking);
+    receiptLeft.innerHTML = html;
+    receiptRight.innerHTML = html;
+
+    printArea.style.display = "block";
+    setTimeout(() => {
+      window.print();
+      printArea.style.display = "none";
+    }, 300);
+  };
+}
 
 // ================= PRINT RECEIPT =================
 document.getElementById("btnPrint").onclick = printReceipt;
@@ -211,17 +229,24 @@ function printReceipt() {
   const branch = sessionStorage.getItem("selectedBranch");
   if (!branch) return alert("No branch selected");
 
-  const tx = db.transaction("bookings", "readonly");
-  const store = tx.objectStore("bookings");
+  const lrNo = document.getElementById("lrNo").value;
+  if (!lrNo) return alert("Enter LR No to print");
+
+  const tx = db.transaction(STORE_NAME, "readonly");
+  const store = tx.objectStore(STORE_NAME);
   const req = store.get(branch);
 
   req.onsuccess = () => {
-    if (!req.result) {
+    if (!req.result || !req.result.bookings) {
       alert("No data to print");
       return;
     }
 
-    const data = req.result.booking;
+    const data = req.result.bookings[lrNo];
+    if (!data) {
+      alert("No booking found for this LR No");
+      return;
+    }
 
     const html = generateReceiptHTML(data);
 
