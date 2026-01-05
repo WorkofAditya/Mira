@@ -16,7 +16,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0
+          fetch-depth: 0  # Fetch entire history to ensure we have all commits
 
       - name: Set Git identity
         run: |
@@ -28,51 +28,29 @@ jobs:
           repo_url="https://github.com/workofaditya/DRC"
           repo_blob="$repo_url/blob/main"
 
-          > CHANGELOG.md
-
-          tags=($(git tag --sort=-v:refname))
-          latest_tag=${tags[0]}
-
-          if [ -n "$latest_tag" ]; then
-            echo "## Unreleased" >> CHANGELOG.md
-            echo -e "| Date | Commit | Change | File |\n|------|--------|--------|------|" >> CHANGELOG.md
-
-            git log $latest_tag..HEAD --date=short --pretty=format:"%H|%h|%ad|%s" \
-            --invert-grep --grep="Auto-update CHANGELOG.md" | while IFS="|" read hash short date msg; do
-              files=$(git show --name-only --pretty="" "$hash" | sed '/^$/d')
-              file_links=""
-              for f in $files; do
-                file_links+="[${f}](${repo_blob}/${f}) "
-              done
-              echo "| ${date} | [${short}](${repo_url}/commit/${hash}) | ${msg} | ${file_links} |" >> CHANGELOG.md
-            done
-            echo -e "\n" >> CHANGELOG.md
+          # Ensure CHANGELOG.md exists
+          if [ ! -f CHANGELOG.md ]; then
+            echo "# Changelog" > CHANGELOG.md
           fi
 
-          for ((i=0; i<${#tags[@]}; i++)); do
-            current_tag=${tags[$i]}
-            next_tag=${tags[$i+1]}
+          # Capture the latest commit hash (HEAD) and the second most recent commit
+          latest_commit=$(git log -n 1 --pretty=format:"%H")
+          previous_commit=$(git log -n 2 --skip=1 --pretty=format:"%H")
 
-            echo "## $current_tag" >> CHANGELOG.md
-            echo -e "| Date | Commit | Change | File |\n|------|--------|--------|------|" >> CHANGELOG.md
+          echo "## Unreleased" >> CHANGELOG.md
+          echo -e "| Date | Commit | Change | File |\n|------|--------|--------|------|" >> CHANGELOG.md
 
-            if [ -n "$next_tag" ]; then
-              range="$next_tag..$current_tag"
-            else
-              range="$current_tag"
-            fi
-
-            git log $range --date=short --pretty=format:"%H|%h|%ad|%s" \
-            --invert-grep --grep="Auto-update CHANGELOG.md" | while IFS="|" read hash short date msg; do
-              files=$(git show --name-only --pretty="" "$hash" | sed '/^$/d')
-              file_links=""
-              for f in $files; do
-                file_links+="[${f}](${repo_blob}/${f}) "
-              done
-              echo "| ${date} | [${short}](${repo_url}/commit/${hash}) | ${msg} | ${file_links} |" >> CHANGELOG.md
+          # Generate the changelog entries from the latest commits
+          git log $previous_commit..$latest_commit --date=short --pretty=format:"%H|%h|%ad|%s" \
+          --invert-grep --grep="Auto-update CHANGELOG.md" | while IFS="|" read hash short date msg; do
+            files=$(git show --name-only --pretty="" "$hash" | sed '/^$/d')
+            file_links=""
+            for f in $files; do
+              file_links+="[${f}](${repo_blob}/${f}) "
             done
-            echo -e "\n" >> CHANGELOG.md
+            echo "| ${date} | [${short}](${repo_url}/commit/${hash}) | ${msg} | ${file_links} |" >> CHANGELOG.md
           done
+          echo -e "\n" >> CHANGELOG.md
 
       - name: Commit & Push Changelog
         run: |
