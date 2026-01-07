@@ -9,40 +9,11 @@
 <div class="app">
 
   <!-- Topbar -->
-  <header class="topbar">
-    <div class="logo">LOGO</div>
-    <nav class="nav">
-      <div class="dropdown">
-        <button class="drop-btn">Employ</button>
-        <div class="drop-menu">
-          <div>Data entry</div>
-          <div>Employ Data</div>
-          <div>Salary slip</div>
-        </div>
-      </div>
-      <div class="dropdown">
-        <button class="drop-btn">Driver</button>
-        <div class="drop-menu">
-          <div>Data entry</div>
-          <div>Payment slip</div>
-          <div>Driver Data</div>
-        </div>
-      </div>
-      <a href="booking.html" class="nav-link">Booking</a>
-      <button>Dispatch</button>
-      <button>Summary</button>
-      <div class="dropdown">
-        <button class="drop-btn">Menu</button>
-        <div class="drop-menu right">
-          <div>Booking</div>
-          <div>Dispatch</div>
-          <div>Godown Stock</div>
-          <div>Consignor Data</div>
-          <div>Consignee Data</div>
-        </div>
-      </div>
-    </nav>
+  <header class="topbar standalone">
+    <div class="logo">RC</div>
+    <div class="title">Booking Page</div>
   </header>
+
 
   <!-- Booking form -->
   <div class="booking-body">
@@ -55,8 +26,16 @@
       </div>
       <div class="row small-gap">
         <label>Branch To</label>
-        <input type="text" id="branchTo">
+          <select id="branchTo">
+            <option value="">-- Select Branch --</option>
+            <option value="JAMNAGAR">JAMNAGAR</option>
+            <option value="DARED">DARED</option>
+            <option value="KOLKATA">KOLKATA</option>
+            <option value="MUMBAI">MUMBAI</option>
+            <option value="DELHI">DELHI</option>
+          </select>
       </div>
+
       <div class="big-gap"></div>
       <div class="row">
         <label>B-Pay Mode</label>
