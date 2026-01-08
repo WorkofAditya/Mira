@@ -366,3 +366,18 @@ input.small {
 .popup.find-popup {
   width: 320px;
 }
+
+.freight-row {
+  align-items: center;
+}
+
+.freight-inputs {
+  display: flex;
+  gap: 6px;
+}
+
+input.tiny {
+  width: 45px;
+  padding: 5px;
+}
+
