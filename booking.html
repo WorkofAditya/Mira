@@ -96,10 +96,14 @@
       </div>
       <div class="fee-box">
         <div class="fee-title">Booking Fee</div>
-        <div class="row">
+        <div class="row freight-row">
           <label>Freight</label>
-          <input type="number" class="small" id="freight">
+          <div class="freight-inputs">
+            <input type="number" class="small" id="freight">
+            <input type="number" class="tiny" id="freightExtra">
+          </div>
         </div>
+
         <div class="row">
           <label>Door del</label>
           <input type="number" id="doorDelivery">
@@ -181,6 +185,7 @@
     </div>
   </div>
 </template>
+
 
 <script src="app.js"></script>
 </body>
