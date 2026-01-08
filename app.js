@@ -104,6 +104,27 @@ function newBooking() {
   lr.focus();
 }
 
+function getNextReceiptNo(callback) {
+  const tx = db.transaction("counters", "readwrite");
+  const store = tx.objectStore("counters");
+
+  const req = store.get("receiptNo");
+
+  req.onsuccess = () => {
+    const data = req.result || { name: "receiptNo", value: 1200 };
+    const next = data.value + 1;
+
+    data.value = next;
+    store.put(data);
+
+    callback(next);
+  };
+
+  req.onerror = () => {
+    alert("Failed to generate receipt number");
+  };
+}
+
 
 // ================= SAVE BOOKING =================
 function saveData(branch) {
@@ -133,7 +154,13 @@ function saveData(branch) {
   // FIX: ensure bookings exists
   if (!data.bookings) data.bookings = {};
 
+  if (isNewBooking && data.bookings[booking.lrNo]) {
+  alert("This LR No already exists");
+  return;
+  }
+
   data.bookings[booking.lrNo] = booking;
+
 
   const putReq = store.put(data);
 
@@ -187,7 +214,7 @@ function setupButtons(branch) {
   document.getElementById("btnSave").onclick = () => saveData(branch);
   document.getElementById("btnPrint").onclick = printReceipt;
   document.getElementById("btnDelete").onclick = () => alert("Delete later");
-  document.getElementById("btnFind").onclick = () => alert("Find later");
+  document.getElementById("btnFind").onclick = openFindPopup;
   document.getElementById("btnPreview").onclick = previewReceipt;
 }
 
@@ -237,78 +264,28 @@ function printReceipt() {
   };
 }
 
-// ================= PRINT RECEIPT =================
-document.getElementById("btnPrint").onclick = printReceipt;
-
-function printReceipt() {
-  const branch = sessionStorage.getItem("selectedBranch");
-  if (!branch) return alert("No branch selected");
-
-  const lrNo = document.getElementById("lrNo").value;
-  if (!lrNo) return alert("Enter LR No to print");
-
-  const tx = db.transaction(STORE_NAME, "readonly");
-  const store = tx.objectStore(STORE_NAME);
-  const req = store.get(branch);
-
-  req.onsuccess = () => {
-    if (!req.result || !req.result.bookings) {
-      alert("No data to print");
-      return;
-    }
-
-    const data = req.result.bookings[lrNo];
-    if (!data) {
-      alert("No booking found for this LR No");
-      return;
-    }
-
-    const html = generateReceiptHTML(data);
-
-    document.getElementById("receiptLeft").innerHTML = html;
-    document.getElementById("receiptRight").innerHTML = html;
-
-    document.getElementById("printArea").style.display = "block";
-
-    setTimeout(() => {
-      window.print();
-      document.getElementById("printArea").style.display = "none";
-    }, 300);
-  };
-}
-
-// ================= RECEIPT TEMPLATE =================
 function generateReceiptHTML(d) {
-  return `
-    <div class="receipt-header">
-      <div class="logo">RC</div>
-      <div class="meta">
-        <div>Date : <b>${d.bookingDate || ""}</b></div>
-        <div>Rcpt.No : <b>${d.lrNo || ""}</b></div>
-      </div>
-    </div>
+  const tpl = document.getElementById("receiptTemplate").content.cloneNode(true);
 
-    <div class="route">
-      ${d.branchFrom || ""} &nbsp; TO &nbsp; ${d.branchTo || ""}
-    </div>
+  tpl.querySelector("[data-booking-date]").textContent = d.bookingDate || "";
+  tpl.querySelector("[data-lr-no]").textContent = d.lrNo || "";
+  tpl.querySelector("[data-route]").textContent =
+    `${d.branchFrom || ""} TO ${d.branchTo || ""}`;
 
-    <div class="field"><span>Sender :</span> ${d.sender || ""}</div>
-    <div class="field"><span>Receiver :</span> ${d.receiver || ""}</div>
-    <div class="field"><span>Contact :</span> ${d.mobile || ""}</div>
-    <div class="field"><span>Item :</span> ${d.content || ""}</div>
-    <div class="field"><span>Packing :</span> ${d.pkgDetail || ""}</div>
-    <div class="field"><span>Parcel :</span> ${d.packages || ""}</div>
-    <div class="field"><span>Weight :</span> ${d.weight || ""}</div>
+  tpl.querySelector("[data-sender]").textContent = d.sender || "";
+  tpl.querySelector("[data-receiver]").textContent = d.receiver || "";
+  tpl.querySelector("[data-mobile]").textContent = d.mobile || "";
+  tpl.querySelector("[data-content]").textContent = d.content || "";
+  tpl.querySelector("[data-pkg]").textContent = d.pkgDetail || "";
+  tpl.querySelector("[data-packages]").textContent = d.packages || "";
+  tpl.querySelector("[data-weight]").textContent = d.weight || "";
+  tpl.querySelector("[data-total]").textContent = `TO PAY : ${d.total || ""}`;
 
-    <div class="to-pay">
-      TO PAY : ${d.total || ""}
-    </div>
-
-    <div class="signature">Receiver's Signature</div>
-  `;
+  const wrapper = document.createElement("div");
+  wrapper.appendChild(tpl);
+  return wrapper.innerHTML;
 }
 
-// ================= PREVIEW RECEIPT =================
 document.getElementById("btnPreview").onclick = previewReceipt;
 
 function previewReceipt() {
@@ -323,62 +300,67 @@ function previewReceipt() {
   const req = store.get(branch);
 
   req.onsuccess = () => {
-    if (!req.result || !req.result.bookings) {
-      alert("No data to preview");
-      return;
-    }
+    const data = req.result?.bookings?.[lrNo];
+    if (!data) return alert("No booking found");
 
-    const data = req.result.bookings[lrNo];
-    if (!data) {
-      alert("No booking found for this LR No");
-      return;
-    }
-
-    // Create preview overlay
     const overlay = document.createElement("div");
-    overlay.id = "previewOverlay";
-    overlay.style = `
-      position: fixed;
-      top: 0; left: 0; width: 100%; height: 100%;
-      background: rgba(0,0,0,0.5);
-      display: flex; justify-content: center; align-items: center;
-      z-index: 9999;
-    `;
+    overlay.className = "overlay";
 
     const popup = document.createElement("div");
-    popup.style = `
-      background: #fff;
-      padding: 20px;
-      border-radius: 8px;
-      width: 600px;
-      max-height: 90%;
-      overflow-y: auto;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-      position: relative;
-    `;
+    popup.className = "popup";
 
-    const closeBtn = document.createElement("button");
-    closeBtn.innerText = "x";
-    closeBtn.style = `
-      position: absolute;
-      top: -5px; right: 0px;
-      padding: 4px 10px;
-      cursor: pointer;
-      border: none;
-      background: #f00;
-      color: #fff;
-      border-radius: 4px;
-    `;
-    closeBtn.onclick = () => document.body.removeChild(overlay);
-
-    popup.appendChild(closeBtn);
-
-    const receiptHTML = generateReceiptHTML(data);
-    const receiptContainer = document.createElement("div");
-    receiptContainer.innerHTML = receiptHTML;
-
-    popup.appendChild(receiptContainer);
+    popup.innerHTML = generateReceiptHTML(data);
     overlay.appendChild(popup);
     document.body.appendChild(overlay);
+
+    overlay.onclick = e => {
+      if (e.target === overlay) document.body.removeChild(overlay);
+    };
   };
+}
+
+function openFindPopup() {
+  const branch = sessionStorage.getItem("selectedBranch");
+  if (!branch) return alert("No branch selected");
+
+  const tx = db.transaction(STORE_NAME, "readonly");
+  const store = tx.objectStore(STORE_NAME);
+  const req = store.get(branch);
+
+  req.onsuccess = () => {
+    const bookings = req.result?.bookings;
+    if (!bookings) return alert("No bookings found");
+
+    const tpl = document.getElementById("findPopupTemplate").content.cloneNode(true);
+    const overlay = tpl.querySelector(".overlay");
+    const list = tpl.querySelector("#lrList");
+
+    Object.keys(bookings).sort().forEach(lr => {
+      list.innerHTML += `<option value="${lr}">${lr}</option>`;
+    });
+
+    document.body.appendChild(tpl);
+
+    list.onchange = e =>
+      document.getElementById("findLR").value = e.target.value;
+
+    document.getElementById("findCancel").onclick = () =>
+      document.body.removeChild(overlay);
+
+    document.getElementById("findLoad").onclick = () => {
+      const lr = document.getElementById("findLR").value.trim();
+      if (!bookings[lr]) return alert("Invalid LR No");
+      loadBookingToForm(bookings[lr]);
+      document.body.removeChild(overlay);
+    };
+  };
+}
+
+function loadBookingToForm(data) {
+  Object.keys(data).forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.value = data[id];
+  });
+
+  lockForm();
 }
