@@ -136,6 +136,52 @@
   </div>
 </div>
 
+<!-- ===== Receipt Template ===== -->
+<template id="receiptTemplate">
+  <div class="receipt-header">
+    <div class="logo">RC</div>
+    <div class="meta">
+      <div>Date : <b data-booking-date></b></div>
+      <div>Rcpt.No : <b data-lr-no></b></div>
+    </div>
+  </div>
+
+  <div class="route" data-route></div>
+
+  <div class="field"><span>Sender :</span> <span data-sender></span></div>
+  <div class="field"><span>Receiver :</span> <span data-receiver></span></div>
+  <div class="field"><span>Contact :</span> <span data-mobile></span></div>
+  <div class="field"><span>Item :</span> <span data-content></span></div>
+  <div class="field"><span>Packing :</span> <span data-pkg></span></div>
+  <div class="field"><span>Parcel :</span> <span data-packages></span></div>
+  <div class="field"><span>Weight :</span> <span data-weight></span></div>
+
+  <div class="to-pay" data-total></div>
+  <div class="signature">Receiver's Signature</div>
+</template>
+
+<!-- ===== Find Popup Template ===== -->
+<template id="findPopupTemplate">
+  <div id="previewOverlay" class="overlay">
+    <div class="popup find-popup">
+      <h3>Find Booking</h3>
+
+      <label>LR No</label>
+      <input type="text" id="findLR">
+
+      <label>Available LR Numbers</label>
+      <select id="lrList">
+        <option value="">-- Select LR --</option>
+      </select>
+
+      <div class="popup-actions">
+        <button id="findCancel">Cancel</button>
+        <button id="findLoad">Load</button>
+      </div>
+    </div>
+  </div>
+</template>
+
 <script src="app.js"></script>
 </body>
 </html>
