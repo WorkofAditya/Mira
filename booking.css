@@ -282,3 +282,87 @@ input.small {
   width: 210px;        
   max-width: 100%;
 }
+
+/* ===== Overlay ===== */
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+}
+
+/* ===== Popup ===== */
+.popup {
+  background: #fff;
+  padding: 20px;
+  width: 600px;
+  max-height: 90%;
+  overflow-y: auto;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+  position: relative;
+}
+
+.popup h3 {
+  margin-top: 0;
+}
+
+.popup input,
+.popup select {
+  width: 100%;
+  margin-bottom: 10px;
+}
+
+.popup-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+/* ===== Receipt ===== */
+.receipt-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.logo {
+  font-weight: bold;
+  font-size: 24px;
+}
+
+.meta {
+  text-align: right;
+}
+
+.route {
+  text-align: center;
+  font-weight: bold;
+  margin: 10px 0;
+}
+
+.field {
+  margin: 4px 0;
+}
+
+.field span:first-child {
+  font-weight: bold;
+}
+
+.to-pay {
+  margin-top: 10px;
+  font-size: 18px;
+  font-weight: bold;
+}
+
+.signature {
+  margin-top: 30px;
+  text-align: right;
+}
+
+.popup.find-popup {
+  width: 320px;
+}
