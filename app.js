@@ -48,6 +48,7 @@ function initHomePage() {
 function initBookingPage() {
   const branch = sessionStorage.getItem("selectedBranch");
   const branchInput = document.getElementById("branchFrom");
+  const pickupFrom = document.getElementById("pickupFrom");
 
   if (!branch) {
     alert("No branch selected");
@@ -57,11 +58,15 @@ function initBookingPage() {
   branchInput.value = branch;
   branchInput.readOnly = true;
 
+  // Sync pickup from here
+  pickupFrom.value = branch;
+
   lockForm();
   loadLatestBooking(branch);
   setupButtons(branch);
   setupEnterNavigation();
 }
+
 
 // ================= LOCK / UNLOCK =================
 function lockForm() {
@@ -94,15 +99,21 @@ function newBooking() {
   isNewBooking = true;
   unlockForm();
 
-  document.querySelectorAll(".booking-body input, .booking-body select")
-  .forEach(el => {
-    if (el.id !== "branchFrom") el.value = "";
-  });
+  document
+    .querySelectorAll(".booking-body input, .booking-body select")
+    .forEach(el => {
+      if (el.id !== "branchFrom") el.value = "";
+    });
+
+  // Re-sync pickup after clear
+  document.getElementById("pickupFrom").value =
+    document.getElementById("branchFrom").value;
 
   const lr = document.getElementById("lrNo");
   lr.readOnly = false;
   lr.focus();
 }
+
 
 function getNextReceiptNo(callback) {
   const tx = db.transaction("counters", "readwrite");
@@ -364,3 +375,10 @@ function loadBookingToForm(data) {
 
   lockForm();
 }
+
+const pickupFrom = document.getElementById("pickupFrom");
+const deliveryTo = document.getElementById("deliveryTo");
+
+branchTo.addEventListener("change", () => {
+  deliveryTo.value = branchTo.value;
+});
