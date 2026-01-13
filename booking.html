@@ -39,8 +39,13 @@
       <div class="big-gap"></div>
       <div class="row">
         <label>B-Pay Mode</label>
-        <input type="text" id="payMode">
+        <select id="payMode">
+          <option value="TO PAY">To Pay</option>
+          <option value="PAID">Paid</option>
+          <option value="ACCOUNT">Account</option>
+        </select>
       </div>
+
       <div class="row">
         <label>Sender / C</label>
         <input type="text" id="sender">
@@ -48,10 +53,6 @@
       <div class="row">
         <label>Receiver</label>
         <input type="text" id="receiver">
-      </div>
-      <div class="row">
-        <label>Content</label>
-        <input type="text" id="content">
       </div>
       <div class="row">
         <label>Packages</label>
