@@ -55,12 +55,20 @@
         <input type="text" id="receiver">
       </div>
       <div class="row">
+        <label>Content</label>
+        <input type="text" id="content">
+      </div>
+      <div class="row">
         <label>Packages</label>
         <input type="number" class="small" id="packages">
       </div>
       <div class="row">
         <label>Weight in KG</label>
         <input type="number" class="small" id="weight">
+      </div>
+      <div class="row">
+        <label>Reminder</label>
+        <input type="text" id="reminder">
       </div>
     </div>
 
@@ -115,6 +123,26 @@
         </div>
       </div>
     </div>
+
+      <!-- Dispatch section -->
+      <div class="dispatch-section">
+        <div class="dispatch-title">DISPATCH</div>
+
+        <div class="row">
+          <label>Memo No</label>
+          <input type="text" id="dispatchMemo">
+        </div>
+
+        <div class="row">
+          <label>Dispatch Date</label>
+          <input type="date" class="small" id="dispatchDate">
+        </div>
+
+        <div class="row">
+          <label>Vehicle No</label>
+          <input type="text" id="vehicleNo">
+        </div>
+      </div>
 
   </div>
 
@@ -186,7 +214,6 @@
     </div>
   </div>
 </template>
-
 
 <script src="app.js"></script>
 </body>
