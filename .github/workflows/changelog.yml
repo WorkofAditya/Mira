@@ -27,7 +27,9 @@ jobs:
           echo "| Date | Commit | Change | File |" >> CHANGELOG.md
           echo "|------|--------|--------|------|" >> CHANGELOG.md
 
-          git log --pretty=format:'%H|%h|%ad|%s' --date=short | while IFS="|" read HASH SHORTHASH DATE MESSAGE
+          git log --pretty=format:'%H|%h|%ad|%s' --date=short \
+          | grep -v "Auto-update CHANGELOG.md" \
+          | while IFS="|" read HASH SHORTHASH DATE MESSAGE
           do
             FILES=$(git show --name-only --pretty="" "$HASH")
 
@@ -46,5 +48,5 @@ jobs:
           git config user.name "github-actions"
           git config user.email "github-actions@github.com"
           git add CHANGELOG.md
-          git commit -m "chore: auto-update changelog" || exit 0
+          git commit -m "Auto-update CHANGELOG.md" || exit 0
           git push
