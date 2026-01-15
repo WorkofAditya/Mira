@@ -381,3 +381,14 @@ input.tiny {
   padding: 5px;
 }
 
+.dispatch-section {
+  margin-top: 25px;
+  padding-top: 15px;
+  border-top: 2px solid #000;
+}
+
+.dispatch-title {
+  font-weight: bold;
+  text-align: center;
+  margin-bottom: 12px;
+}
