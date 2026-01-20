@@ -31,16 +31,12 @@ request.onerror = e => console.error("IndexedDB error:", e);
 
 // ================= HOMEPAGE =================
 function initHomePage() {
-  const selectBtn = document.querySelector(".select-btn");
   const branchSelect = document.getElementById("branchSelect");
 
-  selectBtn.onclick = () => {
-    if (!branchSelect.value) {
-      alert("Please select a branch");
-      return;
-    }
+  branchSelect.onchange = () => {
+    if (!branchSelect.value) return;
     sessionStorage.setItem("selectedBranch", branchSelect.value);
-    window.location.href = "booking.html";
+   
   };
 }
 
