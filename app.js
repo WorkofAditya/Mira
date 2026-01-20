@@ -42,19 +42,21 @@ function initHomePage() {
 
 // ================= BOOKING INIT =================
 function initBookingPage() {
-  const branch = sessionStorage.getItem("selectedBranch");
+  let branch = sessionStorage.getItem("selectedBranch");
+
+  // fallback to Jamnagar if nothing selected
+  if (!branch) {
+    branch = "JAMNAGAR";
+    sessionStorage.setItem("selectedBranch", branch); // <- store fallback
+  }
+
   const branchInput = document.getElementById("branchFrom");
   const pickupFrom = document.getElementById("pickupFrom");
-
-  if (!branch) {
-    alert("No branch selected");
-    return;
-  }
 
   branchInput.value = branch;
   branchInput.readOnly = true;
 
-  // Sync pickup from here
+  // Sync pickupFrom
   pickupFrom.value = branch;
 
   lockForm();
@@ -62,6 +64,7 @@ function initBookingPage() {
   setupButtons(branch);
   setupEnterNavigation();
 }
+
 
 
 // ================= LOCK / UNLOCK =================
