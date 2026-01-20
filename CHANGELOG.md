@@ -1,6 +1,7 @@
 ## Unreleased
 | Date | Commit | Change | File |
 |------|--------|--------|------|
+| 2026-01-20 | [eccc7ef](https://github.com/WorkofAditya/Mira/commit/eccc7effd7aafb51da3c543c2ce564ddf827c813) | Update app.js to sync branches with city list | [app.js](https://github.com/WorkofAditya/Mira/blob/main/app.js) |
 | 2026-01-20 | [7216ec9](https://github.com/WorkofAditya/Mira/commit/7216ec9b24ebf059eb401d61bf24efd1d8196c00) | Removed "Select" button of selection list | [index.html](https://github.com/WorkofAditya/Mira/blob/main/index.html) |
 | 2026-01-18 | [eabba18](https://github.com/WorkofAditya/Mira/commit/eabba18fb428ab2c11e5a90ade96a80bf65e300e) | Created README.md | [README.md](https://github.com/WorkofAditya/Mira/blob/main/README.md) |
 | 2026-01-15 | [04eae51](https://github.com/WorkofAditya/Mira/commit/04eae51e0df8f026e71e8cc0b8617a2594f397b6) | Update changelog.yml to exclude some commits | [.github/workflows/changelog.yml](https://github.com/WorkofAditya/Mira/blob/main/.github/workflows/changelog.yml) |
