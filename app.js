@@ -31,32 +31,34 @@ request.onerror = e => console.error("IndexedDB error:", e);
 
 // ================= HOMEPAGE =================
 function initHomePage() {
+  const selectBtn = document.querySelector(".select-btn");
   const branchSelect = document.getElementById("branchSelect");
 
-  branchSelect.onchange = () => {
-    if (!branchSelect.value) return;
+  selectBtn.onclick = () => {
+    if (!branchSelect.value) {
+      alert("Please select a branch");
+      return;
+    }
     sessionStorage.setItem("selectedBranch", branchSelect.value);
-   
+    window.location.href = "booking.html";
   };
 }
 
 // ================= BOOKING INIT =================
 function initBookingPage() {
-  let branch = sessionStorage.getItem("selectedBranch");
-
-  // fallback to Jamnagar if nothing selected
-  if (!branch) {
-    branch = "JAMNAGAR";
-    sessionStorage.setItem("selectedBranch", branch); // <- store fallback
-  }
-
+  const branch = sessionStorage.getItem("selectedBranch");
   const branchInput = document.getElementById("branchFrom");
   const pickupFrom = document.getElementById("pickupFrom");
+
+  if (!branch) {
+    alert("No branch selected");
+    return;
+  }
 
   branchInput.value = branch;
   branchInput.readOnly = true;
 
-  // Sync pickupFrom
+  // Sync pickup from here
   pickupFrom.value = branch;
 
   lockForm();
@@ -64,7 +66,6 @@ function initBookingPage() {
   setupButtons(branch);
   setupEnterNavigation();
 }
-
 
 
 // ================= LOCK / UNLOCK =================
@@ -296,8 +297,6 @@ function generateReceiptHTML(d) {
   return wrapper.innerHTML;
 }
 
-document.getElementById("btnPreview").onclick = previewReceipt;
-
 function previewReceipt() {
   const branch = sessionStorage.getItem("selectedBranch");
   if (!branch) return alert("No branch selected");
@@ -375,9 +374,33 @@ function loadBookingToForm(data) {
   lockForm();
 }
 
-const pickupFrom = document.getElementById("pickupFrom");
+const branchTo = document.getElementById("branchTo");
 const deliveryTo = document.getElementById("deliveryTo");
+if (branchTo && deliveryTo) {
+  branchTo.addEventListener("change", () => {
+    deliveryTo.value = branchTo.value;
+  });
+}
 
-branchTo.addEventListener("change", () => {
-  deliveryTo.value = branchTo.value;
+
+document.querySelectorAll(".drop-btn").forEach(btn => {
+  const menu = btn.nextElementSibling;
+  if (!menu) return; // skip if no menu exists
+
+  btn.addEventListener("click", e => {
+    e.stopPropagation(); // prevent the document click handler immediately closing it
+
+    // Close other menus
+    document.querySelectorAll(".drop-menu").forEach(m => {
+      if (m !== menu) m.style.display = "none";
+    });
+
+    // Toggle this menu
+    menu.style.display = menu.style.display === "block" ? "none" : "block";
+  });
+});
+
+// Close all menus when clicking outside
+document.addEventListener("click", () => {
+  document.querySelectorAll(".drop-menu").forEach(m => (m.style.display = "none"));
 });
