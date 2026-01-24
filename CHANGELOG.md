@@ -1,6 +1,7 @@
 ## Unreleased
 | Date | Commit | Change | File |
 |------|--------|--------|------|
+| 2026-01-24 | [b17b947](https://github.com/WorkofAditya/Mira/commit/b17b947b6f566ff84f6149a3504c69af7b4010c8) | Enhance branch selection and dropdown menus | [app.js](https://github.com/WorkofAditya/Mira/blob/main/app.js) |
 | 2026-01-20 | [e77dfa5](https://github.com/WorkofAditya/Mira/commit/e77dfa5957688b54d4e1be02ae48ef9ca2fb8248) | Add a fallback for when no branch is selected | [app.js](https://github.com/WorkofAditya/Mira/blob/main/app.js) |
 | 2026-01-20 | [eccc7ef](https://github.com/WorkofAditya/Mira/commit/eccc7effd7aafb51da3c543c2ce564ddf827c813) | Update app.js to sync branches with city list | [app.js](https://github.com/WorkofAditya/Mira/blob/main/app.js) |
 | 2026-01-20 | [7216ec9](https://github.com/WorkofAditya/Mira/commit/7216ec9b24ebf059eb401d61bf24efd1d8196c00) | Removed "Select" button of selection list | [index.html](https://github.com/WorkofAditya/Mira/blob/main/index.html) |
