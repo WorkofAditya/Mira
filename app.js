@@ -405,8 +405,8 @@ document.addEventListener("click", () => {
   document.querySelectorAll(".drop-menu").forEach(m => (m.style.display = "none"));
 });
 
+// Extra Charges
 const container = document.getElementById("extraChargesContainer")
-const addBtn = document.getElementById("addExtraCharge")
 
 function refreshLabels() {
   const rows = container.querySelectorAll(".extra-row")
@@ -415,21 +415,26 @@ function refreshLabels() {
   })
 }
 
-addBtn.onclick = () => {
+function createRow() {
   const row = document.createElement("div")
   row.className = "row extra-row"
 
   row.innerHTML = `
     <label></label>
     <input type="text" name="extraCharges">
+    <button type="button" class="addExtraCharge">+</button>
     <button type="button" class="removeExtra">✕</button>
   `
 
-  container.appendChild(row)
-  refreshLabels()
+  return row
 }
 
 container.onclick = e => {
+  if (e.target.classList.contains("addExtraCharge")) {
+    container.appendChild(createRow())
+    refreshLabels()
+  }
+
   if (e.target.classList.contains("removeExtra")) {
     e.target.parentElement.remove()
     refreshLabels()
