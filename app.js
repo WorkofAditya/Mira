@@ -404,3 +404,34 @@ document.querySelectorAll(".drop-btn").forEach(btn => {
 document.addEventListener("click", () => {
   document.querySelectorAll(".drop-menu").forEach(m => (m.style.display = "none"));
 });
+
+const container = document.getElementById("extraChargesContainer")
+const addBtn = document.getElementById("addExtraCharge")
+
+function refreshLabels() {
+  const rows = container.querySelectorAll(".extra-row")
+  rows.forEach((row, i) => {
+    row.querySelector("label").textContent = "Extra Charges " + (i + 1)
+  })
+}
+
+addBtn.onclick = () => {
+  const row = document.createElement("div")
+  row.className = "row extra-row"
+
+  row.innerHTML = `
+    <label></label>
+    <input type="text" name="extraCharges">
+    <button type="button" class="removeExtra">✕</button>
+  `
+
+  container.appendChild(row)
+  refreshLabels()
+}
+
+container.onclick = e => {
+  if (e.target.classList.contains("removeExtra")) {
+    e.target.parentElement.remove()
+    refreshLabels()
+  }
+}
