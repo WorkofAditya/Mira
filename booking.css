@@ -1,394 +1,348 @@
-/* Reset and base styles */
+/* ================= Reset and Base Styles ================= */
 html, body {
-  height: 100%;
-  margin: 0;
-  font-family: Arial, sans-serif;
-  background: #f0f0f0;
+    height: 100%;
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: #f0f0f0;
 }
 
 * {
-  box-sizing: border-box;
+    box-sizing: border-box;
 }
 
-/* App container */
+/* ================= App Container ================= */
 .app {
-  min-height: 100vh;
-  width: 100vw;
-  display: flex;
-  flex-direction: column;
-  background: #fff;
+    height: 100vh;
+    overflow: hidden;
+    min-height: 100vh;
+    width: 100vw;
+    display: flex;
+    flex-direction: column;
+    background: #fff;
 }
 
-/* Topbar */
+/* ================= Topbar ================= */
 .topbar {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  height: 52px;
-  border-bottom: 3px solid #000;
-  background: #fff;
-  position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 52px;
+    border-bottom: 3px solid #000;
+    background: #fff;
+    position: relative;
 }
 
 .topbar .logo {
-  position: absolute;
-  left: 16px;
-  font-weight: bold;
-  font-size: 20px;
+    position: absolute;
+    left: 16px;
+    font-weight: bold;
+    font-size: 20px;
 }
 
 .topbar .title {
-  font-size: 18px;
-  font-weight: 600;
-  letter-spacing: 0.5px;
+    font-size: 18px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
 }
 
 .logo {
-  font-weight: bold;
+    font-weight: bold;
 }
 
-/*
-.nav {
-  display: flex;
-  justify-content: center;
-  gap: 20px;
-}
-
-.nav button, .drop-btn {
-  background: none;
-  border: none;
-  font-size: 16px;
-  cursor: pointer;
-}
-
-.nav button:hover,
-.drop-btn:hover {
-  background: #eaeaea;
-}
-
-.dropdown {
-  position: relative;
-}
-
-.drop-menu {
-  position: absolute;
-  top: 35px;
-  left: 0;
-  border: 2px solid #000;
-  background: #fff;
-  display: none;
-  min-width: 160px;
-  z-index: 10;
-  flex-direction: column; 
-}
-
-.dropdown:hover .drop-menu {
-  display: flex;
-}
-
-.drop-menu > div {
-  display: block;
-  padding: 8px;
-  border-bottom: 1px solid #000;
-  cursor: pointer;
-}
-
-.drop-menu div:hover {
-  background: #f0f0f0;
-}
-
-.drop-btn:focus {
-  outline: none;
-}
-
-.nav-link {
-  text-decoration: none;
-  color: black;
-}*/
-
-/* Booking body with original column layout */
+/* ================= Booking Body ================= */
 .booking-body {
-  display: grid;
-  grid-template-columns: 1.2fr 1.2fr 0.8fr;
-  column-gap: 25px;
-  padding: 20px;
-  flex: 1;
+    height: calc(100vh - 52px - 95px);
+    overflow: hidden;
+    display: grid;
+    grid-template-columns: 1.2fr 1.2fr 0.8fr;
+    column-gap: 25px;
+    padding: 20px;
+    flex: 1;
 }
 
-/* Columns */
+/* ================= Columns ================= */
 .col {
-  display: flex;
-  flex-direction: column;
+    display: flex;
+    flex-direction: column;
 }
 
-/* Row layout */
+/* ================= Row Layout ================= */
 .row {
-  display: grid;
-  grid-template-columns: 130px 1fr;
-  align-items: center;
-  margin-bottom: 12px;
+    display: grid;
+    grid-template-columns: 130px 1fr;
+    align-items: center;
+    margin-bottom: 12px;
 }
 
 .row.tight {
-  margin-bottom: 4px;
+    margin-bottom: 4px;
 }
 
 .row.small-gap {
-  margin-bottom: 8px;
+    margin-bottom: 8px;
 }
 
 .big-gap {
-  height: 40px;
+    height: 40px;
 }
 
-/* Inputs */
-input[type="text"], input[type="number"], input[type="date"] {
-  padding: 5px;
+/* ================= Inputs ================= */
+input[type="text"],
+input[type="number"],
+input[type="date"] {
+    padding: 5px;
 }
 
 input {
-  width: 210px; /* preserve original size */
+    width: 210px;
 }
 
 input.small {
-  width: 80px;
+    width: 80px;
 }
 
-/* Fee box */
+input.tiny {
+    width: 45px;
+    padding: 5px;
+}
+
+select {
+    width: 210px;
+    max-width: 100%;
+}
+
+/* ================= Fee Box ================= */
 .fee-box {
-  border: 2px solid #000;
-  padding: 10px;
-  margin-top: 20px;
+    border: 2px solid #000;
+    padding: 10px;
+    margin-top: 20px;
 }
 
 .fee-title {
-  text-align: center;
-  font-weight: bold;
-  border-bottom: 1px solid #000;
-  padding-bottom: 5px;
-  margin-bottom: 10px;
+    text-align: center;
+    font-weight: bold;
+    border-bottom: 1px solid #000;
+    padding-bottom: 5px;
+    margin-bottom: 10px;
 }
 
-/* Actions */
+.freight-row {
+    display: flex;
+    align-items: center;
+}
+
+.freight-inputs {
+    display: flex;
+    gap: 6px;
+}
+
+/* ================= Actions ================= */
 .actions {
-  display: flex;
-  justify-content: center;
-  gap: 15px;
-  margin: 30px 0;
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin: 30px 0;
+    flex-shrink: 0;
 }
 
 .actions button {
-  width: 110px;
-  height: 35px;
-  cursor: pointer;
+    width: 110px;
+    height: 35px;
+    cursor: pointer;
 }
 
-/* Responsive adjustments */
+/* ================= Dispatch Section ================= */
+.dispatch-section {
+    margin-top: 25px;
+    padding-top: 15px;
+    border-top: 2px solid #000;
+}
+
+.dispatch-title {
+    font-weight: bold;
+    text-align: center;
+    margin-bottom: 12px;
+}
+
+/* ================= Extra Charges ================= */
+#addExtraCharge {
+    width: 120px;
+    height: 30px;
+    cursor: pointer;
+}
+
+#extraChargesContainer {
+    max-height: 160px;
+    overflow-y: auto;
+}
+
+#extraChargesWrapper {
+    max-height: 200px;
+    overflow: hidden;
+    margin-top: 20px;
+}
+
+.extra-row {
+    display: grid;
+    grid-template-columns: 130px 1fr 30px;
+}
+
+.removeExtra {
+    width: 28px;
+    height: 28px;
+    cursor: pointer;
+}
+
+/* ================= Responsive ================= */
 @media (max-width: 1000px) {
-  .booking-body {
-    grid-template-columns: 1fr;
-  }
-  .row {
-    grid-template-columns: 1fr;
-  }
-  .row label {
-    margin-bottom: 4px;
-  }
+    .booking-body {
+        grid-template-columns: 1fr;
+    }
+    .row {
+        grid-template-columns: 1fr;
+    }
+    .row label {
+        margin-bottom: 4px;
+    }
 }
 
-/* ================= PRINT LAYOUT ================= */
+/* ================= Print Layout ================= */
 @media print {
-  body * {
-    visibility: hidden;
-  }
-
-  #printArea,
-  #printArea * {
-    visibility: visible;
-  }
-
-  #printArea {
-    position: absolute;
-    left: 0;
-    top: 0;
-    width: 100%;
-  }
+    body * {
+        visibility: hidden;
+    }
+    #printArea, #printArea * {
+        visibility: visible;
+    }
+    #printArea {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+    }
 }
 
 .print-page {
-  display: flex;
-  justify-content: space-between;
-  gap: 20px;
-  padding: 20px;
+    display: flex;
+    justify-content: space-between;
+    gap: 20px;
+    padding: 20px;
 }
 
 .receipt {
-  width: 48%;
-  border: 2px solid #000;
-  padding: 15px;
-  font-family: Arial, sans-serif;
-  font-size: 14px;
+    width: 48%;
+    border: 2px solid #000;
+    padding: 15px;
+    font-family: Arial, sans-serif;
+    font-size: 14px;
 }
 
 .receipt-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
 }
 
 .receipt-header .logo {
-  font-size: 48px;
-  font-weight: bold;
+    font-size: 48px;
+    font-weight: bold;
 }
 
 .receipt-header .meta {
-  text-align: right;
+    text-align: right;
 }
 
 .receipt-header .meta div {
-  margin-bottom: 4px;
+    margin-bottom: 4px;
 }
 
 .route {
-  margin: 10px 0;
-  font-weight: bold;
-  text-align: center;
+    margin: 10px 0;
+    font-weight: bold;
+    text-align: center;
 }
 
 .field {
-  display: flex;
-  margin: 4px 0;
+    display: flex;
+    margin: 4px 0;
 }
 
 .field span:first-child {
-  width: 90px;
+    width: 90px;
+    font-weight: bold;
 }
 
 .to-pay {
-  margin-top: 10px;
-  font-weight: bold;
-  color: darkred;
+    margin-top: 10px;
+    font-weight: bold;
+    color: darkred;
+    font-size: 18px;
 }
 
 .signature {
-  margin-top: 25px;
-  text-align: center;
-  border-top: 1px solid #000;
-  padding-top: 5px;
-  font-weight: bold;
+    margin-top: 30px;
+    text-align: center;
+    border-top: 1px solid #000;
+    padding-top: 5px;
+    font-weight: bold;
 }
 
-.booking-body select {
-  width: 210px;        
-  max-width: 100%;
-}
-
-/* ===== Overlay ===== */
+/* ================= Popup / Overlay ================= */
 .overlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,0.5);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 9999;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
 }
 
-/* ===== Popup ===== */
 .popup {
-  background: #fff;
-  padding: 20px;
-  width: 600px;
-  max-height: 90%;
-  overflow-y: auto;
-  border-radius: 8px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-  position: relative;
+    background: #fff;
+    padding: 20px;
+    width: 600px;
+    max-height: 90%;
+    overflow-y: auto;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    position: relative;
 }
 
 .popup h3 {
-  margin-top: 0;
+    margin-top: 0;
 }
 
 .popup input,
 .popup select {
-  width: 100%;
-  margin-bottom: 10px;
+    width: 100%;
+    margin-bottom: 10px;
 }
 
 .popup-actions {
-  display: flex;
-  justify-content: flex-end;
-  gap: 10px;
-}
-
-/* ===== Receipt ===== */
-.receipt-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.logo {
-  font-weight: bold;
-  font-size: 24px;
-}
-
-.meta {
-  text-align: right;
-}
-
-.route {
-  text-align: center;
-  font-weight: bold;
-  margin: 10px 0;
-}
-
-.field {
-  margin: 4px 0;
-}
-
-.field span:first-child {
-  font-weight: bold;
-}
-
-.to-pay {
-  margin-top: 10px;
-  font-size: 18px;
-  font-weight: bold;
-}
-
-.signature {
-  margin-top: 30px;
-  text-align: right;
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
 }
 
 .popup.find-popup {
-  width: 320px;
+    width: 320px;
 }
 
-.freight-row {
-  align-items: center;
+.col.left {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
 }
 
-.freight-inputs {
-  display: flex;
-  gap: 6px;
+.col.right {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    margin-bottom: 10px; /* extra space to prevent pushing issues */
 }
 
-input.tiny {
-  width: 45px;
-  padding: 5px;
-}
-
-.dispatch-section {
-  margin-top: 25px;
-  padding-top: 15px;
-  border-top: 2px solid #000;
-}
-
-.dispatch-title {
-  font-weight: bold;
-  text-align: center;
-  margin-bottom: 12px;
+.right-scroll {
+    overflow-y: auto;
+    flex: 1;
 }
