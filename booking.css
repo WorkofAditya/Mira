@@ -165,8 +165,8 @@ select {
 
 /* ================= Extra Charges ================= */
 #addExtraCharge {
-    width: 120px;
-    height: 30px;
+    width: 28px;
+    height: 28px;
     cursor: pointer;
 }
 
@@ -183,12 +183,13 @@ select {
 
 .extra-row {
     display: grid;
-    grid-template-columns: 130px 1fr 30px;
+    grid-template-columns: 130px 1fr 28px 28px;
+    align-items: center;
 }
 
 .removeExtra {
     width: 28px;
-    height: 28px;
+    height: 22px;
     cursor: pointer;
 }
 
