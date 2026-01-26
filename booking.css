@@ -127,13 +127,12 @@ select {
 }
 
 .freight-row {
-    display: flex;
-    align-items: center;
+  align-items: center;
 }
 
 .freight-inputs {
-    display: flex;
-    gap: 6px;
+  display: flex;
+  gap: 6px;
 }
 
 /* ================= Actions ================= */
