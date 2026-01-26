@@ -1,6 +1,7 @@
 ## Unreleased
 | Date | Commit | Change | File |
 |------|--------|--------|------|
+| 2026-01-26 | [2f6db9c](https://github.com/WorkofAditya/Mira/commit/2f6db9c7dbbc42d0f1faf1876f536e6edc63bab6) | Refactor booking form layout and buttons | [booking.html](https://github.com/WorkofAditya/Mira/blob/main/booking.html) |
 | 2026-01-26 | [ce65678](https://github.com/WorkofAditya/Mira/commit/ce656783c8d5fca8b2a4cba517e0cd96c09c139c) | Refactor freight-row and freight-inputs styles | [booking.css](https://github.com/WorkofAditya/Mira/blob/main/booking.css) |
 | 2026-01-26 | [a950e39](https://github.com/WorkofAditya/Mira/commit/a950e39abe0b5850c76e40cfbf0a464ab29544dc) | Add functionality to manage extra charges | [app.js](https://github.com/WorkofAditya/Mira/blob/main/app.js) |
 | 2026-01-26 | [d8dd449](https://github.com/WorkofAditya/Mira/commit/d8dd4494f73079fa005a08fe6ec855e5c1325474) | Refactor CSS comments and structure for clarity | [booking.css](https://github.com/WorkofAditya/Mira/blob/main/booking.css) |
