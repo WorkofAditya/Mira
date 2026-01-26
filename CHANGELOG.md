@@ -1,6 +1,7 @@
 ## Unreleased
 | Date | Commit | Change | File |
 |------|--------|--------|------|
+| 2026-01-26 | [d8dd449](https://github.com/WorkofAditya/Mira/commit/d8dd4494f73079fa005a08fe6ec855e5c1325474) | Refactor CSS comments and structure for clarity | [booking.css](https://github.com/WorkofAditya/Mira/blob/main/booking.css) |
 | 2026-01-26 | [cc7bd4e](https://github.com/WorkofAditya/Mira/commit/cc7bd4ed708ed570abff5283f7b8afd13495c8c2) | Refactor booking.html for improved sections | [booking.html](https://github.com/WorkofAditya/Mira/blob/main/booking.html) |
 | 2026-01-24 | [571454c](https://github.com/WorkofAditya/Mira/commit/571454ce44150be37e62f518a47dbc0583b056d8) | Add select button to index.html | [index.html](https://github.com/WorkofAditya/Mira/blob/main/index.html) |
 | 2026-01-24 | [b17b947](https://github.com/WorkofAditya/Mira/commit/b17b947b6f566ff84f6149a3504c69af7b4010c8) | Enhance branch selection and dropdown menus | [app.js](https://github.com/WorkofAditya/Mira/blob/main/app.js) |
