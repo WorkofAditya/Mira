@@ -1,6 +1,10 @@
 ## Unreleased
 | Date | Commit | Change | File |
 |------|--------|--------|------|
+| 2026-02-10 | [1a3eff7](https://github.com/WorkofAditya/Mira/commit/1a3eff76d2bb94bee5eb0a2d293c604ccd275c1a) | Merge pull request #2 from WorkofAditya/codex/remove-expandable-feature-from-extra-charges |  |
+| 2026-02-10 | [0ad2d73](https://github.com/WorkofAditya/Mira/commit/0ad2d73302dc23aefb12a7c4bd274ab28e3af425) | Simplify booking extra charges to two fixed fields | [app.js](https://github.com/WorkofAditya/Mira/blob/main/app.js) |
+| 2026-02-10 | [0ad2d73](https://github.com/WorkofAditya/Mira/commit/0ad2d73302dc23aefb12a7c4bd274ab28e3af425) | Simplify booking extra charges to two fixed fields | [booking.css](https://github.com/WorkofAditya/Mira/blob/main/booking.css) |
+| 2026-02-10 | [0ad2d73](https://github.com/WorkofAditya/Mira/commit/0ad2d73302dc23aefb12a7c4bd274ab28e3af425) | Simplify booking extra charges to two fixed fields | [booking.html](https://github.com/WorkofAditya/Mira/blob/main/booking.html) |
 | 2026-02-10 | [32e9182](https://github.com/WorkofAditya/Mira/commit/32e91821280af20f599936e92cb5abc5ee8e8be5) | Clean up formatting in README.md | [README.md](https://github.com/WorkofAditya/Mira/blob/main/README.md) |
 | 2026-01-26 | [9fe002e](https://github.com/WorkofAditya/Mira/commit/9fe002ea9de59199e1df76a86627fcd6d2131b17) | Refactor extra charges functionality in app.js | [app.js](https://github.com/WorkofAditya/Mira/blob/main/app.js) |
 | 2026-01-26 | [e36624b](https://github.com/WorkofAditya/Mira/commit/e36624bd1c3808f6da3d546117c9f2bc20bf1638) | Adjust button sizes and grid layout for extra charges | [booking.css](https://github.com/WorkofAditya/Mira/blob/main/booking.css) |
