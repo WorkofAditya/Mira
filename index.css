@@ -1,0 +1,158 @@
+    /* Reset & global styles */
+    html, body {
+      height: 100%;
+      margin: 0;
+    }
+
+    * {
+      box-sizing: border-box;
+      font-family: Arial, sans-serif;
+    }
+
+    body {
+      background: #f0f0f0;
+    }
+
+    /* Full-screen app container */
+    .app {
+      min-height: 100vh;
+      width: 100%;
+      background: white;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Topbar */
+    .topbar {
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      align-items: center;
+      border-bottom: 3px solid #000;
+      padding: 10px 15px;
+      position: sticky;
+      top: 0;
+      background: white;
+      z-index: 1000;
+    }
+
+    .logo {
+      font-weight: bold;
+    }
+
+    .nav {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+    }
+
+    .nav button, .drop-btn {
+      background: none;
+      border: none;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    .nav button:hover,
+    .drop-btn:hover {
+      background-color: #eaeaea;
+      border-radius: 2px;
+    }
+
+    .dropdown {
+      position: relative;
+    }
+
+    .drop-menu {
+      position: absolute;
+      top: 35px;
+      left: 0;
+      border: 2px solid #000;
+      background: #fff;
+      display: none;
+      flex-direction: column;
+      min-width: 160px;
+      z-index: 100;
+    }
+
+    .drop-menu.right {
+      left: auto;
+      right: 0;
+    }
+
+    .drop-menu div {
+      padding: 8px 12px;
+      border-bottom: 1px solid #000;
+      cursor: pointer;
+    }
+
+    .drop-menu div:last-child {
+      border-bottom: none;
+    }
+
+    .dropdown:hover .drop-menu {
+      display: flex;
+    }
+
+    .drop-menu div:hover {
+      background-color: #f0f0f0;
+    }
+
+    .nav-link {
+      text-decoration: none;
+      color: inherit;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    .nav-link:hover {
+      background-color: #eaeaea;
+      border-radius: 2px;
+    }
+
+    .spacer {
+      width: 60px;
+    }
+
+    /* Filters section - perfectly centered */
+    .filters {
+      display: flex;
+      justify-content: center;
+      align-items: flex-end;
+      gap: 20px;
+      margin: 40px 0;
+      width: 100%;
+    }
+
+    .filters-inner {
+      display: flex;
+      align-items: flex-end;
+      gap: 20px;
+    }
+
+    .field {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .field label {
+      text-align: center;
+      margin-bottom: 5px;
+    }
+
+    .field input {
+      width: 200px;
+      padding: 5px;
+    }
+
+    .select-btn {
+      padding: 6px 14px;
+      height: 32px;
+    }
+
+    /* Optional content placeholders */
+    .content {
+      flex: 1;
+      padding: 20px;
+    }
+  

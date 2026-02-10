@@ -1,0 +1,52 @@
+name: Auto Generate Changelog
+
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: write
+
+jobs:
+  changelog:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Generate changelog
+        run: |
+          REPO="${{ github.repository }}"
+          BRANCH="main"
+
+          echo "## Unreleased" > CHANGELOG.md
+          echo "| Date | Commit | Change | File |" >> CHANGELOG.md
+          echo "|------|--------|--------|------|" >> CHANGELOG.md
+
+          git log --pretty=format:'%H|%h|%ad|%s' --date=short \
+          | grep -v "Auto-update CHANGELOG.md" \
+          | while IFS="|" read HASH SHORTHASH DATE MESSAGE
+          do
+            FILES=$(git show --name-only --pretty="" "$HASH")
+
+            if [ -z "$FILES" ]; then
+              echo "| $DATE | [$SHORTHASH](https://github.com/$REPO/commit/$HASH) | $MESSAGE |  |" >> CHANGELOG.md
+            else
+              for FILE in $FILES
+              do
+                echo "| $DATE | [$SHORTHASH](https://github.com/$REPO/commit/$HASH) | $MESSAGE | [$FILE](https://github.com/$REPO/blob/$BRANCH/$FILE) |" >> CHANGELOG.md
+              done
+            fi
+          done
+
+      - name: Commit changelog
+        run: |
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+          git add CHANGELOG.md
+          git commit -m "Auto-update CHANGELOG.md" || exit 0
+          git push

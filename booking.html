@@ -1,325 +1,217 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>Booking</title>
-<style>
-/* Reset and base styles */
-html, body {
-  height: 100%;
-  margin: 0;
-  font-family: Arial, sans-serif;
-  background: #f0f0f0;
-}
-
-* {
-  box-sizing: border-box;
-}
-
-/* App container */
-.app {
-  min-height: 100vh;
-  width: 100vw;
-  display: flex;
-  flex-direction: column;
-  background: #fff;
-}
-
-/* Topbar */
-.topbar {
-  display: grid;
-  grid-template-columns: auto 1fr auto;
-  align-items: center;
-  border-bottom: 3px solid #000;
-  padding: 10px 15px;
-  background: #fff;
-}
-
-.logo {
-  font-weight: bold;
-}
-
-.nav {
-  display: flex;
-  justify-content: center;
-  gap: 20px;
-}
-
-.nav button, .drop-btn {
-  background: none;
-  border: none;
-  font-size: 16px;
-  cursor: pointer;
-}
-
-.nav button:hover,
-.drop-btn:hover {
-  background: #eaeaea;
-}
-
-.dropdown {
-  position: relative;
-}
-
-.drop-menu {
-  position: absolute;
-  top: 35px;
-  left: 0;
-  border: 2px solid #000;
-  background: #fff;
-  display: none;
-  min-width: 160px;
-  z-index: 10;
-}
-
-.dropdown:hover .drop-menu {
-  display: block;
-}
-
-.drop-menu div {
-  padding: 8px;
-  border-bottom: 1px solid #000;
-  cursor: pointer;
-}
-
-.drop-menu div:hover {
-  background: #f0f0f0;
-}
-
-.nav-link {
-  text-decoration: none;
-  color: black;
-}
-
-/* Booking body with original column layout */
-.booking-body {
-  display: grid;
-  grid-template-columns: 1.2fr 1.2fr 0.8fr;
-  column-gap: 25px;
-  padding: 20px;
-  flex: 1;
-}
-
-/* Columns */
-.col {
-  display: flex;
-  flex-direction: column;
-}
-
-/* Row layout */
-.row {
-  display: grid;
-  grid-template-columns: 130px 1fr;
-  align-items: center;
-  margin-bottom: 12px;
-}
-
-.row.tight {
-  margin-bottom: 4px;
-}
-
-.row.small-gap {
-  margin-bottom: 8px;
-}
-
-.big-gap {
-  height: 40px;
-}
-
-/* Inputs */
-input[type="text"], input[type="number"], input[type="date"] {
-  padding: 5px;
-}
-
-input {
-  width: 210px; /* preserve original size */
-}
-
-input.small {
-  width: 80px;
-}
-
-/* Fee box */
-.fee-box {
-  border: 2px solid #000;
-  padding: 10px;
-  margin-top: 20px;
-}
-
-.fee-title {
-  text-align: center;
-  font-weight: bold;
-  border-bottom: 1px solid #000;
-  padding-bottom: 5px;
-  margin-bottom: 10px;
-}
-
-/* Actions */
-.actions {
-  display: flex;
-  justify-content: center;
-  gap: 15px;
-  margin: 30px 0;
-}
-
-.actions button {
-  width: 110px;
-  height: 35px;
-  cursor: pointer;
-}
-
-/* Responsive adjustments */
-@media (max-width: 1000px) {
-  .booking-body {
-    grid-template-columns: 1fr;
-  }
-  .row {
-    grid-template-columns: 1fr;
-  }
-  .row label {
-    margin-bottom: 4px;
-  }
-}
-</style>
+    <meta charset="UTF-8">
+    <title>Booking</title>
+    <link rel="stylesheet" href="booking.css">
 </head>
 <body>
-<div class="app">
+    <div class="app">
 
-  <!-- Topbar -->
-  <header class="topbar">
-    <div class="logo">LOGO</div>
-    <nav class="nav">
-      <div class="dropdown">
-        <button class="drop-btn">Employ</button>
-        <div class="drop-menu">
-          <div>Data entry</div>
-          <div>Employ Data</div>
-          <div>Salary slip</div>
-        </div>
-      </div>
-      <div class="dropdown">
-        <button class="drop-btn">Driver</button>
-        <div class="drop-menu">
-          <div>Data entry</div>
-          <div>Payment slip</div>
-          <div>Driver Data</div>
-        </div>
-      </div>
-      <a href="booking.html" class="nav-link">Booking</a>
-      <button>Dispatch</button>
-      <button>Summary</button>
-      <div class="dropdown">
-        <button class="drop-btn">Menu</button>
-        <div class="drop-menu right">
-          <div>Booking</div>
-          <div>Dispatch</div>
-          <div>Godown Stock</div>
-          <div>Consignor Data</div>
-          <div>Consignee Data</div>
-        </div>
-      </div>
-    </nav>
-  </header>
+        <!-- Topbar -->
+        <header class="topbar standalone">
+            <div class="logo">RC</div>
+            <div class="title">Booking Page</div>
+        </header>
 
-  <!-- Booking form -->
-  <div class="booking-body">
+        <!-- Booking form -->
+        <div class="booking-body">
 
     <!-- Left column -->
     <div class="col left">
-      <div class="row">
-        <label>Branch From</label>
-        <input type="text" id="branchFrom" readonly>
-      </div>
-      <div class="row small-gap">
-        <label>Branch To</label>
-        <input type="text">
-      </div>
-      <div class="big-gap"></div>
-      <div class="row">
-        <label>B-Pay Mode</label>
-        <input type="text">
-      </div>
-      <div class="row">
-        <label>Sender / C</label>
-        <input type="text">
-      </div>
-      <div class="row">
-        <label>Receiver</label>
-        <input type="text">
-      </div>
-      <div class="row">
-        <label>Content</label>
-        <input type="text">
-      </div>
-      <div class="row">
-        <label>Packages</label>
-        <input type="number" class="small">
-      </div>
-      <div class="row">
-        <label>Weight in KG</label>
-        <input type="number" class="small">
-      </div>
+        <div class="row">
+            <label>Branch From</label>
+            <input type="text" id="branchFrom" readonly>
+        </div>
+        <div class="row small-gap">
+            <label>Branch To</label>
+            <select id="branchTo">
+                <option value="">-- Select Branch --</option>
+                <option value="JAMNAGAR">JAMNAGAR</option>
+                <option value="DARED">DARED</option>
+                <option value="KOLKATA">KOLKATA</option>
+                <option value="MUMBAI">MUMBAI</option>
+                <option value="DELHI">DELHI</option>
+            </select>
+        </div>
+        <div class="big-gap"></div>
+        <div class="row">
+            <label>B-Pay Mode</label>
+            <select id="payMode">
+                <option value="TO PAY">To Pay</option>
+                <option value="PAID">Paid</option>
+                <option value="ACCOUNT">Account</option>
+            </select>
+        </div>
+        <div class="row">
+            <label>Sender / C</label>
+            <input type="text" id="sender">
+        </div>
+        <div class="row">
+            <label>Receiver</label>
+            <input type="text" id="receiver">
+        </div>
+        <div class="row">
+            <label>Content</label>
+            <input type="text" id="content">
+        </div>
+        <div class="row">
+            <label>Packages</label>
+            <input type="number" class="small" id="packages">
+        </div>
+        <div class="row">
+            <label>Weight in KG</label>
+            <input type="number" class="small" id="weight">
+        </div>
+        <div class="row">
+            <label>Reminder</label>
+            <input type="text" id="reminder">
+        </div>
+
+        <!-- Dispatch section moved here -->
+        <div class="dispatch-section">
+            <div class="dispatch-title">DISPATCH</div>
+            <div class="row">
+                <label>Memo No</label>
+                <input type="text" id="dispatchMemo">
+            </div>
+            <div class="row">
+                <label>Dispatch Date</label>
+                <input type="date" class="small" id="dispatchDate">
+            </div>
+            <div class="row">
+                <label>Vehicle No</label>
+                <input type="text" id="vehicleNo">
+            </div>
+        </div>
     </div>
 
     <!-- Middle column -->
     <div class="col middle">
-      <div class="row tight">
-        <label>Pickup From</label>
-        <input type="text">
-      </div>
-      <div class="row tight">
-        <label>Delivery To</label>
-        <input type="text">
-      </div>
-      <div class="big-gap"></div>
-      <div class="row">
-        <label>Mobile No.</label>
-        <input type="text">
-      </div>
-      <div class="row">
-        <label>PKG Detail</label>
-        <input type="text">
-      </div>
+        <div class="row tight">
+            <label>Pickup From</label>
+            <input type="text" id="pickupFrom">
+        </div>
+        <div class="row tight">
+            <label>Delivery To</label>
+            <input type="text" id="deliveryTo">
+        </div>
+        <div class="big-gap"></div>
+        <div class="row">
+            <label>Mobile No.</label>
+            <input type="text" id="mobile">
+        </div>
+        <div class="row">
+            <label>PKG Detail</label>
+            <input type="text" id="pkgDetail">
+        </div>
     </div>
 
     <!-- Right column -->
     <div class="col right">
-      <div class="row">
-        <label>Date</label>
-        <input type="date" class="small">
-      </div>
-      <div class="row">
-        <label>L. R. No</label>
-        <input type="text">
-      </div>
-      <div class="fee-box">
-        <div class="fee-title">Booking Fee</div>
-        <div class="row">
-          <label>Freight</label>
-          <input type="number" class="small">
+        <div class="right-scroll">
+            <div class="row">
+                <label>Date</label>
+                <input type="date" class="small" id="bookingDate">
+            </div>
+            <div class="row">
+                <label>L. R. No</label>
+                <input type="text" id="lrNo">
+            </div>
+            <div class="fee-box">
+                <div class="fee-title">Booking Fee</div>
+                <div class="row freight-row">
+                    <label>Freight</label>
+                    <div class="freight-inputs">
+                        <input type="number" class="small" id="freight">
+                        <input type="number" class="tiny" id="freightExtra">
+                    </div>
+                </div>
+                <div class="row">
+                    <label>Door del</label>
+                    <input type="number" id="doorDelivery">
+                </div>
+                <div class="row">
+                    <label>Extra Charges 1</label>
+                    <input type="text" id="extraCharges1">
+                </div>
+                <div class="row">
+                    <label>Extra Charges 2</label>
+                    <input type="text" id="extraCharges2">
+                </div>
+                <div class="row">
+                    <label>Total</label>
+                    <input type="number" id="total">
+                </div>
+            </div>
+            <!-- Extra margin at bottom -->
+            <div style="height: 20px;"></div>
         </div>
-        <div class="row">
-          <label>Door del</label>
-          <input type="number">
+    </div>
+</div>
+
+
+        <!-- Action buttons -->
+        <div class="actions">
+            <button id="btnNew">Add / New</button>
+            <button id="btnEdit">Edit</button>
+            <button id="btnSave">Save</button>
+            <button id="btnDelete">Delete</button>
+            <button id="btnFind">Find</button>
+            <button id="btnPreview">Preview</button>
+            <button id="btnPrint">Print</button>
         </div>
-        <div class="row">
-          <label>Total</label>
-          <input type="number">
-        </div>
-      </div>
+
     </div>
 
-  </div>
+    <!-- PRINT LAYOUT -->
+    <div id="printArea" style="display:none">
+        <div class="print-page">
+            <div class="receipt" id="receiptLeft"></div>
+            <div class="receipt" id="receiptRight"></div>
+        </div>
+    </div>
 
-  <!-- Action buttons -->
-  <div class="actions">
-    <button>Add</button>
-    <button>Edit</button>
-    <button>Delete</button>
-    <button>Print</button>
-    <button>Reset</button>
-  </div>
+    <!-- ===== Receipt Template ===== -->
+    <template id="receiptTemplate">
+        <div class="receipt-header">
+            <div class="logo">RC</div>
+            <div class="meta">
+                <div>Date : <b data-booking-date></b></div>
+                <div>Rcpt.No : <b data-lr-no></b></div>
+            </div>
+        </div>
+        <div class="route" data-route></div>
+        <div class="field"><span>Sender :</span> <span data-sender></span></div>
+        <div class="field"><span>Receiver :</span> <span data-receiver></span></div>
+        <div class="field"><span>Contact :</span> <span data-mobile></span></div>
+        <div class="field"><span>Item :</span> <span data-content></span></div>
+        <div class="field"><span>Packing :</span> <span data-pkg></span></div>
+        <div class="field"><span>Parcel :</span> <span data-packages></span></div>
+        <div class="field"><span>Weight :</span> <span data-weight></span></div>
+        <div class="to-pay" data-total></div>
+        <div class="signature">Receiver's Signature</div>
+    </template>
 
-</div>
+    <!-- ===== Find Popup Template ===== -->
+    <template id="findPopupTemplate">
+        <div id="previewOverlay" class="overlay">
+            <div class="popup find-popup">
+                <h3>Find Booking</h3>
+                <label>LR No</label>
+                <input type="text" id="findLR">
+                <label>Available LR Numbers</label>
+                <select id="lrList">
+                    <option value="">-- Select LR --</option>
+                </select>
+                <div class="popup-actions">
+                    <button id="findCancel">Cancel</button>
+                    <button id="findLoad">Load</button>
+                </div>
+            </div>
+        </div>
+    </template>
+
+    <script src="app.js"></script>
 </body>
 </html>

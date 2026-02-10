@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Dispatch Entry</title>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        background: #f5f5f5;
+    }
+
+    .container {
+        width: 1100px;
+        margin: 20px auto;
+        background: #fff;
+        border: 2px solid #000;
+        padding: 15px;
+    }
+
+    .top {
+        display: flex;
+    }
+
+    .left {
+        width: 35%;
+    }
+
+    .row {
+        display: flex;
+        align-items: center;
+        margin-bottom: 8px;
+    }
+
+    .row label {
+        width: 120px;
+        font-weight: bold;
+    }
+
+    .row input {
+        width: 180px;
+        height: 24px;
+        border: 2px solid #000;
+    }
+
+    .remark input {
+        width: 160px;
+    }
+
+    .loading-btn {
+        margin-left: 10px;
+        padding: 8px 15px;
+        border: 2px solid #000;
+        background: #eaeaea;
+        font-weight: bold;
+        cursor: pointer;
+    }
+
+    .middle {
+        width: 30%;
+        text-align: center;
+    }
+
+    .middle h3 {
+        margin-bottom: 5px;
+    }
+
+    .box {
+        width: 90%;
+        height: 350px;
+        border: 2px solid #000;
+        margin: auto;
+    }
+
+    .arrows {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        gap: 10px;
+    }
+
+    .arrows button {
+        width: 40px;
+        height: 30px;
+        border: 2px solid #000;
+        cursor: pointer;
+    }
+
+    .right {
+        width: 30%;
+    }
+
+    .bottom {
+        display: flex;
+        justify-content: space-around;
+        margin-top: 15px;
+        border-top: 2px solid #000;
+        padding-top: 10px;
+    }
+
+    .bottom button {
+        width: 100px;
+        height: 35px;
+        border: 2px solid #000;
+        background: #eaeaea;
+        font-weight: bold;
+        cursor: pointer;
+    }
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <div class="top">
+        <!-- Left Section -->
+        <div class="left">
+            <div class="row">
+                <label>DISPATCH NO</label>
+                <input type="text">
+            </div>
+
+            <div class="row">
+                <label>DATE</label>
+                <input type="date">
+            </div>
+
+            <div class="row">
+                <label>METHOD</label>
+                <input type="text">
+            </div>
+
+            <div class="row">
+                <label>BRANCH</label>
+                <input type="text">
+            </div>
+
+            <div class="row">
+                <label>DRIVER NAME</label>
+                <input type="text">
+            </div>
+
+            <div class="row">
+                <label>MOBAIL NO</label>
+                <input type="text">
+            </div>
+
+            <div class="row">
+                <label>VAICAL NO</label>
+                <input type="text">
+            </div>
+
+            <div class="row">
+                <label>ROUET</label>
+                <input type="text">
+            </div>
+
+            <div class="row remark">
+                <label>REMARK</label>
+                <input type="text">
+                <button class="loading-btn">LODING</button>
+            </div>
+        </div>
+
+        <!-- Middle Section -->
+        <div class="middle">
+            <h3>LR NO GODOUN</h3>
+            <div class="box"></div>
+        </div>
+
+        <!-- Arrow Buttons -->
+        <div class="arrows">
+            <button>&gt;</button>
+            <button>&gt;</button>
+            <button>&lt;</button>
+            <button>&lt;</button>
+        </div>
+
+        <!-- Right Section -->
+        <div class="right">
+          <h3>LR ON VEHICLE </h3>
+            <!--Tab to edit-->
+            <!--Tab to edit-->
+          </h3>
+            <div class="box"></div>
+        </div>
+    </div>
+
+    <!-- Bottom Buttons -->
+    <div class="bottom">
+        <button>NEW</button>
+        <button>EDIT</button>
+        <button>DELETE</button>
+        <button>FIND</button>
+        <button>PRIVIEW</button>
+        <button>PRINT</button>
+        <button>PDF</button>
+        <button>EXIT</button>
+    </div>
+
+</div>
+
+</body>
+</html>
