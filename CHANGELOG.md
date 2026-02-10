@@ -1,6 +1,7 @@
 ## Unreleased
 | Date | Commit | Change | File |
 |------|--------|--------|------|
+| 2026-02-10 | [32e9182](https://github.com/WorkofAditya/Mira/commit/32e91821280af20f599936e92cb5abc5ee8e8be5) | Clean up formatting in README.md | [README.md](https://github.com/WorkofAditya/Mira/blob/main/README.md) |
 | 2026-01-26 | [9fe002e](https://github.com/WorkofAditya/Mira/commit/9fe002ea9de59199e1df76a86627fcd6d2131b17) | Refactor extra charges functionality in app.js | [app.js](https://github.com/WorkofAditya/Mira/blob/main/app.js) |
 | 2026-01-26 | [e36624b](https://github.com/WorkofAditya/Mira/commit/e36624bd1c3808f6da3d546117c9f2bc20bf1638) | Adjust button sizes and grid layout for extra charges | [booking.css](https://github.com/WorkofAditya/Mira/blob/main/booking.css) |
 | 2026-01-26 | [2f6db9c](https://github.com/WorkofAditya/Mira/commit/2f6db9c7dbbc42d0f1faf1876f536e6edc63bab6) | Refactor booking form layout and buttons | [booking.html](https://github.com/WorkofAditya/Mira/blob/main/booking.html) |
