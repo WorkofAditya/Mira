@@ -11,11 +11,14 @@
   Designed to manage and organize data efficiently.
   <br>
   <b>Developed by <a href="https://github.com/WorkofAditya/">Adityasinh</a></b>
-  <br><br>
+  <br>
+  <br>
+  
   <a href="https://github.com/WorkofAditya/Mira/issues">Report a Bug</a>
   <br>
   <a href="https://github.com/WorkofAditya/Mira/issues">Request a Feature</a>
 </p>
-
+<i>Still in development</i>
 </div>
 <br>
+ 
