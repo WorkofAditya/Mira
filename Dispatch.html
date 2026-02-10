@@ -71,6 +71,13 @@
         margin: auto;
     }
 
+    .box select {
+        width: 100%;
+        height: 100%;
+        border: none;
+        outline: none;
+    }
+
     .arrows {
         display: flex;
         flex-direction: column;
@@ -113,92 +120,89 @@
 <div class="container">
 
     <div class="top">
-        <!-- Left Section -->
         <div class="left">
             <div class="row">
                 <label>DISPATCH NO</label>
-                <input type="text">
+                <input type="text" id="dispatchNo">
             </div>
 
             <div class="row">
                 <label>DATE</label>
-                <input type="date">
+                <input type="date" id="dispatchDate">
             </div>
 
             <div class="row">
                 <label>METHOD</label>
-                <input type="text">
+                <input type="text" id="method">
             </div>
 
             <div class="row">
                 <label>BRANCH</label>
-                <input type="text">
+                <input type="text" id="branchInput" readonly>
             </div>
 
             <div class="row">
                 <label>DRIVER NAME</label>
-                <input type="text">
+                <input type="text" id="driverName">
             </div>
 
             <div class="row">
-                <label>MOBAIL NO</label>
-                <input type="text">
+                <label>MOBILE NO</label>
+                <input type="text" id="mobileNo">
             </div>
 
             <div class="row">
-                <label>VAICAL NO</label>
-                <input type="text">
+                <label>VEHICLE NO</label>
+                <input type="text" id="vehicleNo">
             </div>
 
             <div class="row">
-                <label>ROUET</label>
-                <input type="text">
+                <label>ROUTE</label>
+                <input type="text" id="route">
             </div>
 
             <div class="row remark">
                 <label>REMARK</label>
-                <input type="text">
-                <button class="loading-btn">LODING</button>
+                <input type="text" id="remark">
+                <button class="loading-btn" type="button">LOADING</button>
             </div>
         </div>
 
-        <!-- Middle Section -->
         <div class="middle">
-            <h3>LR NO GODOUN</h3>
-            <div class="box"></div>
+            <h3>LR NO GODOWN</h3>
+            <div class="box">
+              <select id="godownList" multiple></select>
+            </div>
         </div>
 
-        <!-- Arrow Buttons -->
         <div class="arrows">
-            <button>&gt;</button>
-            <button>&gt;</button>
-            <button>&lt;</button>
-            <button>&lt;</button>
+            <button id="btnMoveOneToVehicle" type="button">&gt;</button>
+            <button id="btnMoveAllToVehicle" type="button">&gt;&gt;</button>
+            <button id="btnMoveOneToGodown" type="button">&lt;</button>
+            <button id="btnMoveAllToGodown" type="button">&lt;&lt;</button>
         </div>
 
-        <!-- Right Section -->
         <div class="right">
-          <h3>LR ON VEHICLE </h3>
-            <!--Tab to edit-->
-            <!--Tab to edit-->
-          </h3>
-            <div class="box"></div>
+          <h3>LR ON VEHICLE</h3>
+            <div class="box">
+              <select id="vehicleList" multiple></select>
+            </div>
         </div>
     </div>
 
-    <!-- Bottom Buttons -->
     <div class="bottom">
-        <button>NEW</button>
-        <button>EDIT</button>
-        <button>DELETE</button>
-        <button>FIND</button>
-        <button>PRIVIEW</button>
-        <button>PRINT</button>
-        <button>PDF</button>
-        <button>EXIT</button>
+        <button type="button">NEW</button>
+        <button type="button">EDIT</button>
+        <button type="button">DELETE</button>
+        <button type="button">FIND</button>
+        <button type="button">PREVIEW</button>
+        <button type="button">PRINT</button>
+        <button type="button">PDF</button>
+        <button type="button">EXIT</button>
     </div>
 
 </div>
 
+<script src="Dispatch.js"></script>
 </body>
 </html>
