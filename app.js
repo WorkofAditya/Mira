@@ -3,6 +3,8 @@ let isNewBooking = false;
 
 const DB_NAME = "TransportDB";
 const STORE_NAME = "bookings";
+const DISPATCH_DB_NAME = "DispatchDB";
+const DISPATCH_STORE = "dispatchBranchState";
 let db;
 
 const request = indexedDB.open(DB_NAME, 3);
@@ -208,13 +210,60 @@ function saveData(branch) {
 }
 
 
+function getDispatchDetailsForLr(branch, lrNo) {
+  return new Promise(resolve => {
+    if (!branch || !lrNo) {
+      resolve(null);
+      return;
+    }
+
+    const request = indexedDB.open(DISPATCH_DB_NAME, 1);
+
+    request.onsuccess = e => {
+      const dispatchDb = e.target.result;
+      const tx = dispatchDb.transaction(DISPATCH_STORE, "readonly");
+      const store = tx.objectStore(DISPATCH_STORE);
+      const req = store.get(branch);
+
+      req.onsuccess = () => {
+        const details = req.result?.dispatchDetailsByLr?.[lrNo] || null;
+        resolve(details);
+      };
+
+      req.onerror = () => resolve(null);
+      tx.oncomplete = () => dispatchDb.close();
+    };
+
+    request.onerror = () => resolve(null);
+  });
+}
+
+function applyDispatchDetailsToForm(details) {
+  const memo = document.getElementById("dispatchMemo");
+  const dispatchDate = document.getElementById("dispatchDate");
+  const vehicleNo = document.getElementById("vehicleNo");
+
+  if (!memo || !dispatchDate || !vehicleNo) return;
+
+  memo.value = details?.dispatchNo || "";
+  dispatchDate.value = details?.dispatchDate || "";
+  vehicleNo.value = details?.vehicleNo || "";
+}
+
+async function syncDispatchSectionForCurrentLr() {
+  const branch = getSelectedBranch();
+  const lrNo = document.getElementById("lrNo")?.value?.trim();
+  const details = await getDispatchDetailsForLr(branch, lrNo);
+  applyDispatchDetailsToForm(details);
+}
+
 // ================= LOAD LATEST =================
-function loadLatestBooking(branch) {
+async function loadLatestBooking(branch) {
   const tx = db.transaction(STORE_NAME, "readonly");
   const store = tx.objectStore(STORE_NAME);
   const req = store.get(branch);
 
-  req.onsuccess = () => {
+  req.onsuccess = async () => {
     if (!req.result || !req.result.bookings) return;
 
     const bookings = req.result.bookings;
@@ -227,6 +276,7 @@ function loadLatestBooking(branch) {
     });
 
     lockForm();
+    await syncDispatchSectionForCurrentLr();
   };
 }
 
@@ -377,13 +427,14 @@ function openFindPopup() {
   };
 }
 
-function loadBookingToForm(data) {
+async function loadBookingToForm(data) {
   Object.keys(data).forEach(id => {
     const el = document.getElementById(id);
     if (el) el.value = data[id];
   });
 
   lockForm();
+  await syncDispatchSectionForCurrentLr();
 }
 
 const branchTo = document.getElementById("branchTo");
