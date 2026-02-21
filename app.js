@@ -29,24 +29,36 @@ request.onsuccess = e => {
 
 request.onerror = e => console.error("IndexedDB error:", e);
 
+function getSelectedBranch() {
+  return localStorage.getItem("selectedBranch") || sessionStorage.getItem("selectedBranch");
+}
+
+function setSelectedBranch(branch) {
+  localStorage.setItem("selectedBranch", branch);
+  sessionStorage.setItem("selectedBranch", branch);
+}
+
 // ================= HOMEPAGE =================
 function initHomePage() {
   const selectBtn = document.querySelector(".select-btn");
   const branchSelect = document.getElementById("branchSelect");
+
+  const savedBranch = getSelectedBranch();
+  if (savedBranch) branchSelect.value = savedBranch;
 
   selectBtn.onclick = () => {
     if (!branchSelect.value) {
       alert("Please select a branch");
       return;
     }
-    sessionStorage.setItem("selectedBranch", branchSelect.value);
-    window.location.href = "booking.html";
+    setSelectedBranch(branchSelect.value);
+    alert(`Branch set to ${branchSelect.value}`);
   };
 }
 
 // ================= BOOKING INIT =================
 function initBookingPage() {
-  const branch = sessionStorage.getItem("selectedBranch");
+  const branch = getSelectedBranch();
   const branchInput = document.getElementById("branchFrom");
   const pickupFrom = document.getElementById("pickupFrom");
 
@@ -244,7 +256,7 @@ function setupEnterNavigation() {
 
 // ================= PRINT =================
 function printReceipt() {
-  const branch = sessionStorage.getItem("selectedBranch");
+  const branch = getSelectedBranch();
   const lrNo = document.getElementById("lrNo").value;
 
   if (!lrNo) {
@@ -298,7 +310,7 @@ function generateReceiptHTML(d) {
 }
 
 function previewReceipt() {
-  const branch = sessionStorage.getItem("selectedBranch");
+  const branch = getSelectedBranch();
   if (!branch) return alert("No branch selected");
 
   const lrNo = document.getElementById("lrNo").value;
@@ -329,7 +341,7 @@ function previewReceipt() {
 }
 
 function openFindPopup() {
-  const branch = sessionStorage.getItem("selectedBranch");
+  const branch = getSelectedBranch();
   if (!branch) return alert("No branch selected");
 
   const tx = db.transaction(STORE_NAME, "readonly");
@@ -404,4 +416,3 @@ document.querySelectorAll(".drop-btn").forEach(btn => {
 document.addEventListener("click", () => {
   document.querySelectorAll(".drop-menu").forEach(m => (m.style.display = "none"));
 });
-
