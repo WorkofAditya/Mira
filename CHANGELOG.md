@@ -1,6 +1,7 @@
 ## Unreleased
 | Date | Commit | Change | File |
 |------|--------|--------|------|
+| 2026-02-25 | [39a579b](https://github.com/WorkofAditya/Mira/commit/39a579ba827ec169f7edfc4bb8eff3dc39d970b3) | Add service worker for caching and offline support | [service-worker.js](https://github.com/WorkofAditya/Mira/blob/main/service-worker.js) |
 | 2026-02-25 | [abda3f4](https://github.com/WorkofAditya/Mira/commit/abda3f46349de632a4cb815fe35cc5708c08c0aa) | Re added Icons with BG removed | [icons/icon-192.png](https://github.com/WorkofAditya/Mira/blob/main/icons/icon-192.png) |
 | 2026-02-25 | [abda3f4](https://github.com/WorkofAditya/Mira/commit/abda3f46349de632a4cb815fe35cc5708c08c0aa) | Re added Icons with BG removed | [icons/icon-512.png](https://github.com/WorkofAditya/Mira/blob/main/icons/icon-512.png) |
 | 2026-02-25 | [7264289](https://github.com/WorkofAditya/Mira/commit/726428993241aec622ce14113dba9279d92a42a3) | Delete icons/icon-512.png | [icons/icon-512.png](https://github.com/WorkofAditya/Mira/blob/main/icons/icon-512.png) |
