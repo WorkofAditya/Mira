@@ -1,6 +1,8 @@
 ## Unreleased
 | Date | Commit | Change | File |
 |------|--------|--------|------|
+| 2026-02-25 | [abda3f4](https://github.com/WorkofAditya/Mira/commit/abda3f46349de632a4cb815fe35cc5708c08c0aa) | Re added Icons with BG removed | [icons/icon-192.png](https://github.com/WorkofAditya/Mira/blob/main/icons/icon-192.png) |
+| 2026-02-25 | [abda3f4](https://github.com/WorkofAditya/Mira/commit/abda3f46349de632a4cb815fe35cc5708c08c0aa) | Re added Icons with BG removed | [icons/icon-512.png](https://github.com/WorkofAditya/Mira/blob/main/icons/icon-512.png) |
 | 2026-02-25 | [7264289](https://github.com/WorkofAditya/Mira/commit/726428993241aec622ce14113dba9279d92a42a3) | Delete icons/icon-512.png | [icons/icon-512.png](https://github.com/WorkofAditya/Mira/blob/main/icons/icon-512.png) |
 | 2026-02-25 | [0c421be](https://github.com/WorkofAditya/Mira/commit/0c421be69e49606909d56018cda28bd89808fee3) | Delete icons/icon-192.png | [icons/icon-192.png](https://github.com/WorkofAditya/Mira/blob/main/icons/icon-192.png) |
 | 2026-02-25 | [a937c1b](https://github.com/WorkofAditya/Mira/commit/a937c1bcc2f353fb3ad6d8b3165026508251e0e3) | Add files via upload | [icons/icon-192.png](https://github.com/WorkofAditya/Mira/blob/main/icons/icon-192.png) |
