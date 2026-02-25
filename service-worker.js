@@ -1,4 +1,4 @@
-const CACHE_NAME = "rc-transport-cache-v1";
+const CACHE_NAME = "rc-transport-cache-v2";
 const APP_SHELL = [
   "./",
   "./index.html",
@@ -10,7 +10,10 @@ const APP_SHELL = [
   "./Dispatch.js",
   "./manifest.json",
   "./icons/icon-192.png",
-  "./icons/icon-512.png"
+  "./icons/icon-512.png",
+  "./icons/apple-touch-icons.png",
+  "./icons/favicon-16x16.png",
+  "./icons/favicon-32x32.png"
 ];
 
 self.addEventListener("install", event => {
