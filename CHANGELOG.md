@@ -1,6 +1,7 @@
 ## Unreleased
 | Date | Commit | Change | File |
 |------|--------|--------|------|
+| 2026-02-25 | [c7e8317](https://github.com/WorkofAditya/Mira/commit/c7e8317aaa2ba3d3518f2a451e99982097719760) | Add meta tags and service worker registration for booking | [booking.html](https://github.com/WorkofAditya/Mira/blob/main/booking.html) |
 | 2026-02-25 | [067eebe](https://github.com/WorkofAditya/Mira/commit/067eebeb58ae25d63a275945a1fd27a51c129762) | Enhance Dispatch.html with meta tags and service worker | [Dispatch.html](https://github.com/WorkofAditya/Mira/blob/main/Dispatch.html) |
 | 2026-02-25 | [4061d7f](https://github.com/WorkofAditya/Mira/commit/4061d7fa989cc17a19332f2ad5b24eb658651a04) | Create manifest.json for Mira application | [manifest.json](https://github.com/WorkofAditya/Mira/blob/main/manifest.json) |
 | 2026-02-25 | [39a579b](https://github.com/WorkofAditya/Mira/commit/39a579ba827ec169f7edfc4bb8eff3dc39d970b3) | Add service worker for caching and offline support | [service-worker.js](https://github.com/WorkofAditya/Mira/blob/main/service-worker.js) |
