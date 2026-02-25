@@ -1,6 +1,13 @@
 ## Unreleased
 | Date | Commit | Change | File |
 |------|--------|--------|------|
+| 2026-02-25 | [7b5e2d9](https://github.com/WorkofAditya/Mira/commit/7b5e2d9ba664edc6178dffc6723709a6cad693a3) | Added Extra icons | [Dispatch.html](https://github.com/WorkofAditya/Mira/blob/main/Dispatch.html) |
+| 2026-02-25 | [7b5e2d9](https://github.com/WorkofAditya/Mira/commit/7b5e2d9ba664edc6178dffc6723709a6cad693a3) | Added Extra icons | [booking.html](https://github.com/WorkofAditya/Mira/blob/main/booking.html) |
+| 2026-02-25 | [7b5e2d9](https://github.com/WorkofAditya/Mira/commit/7b5e2d9ba664edc6178dffc6723709a6cad693a3) | Added Extra icons | [icons/icon-192.png](https://github.com/WorkofAditya/Mira/blob/main/icons/icon-192.png) |
+| 2026-02-25 | [7b5e2d9](https://github.com/WorkofAditya/Mira/commit/7b5e2d9ba664edc6178dffc6723709a6cad693a3) | Added Extra icons | [icons/icon-512.png](https://github.com/WorkofAditya/Mira/blob/main/icons/icon-512.png) |
+| 2026-02-25 | [7b5e2d9](https://github.com/WorkofAditya/Mira/commit/7b5e2d9ba664edc6178dffc6723709a6cad693a3) | Added Extra icons | [index.html](https://github.com/WorkofAditya/Mira/blob/main/index.html) |
+| 2026-02-25 | [7b5e2d9](https://github.com/WorkofAditya/Mira/commit/7b5e2d9ba664edc6178dffc6723709a6cad693a3) | Added Extra icons | [manifest.json](https://github.com/WorkofAditya/Mira/blob/main/manifest.json) |
+| 2026-02-25 | [7b5e2d9](https://github.com/WorkofAditya/Mira/commit/7b5e2d9ba664edc6178dffc6723709a6cad693a3) | Added Extra icons | [service-worker.js](https://github.com/WorkofAditya/Mira/blob/main/service-worker.js) |
 | 2026-02-25 | [f05b1fd](https://github.com/WorkofAditya/Mira/commit/f05b1fd470e110288003e09724d1d9603bfbb524) | Add files via upload | [icons/apple-touch-icon.png](https://github.com/WorkofAditya/Mira/blob/main/icons/apple-touch-icon.png) |
 | 2026-02-25 | [f05b1fd](https://github.com/WorkofAditya/Mira/commit/f05b1fd470e110288003e09724d1d9603bfbb524) | Add files via upload | [icons/favicon-16x16.png](https://github.com/WorkofAditya/Mira/blob/main/icons/favicon-16x16.png) |
 | 2026-02-25 | [f05b1fd](https://github.com/WorkofAditya/Mira/commit/f05b1fd470e110288003e09724d1d9603bfbb524) | Add files via upload | [icons/favicon-32x32.png](https://github.com/WorkofAditya/Mira/blob/main/icons/favicon-32x32.png) |
