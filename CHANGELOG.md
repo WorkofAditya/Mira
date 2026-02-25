@@ -1,6 +1,7 @@
 ## Unreleased
 | Date | Commit | Change | File |
 |------|--------|--------|------|
+| 2026-02-25 | [0c421be](https://github.com/WorkofAditya/Mira/commit/0c421be69e49606909d56018cda28bd89808fee3) | Delete icons/icon-192.png | [icons/icon-192.png](https://github.com/WorkofAditya/Mira/blob/main/icons/icon-192.png) |
 | 2026-02-25 | [a937c1b](https://github.com/WorkofAditya/Mira/commit/a937c1bcc2f353fb3ad6d8b3165026508251e0e3) | Add files via upload | [icons/icon-192.png](https://github.com/WorkofAditya/Mira/blob/main/icons/icon-192.png) |
 | 2026-02-25 | [a937c1b](https://github.com/WorkofAditya/Mira/commit/a937c1bcc2f353fb3ad6d8b3165026508251e0e3) | Add files via upload | [icons/icon-512.png](https://github.com/WorkofAditya/Mira/blob/main/icons/icon-512.png) |
 | 2026-02-21 | [f5c9814](https://github.com/WorkofAditya/Mira/commit/f5c98141a256a8bbdf9fd9379d74ff88e79b263d) | Implement dispatch details retrieval and form application | [app.js](https://github.com/WorkofAditya/Mira/blob/main/app.js) |
