@@ -1,6 +1,7 @@
 ## Unreleased
 | Date | Commit | Change | File |
 |------|--------|--------|------|
+| 2026-02-25 | [88d7083](https://github.com/WorkofAditya/Mira/commit/88d70836568a4ea20fb6e546c0fa04c26a287691) | Remove BETA option from branch select dropdown | [index.html](https://github.com/WorkofAditya/Mira/blob/main/index.html) |
 | 2026-02-25 | [9e28946](https://github.com/WorkofAditya/Mira/commit/9e28946632ef9d6e90aea64c6d0ad017db182b8f) | Enhance index.html with PWA features | [index.html](https://github.com/WorkofAditya/Mira/blob/main/index.html) |
 | 2026-02-25 | [c7e8317](https://github.com/WorkofAditya/Mira/commit/c7e8317aaa2ba3d3518f2a451e99982097719760) | Add meta tags and service worker registration for booking | [booking.html](https://github.com/WorkofAditya/Mira/blob/main/booking.html) |
 | 2026-02-25 | [067eebe](https://github.com/WorkofAditya/Mira/commit/067eebeb58ae25d63a275945a1fd27a51c129762) | Enhance Dispatch.html with meta tags and service worker | [Dispatch.html](https://github.com/WorkofAditya/Mira/blob/main/Dispatch.html) |
