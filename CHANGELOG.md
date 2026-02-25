@@ -1,6 +1,7 @@
 ## Unreleased
 | Date | Commit | Change | File |
 |------|--------|--------|------|
+| 2026-02-25 | [8e2e87b](https://github.com/WorkofAditya/Mira/commit/8e2e87b796856d853247fcde13304b426663d2a0) | Change overflow to overflow-y for app and booking-body | [booking.css](https://github.com/WorkofAditya/Mira/blob/main/booking.css) |
 | 2026-02-25 | [7b5e2d9](https://github.com/WorkofAditya/Mira/commit/7b5e2d9ba664edc6178dffc6723709a6cad693a3) | Added Extra icons | [Dispatch.html](https://github.com/WorkofAditya/Mira/blob/main/Dispatch.html) |
 | 2026-02-25 | [7b5e2d9](https://github.com/WorkofAditya/Mira/commit/7b5e2d9ba664edc6178dffc6723709a6cad693a3) | Added Extra icons | [booking.html](https://github.com/WorkofAditya/Mira/blob/main/booking.html) |
 | 2026-02-25 | [7b5e2d9](https://github.com/WorkofAditya/Mira/commit/7b5e2d9ba664edc6178dffc6723709a6cad693a3) | Added Extra icons | [icons/icon-192.png](https://github.com/WorkofAditya/Mira/blob/main/icons/icon-192.png) |
