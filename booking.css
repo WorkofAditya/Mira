@@ -45,6 +45,18 @@ html, body {
     letter-spacing: 0.5px;
 }
 
+.home-link {
+    position: absolute;
+    right: 16px;
+    color: #1f2937;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.home-link:hover {
+    text-decoration: underline;
+}
+
 .logo {
     font-weight: bold;
 }
