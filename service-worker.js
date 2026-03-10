@@ -1,9 +1,10 @@
-const CACHE_NAME = "rc-transport-cache-v2";
+const CACHE_NAME = "rc-transport-cache-v3";
 const APP_SHELL = [
   "./",
   "./index.html",
   "./booking.html",
   "./Dispatch.html",
+  "./Dispatch.css",
   "./index.css",
   "./booking.css",
   "./app.js",
