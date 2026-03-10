@@ -1,6 +1,11 @@
 ## Unreleased
 | Date | Commit | Change | File |
 |------|--------|--------|------|
+| 2026-03-10 | [fc61ba7](https://github.com/WorkofAditya/Mira/commit/fc61ba7d51565d3d7c43048f1604d147c86318fa) | Add some general improvements | [Dispatch.html](https://github.com/WorkofAditya/Mira/blob/main/Dispatch.html) |
+| 2026-03-10 | [fc61ba7](https://github.com/WorkofAditya/Mira/commit/fc61ba7d51565d3d7c43048f1604d147c86318fa) | Add some general improvements | [booking.css](https://github.com/WorkofAditya/Mira/blob/main/booking.css) |
+| 2026-03-10 | [fc61ba7](https://github.com/WorkofAditya/Mira/commit/fc61ba7d51565d3d7c43048f1604d147c86318fa) | Add some general improvements | [booking.html](https://github.com/WorkofAditya/Mira/blob/main/booking.html) |
+| 2026-03-10 | [fc61ba7](https://github.com/WorkofAditya/Mira/commit/fc61ba7d51565d3d7c43048f1604d147c86318fa) | Add some general improvements | [dispatch.css](https://github.com/WorkofAditya/Mira/blob/main/dispatch.css) |
+| 2026-03-10 | [fc61ba7](https://github.com/WorkofAditya/Mira/commit/fc61ba7d51565d3d7c43048f1604d147c86318fa) | Add some general improvements | [index.html](https://github.com/WorkofAditya/Mira/blob/main/index.html) |
 | 2026-03-10 | [7fef9f5](https://github.com/WorkofAditya/Mira/commit/7fef9f53fef88cb217b4586ae280bef456a37df3) | Update cache version to rc-transport-cache-v3 | [service-worker.js](https://github.com/WorkofAditya/Mira/blob/main/service-worker.js) |
 | 2026-03-10 | [bff02e8](https://github.com/WorkofAditya/Mira/commit/bff02e8066b7b7fea5a75e0bb81125606a910bb8) | Merge pull request #10 from WorkofAditya/codex/update-dispatch-page-to-Fullscreen |  |
 | 2026-03-10 | [6eddb24](https://github.com/WorkofAditya/Mira/commit/6eddb245b014a1bbe4003ddfbb0cdba0e84f547e) | Restyle dispatch page to match booking layout | [Dispatch.html](https://github.com/WorkofAditya/Mira/blob/main/Dispatch.html) |
