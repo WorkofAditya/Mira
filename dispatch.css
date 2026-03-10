@@ -180,3 +180,14 @@ body {
         min-height: 220px;
     }
 }
+
+.back-arrow{
+    position:absolute;
+    right:15px;
+    top:50%;
+    transform:translateY(-50%);
+    font-size:22px;
+    text-decoration:none;
+    color:black;
+    font-weight:bold;
+}
