@@ -9,205 +9,102 @@
     <link rel="apple-touch-icon" sizes="180x180" href="icons/apple-touch-icon.png">
     <link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32x32.png">
     <link rel="icon" type="image/png" sizes="16x16" href="icons/favicon-16x16.png">
-<title>Dispatch Entry</title>
-<style>
-    body {
-        font-family: Arial, sans-serif;
-        background: #f5f5f5;
-    }
-
-    .container {
-        width: 1100px;
-        margin: 20px auto;
-        background: #fff;
-        border: 2px solid #000;
-        padding: 15px;
-    }
-
-    .top {
-        display: flex;
-    }
-
-    .left {
-        width: 35%;
-    }
-
-    .row {
-        display: flex;
-        align-items: center;
-        margin-bottom: 8px;
-    }
-
-    .row label {
-        width: 120px;
-        font-weight: bold;
-    }
-
-    .row input {
-        width: 180px;
-        height: 24px;
-        border: 2px solid #000;
-    }
-
-    .remark input {
-        width: 160px;
-    }
-
-    .loading-btn {
-        margin-left: 10px;
-        padding: 8px 15px;
-        border: 2px solid #000;
-        background: #eaeaea;
-        font-weight: bold;
-        cursor: pointer;
-    }
-
-    .middle {
-        width: 30%;
-        text-align: center;
-    }
-
-    .middle h3 {
-        margin-bottom: 5px;
-    }
-
-    .box {
-        width: 90%;
-        height: 350px;
-        border: 2px solid #000;
-        margin: auto;
-    }
-
-    .box select {
-        width: 100%;
-        height: 100%;
-        border: none;
-        outline: none;
-    }
-
-    .arrows {
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        gap: 10px;
-    }
-
-    .arrows button {
-        width: 40px;
-        height: 30px;
-        border: 2px solid #000;
-        cursor: pointer;
-    }
-
-    .right {
-        width: 30%;
-    }
-
-    .bottom {
-        display: flex;
-        justify-content: space-around;
-        margin-top: 15px;
-        border-top: 2px solid #000;
-        padding-top: 10px;
-    }
-
-    .bottom button {
-        width: 100px;
-        height: 35px;
-        border: 2px solid #000;
-        background: #eaeaea;
-        font-weight: bold;
-        cursor: pointer;
-    }
-</style>
+    <title>Dispatch Entry</title>
+    <link rel="stylesheet" href="dispatch.css">
 </head>
 
 <body>
 
-<div class="container">
+<div class="app">
+    <header class="topbar">
+        <div class="logo">RC</div>
+        <div class="title">Dispatch Page</div>
+    </header>
 
-    <div class="top">
-        <div class="left">
+    <div class="dispatch-body">
+        <section class="dispatch-form">
             <div class="row">
-                <label>DISPATCH NO</label>
+                <label>Dispatch No</label>
                 <input type="text" id="dispatchNo">
             </div>
 
             <div class="row">
-                <label>DATE</label>
+                <label>Date</label>
                 <input type="date" id="dispatchDate">
             </div>
 
             <div class="row">
-                <label>METHOD</label>
+                <label>Method</label>
                 <input type="text" id="method">
             </div>
 
             <div class="row">
-                <label>BRANCH</label>
+                <label>Branch</label>
                 <input type="text" id="branchInput" readonly>
             </div>
 
             <div class="row">
-                <label>DRIVER NAME</label>
+                <label>Driver Name</label>
                 <input type="text" id="driverName">
             </div>
 
             <div class="row">
-                <label>MOBILE NO</label>
+                <label>Mobile No</label>
                 <input type="text" id="mobileNo">
             </div>
 
             <div class="row">
-                <label>VEHICLE NO</label>
+                <label>Vehicle No</label>
                 <input type="text" id="vehicleNo">
             </div>
 
             <div class="row">
-                <label>ROUTE</label>
+                <label>Route</label>
                 <input type="text" id="route">
             </div>
 
-            <div class="row remark">
-                <label>REMARK</label>
+            <div class="row align-top">
+                <label>Remark</label>
                 <input type="text" id="remark">
-                <button class="loading-btn" id="loadingBtn" type="button">LOADING</button>
             </div>
-        </div>
 
-        <div class="middle">
-            <h3>LR NO GODOWN</h3>
-            <div class="box">
-              <select id="godownList" multiple></select>
+            <button class="loading-btn" id="loadingBtn" type="button">Loading</button>
+        </section>
+
+        <section class="transfer-area">
+            <div class="list-panel">
+                <h3>LR No Godown</h3>
+                <div class="list-box">
+                    <select id="godownList" multiple></select>
+                </div>
             </div>
-        </div>
 
-        <div class="arrows">
-            <button id="btnMoveOneToVehicle" type="button">&gt;</button>
-            <button id="btnMoveAllToVehicle" type="button">&gt;&gt;</button>
-            <button id="btnMoveOneToGodown" type="button">&lt;</button>
-            <button id="btnMoveAllToGodown" type="button">&lt;&lt;</button>
-        </div>
-
-        <div class="right">
-          <h3>LR ON VEHICLE</h3>
-            <div class="box">
-              <select id="vehicleList" multiple></select>
+            <div class="arrows">
+                <button id="btnMoveOneToVehicle" type="button" aria-label="Move selected to vehicle">&gt;</button>
+                <button id="btnMoveAllToVehicle" type="button" aria-label="Move all to vehicle">&gt;&gt;</button>
+                <button id="btnMoveOneToGodown" type="button" aria-label="Move selected to godown">&lt;</button>
+                <button id="btnMoveAllToGodown" type="button" aria-label="Move all to godown">&lt;&lt;</button>
             </div>
-        </div>
+
+            <div class="list-panel">
+                <h3>LR On Vehicle</h3>
+                <div class="list-box">
+                    <select id="vehicleList" multiple></select>
+                </div>
+            </div>
+        </section>
     </div>
 
-    <div class="bottom">
-        <button type="button">NEW</button>
-        <button type="button">EDIT</button>
-        <button type="button">DELETE</button>
-        <button type="button">FIND</button>
-        <button type="button">PREVIEW</button>
-        <button type="button">PRINT</button>
+    <div class="actions">
+        <button type="button">New</button>
+        <button type="button">Edit</button>
+        <button type="button">Delete</button>
+        <button type="button">Find</button>
+        <button type="button">Preview</button>
+        <button type="button">Print</button>
         <button type="button">PDF</button>
-        <button type="button">EXIT</button>
+        <button type="button">Exit</button>
     </div>
-
 </div>
 
 <script src="Dispatch.js"></script>
