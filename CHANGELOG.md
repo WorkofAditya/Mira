@@ -1,6 +1,7 @@
 ## Unreleased
 | Date | Commit | Change | File |
 |------|--------|--------|------|
+| 2026-03-14 | [5986f7f](https://github.com/WorkofAditya/Mira/commit/5986f7f329a4b8edfee27445dbb6e02606135e2e) | Fix update function and the remote version URL | [app.js](https://github.com/WorkofAditya/Mira/blob/main/app.js) |
 | 2026-03-14 | [4a748ea](https://github.com/WorkofAditya/Mira/commit/4a748eaf630176942e88551b10a7e54ffb39dbb5) | Update service-worker.js with version.txt and new cache version | [service-worker.js](https://github.com/WorkofAditya/Mira/blob/main/service-worker.js) |
 | 2026-03-14 | [7a77093](https://github.com/WorkofAditya/Mira/commit/7a7709388c88208dd6f8b167276384093c0dc6a2) | Create version.txt | [version.txt](https://github.com/WorkofAditya/Mira/blob/main/version.txt) |
 | 2026-03-14 | [eb83b80](https://github.com/WorkofAditya/Mira/commit/eb83b80d9bf14933a3c1749d9bd360780a743602) | Added version update system | [app.js](https://github.com/WorkofAditya/Mira/blob/main/app.js) |
