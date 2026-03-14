@@ -1,5 +1,7 @@
 // ================= DATABASE SETUP =================
 let isNewBooking = false;
+const APP_VERSION = 1;
+const REMOTE_VERSION_URL = "https://raw.githubusercontent.com/CodeofAditya/Mira/refs/heads/main/version.txt";
 
 const DB_NAME = "TransportDB";
 const STORE_NAME = "bookings";
@@ -25,11 +27,42 @@ request.onupgradeneeded = e => {
 request.onsuccess = e => {
   db = e.target.result;
 
+  checkForAppUpdate();
+
   if (document.getElementById("branchSelect")) initHomePage();
   if (document.getElementById("branchFrom")) initBookingPage();
 };
 
 request.onerror = e => console.error("IndexedDB error:", e);
+
+async function checkForAppUpdate() {
+  try {
+    const response = await fetch(REMOTE_VERSION_URL, { cache: "no-store" });
+    if (!response.ok) return;
+
+    const remoteVersion = Number.parseInt((await response.text()).trim(), 10);
+    if (!Number.isFinite(remoteVersion)) return;
+
+    if (APP_VERSION < remoteVersion) {
+      const shouldUpdate = window.confirm("A new update is available. Click OK to refresh the app now.");
+      if (!shouldUpdate) return;
+
+      if ("serviceWorker" in navigator) {
+        const registrations = await navigator.serviceWorker.getRegistrations();
+        await Promise.all(registrations.map(reg => reg.update()));
+      }
+
+      if (window.caches?.keys) {
+        const cacheKeys = await window.caches.keys();
+        await Promise.all(cacheKeys.map(key => window.caches.delete(key)));
+      }
+
+      window.location.reload();
+    }
+  } catch (error) {
+    console.error("Version check failed:", error);
+  }
+}
 
 function getSelectedBranch() {
   return localStorage.getItem("selectedBranch") || sessionStorage.getItem("selectedBranch");
@@ -79,6 +112,56 @@ function initBookingPage() {
   loadLatestBooking(branch);
   setupButtons(branch);
   setupEnterNavigation();
+  setupBookingFeeCalculations();
+}
+
+function toNumber(value) {
+  const parsed = Number.parseFloat(value);
+  return Number.isFinite(parsed) ? parsed : 0;
+}
+
+let recalculateBookingFees = () => {};
+
+function setupBookingFeeCalculations() {
+  const weightInput = document.getElementById("weight");
+  const freightInput = document.getElementById("freight");
+  const freightExtraInput = document.getElementById("freightExtra");
+  const doorDeliveryInput = document.getElementById("doorDelivery");
+  const extraCharges1Input = document.getElementById("extraCharges1");
+  const extraCharges2Input = document.getElementById("extraCharges2");
+  const totalInput = document.getElementById("total");
+
+  if (!weightInput || !freightInput || !freightExtraInput || !totalInput) return;
+
+  freightInput.readOnly = true;
+
+  recalculateBookingFees = () => {
+    const weight = toNumber(weightInput.value);
+    const freightRate = toNumber(freightExtraInput.value);
+    const freight = weight * freightRate;
+
+    freightInput.value = freight ? freight.toString() : "";
+
+    const total =
+      freight +
+      toNumber(doorDeliveryInput?.value) +
+      toNumber(extraCharges1Input?.value) +
+      toNumber(extraCharges2Input?.value);
+
+    totalInput.value = total ? total.toString() : "";
+  };
+
+  [
+    weightInput,
+    freightExtraInput,
+    doorDeliveryInput,
+    extraCharges1Input,
+    extraCharges2Input
+  ]
+    .filter(Boolean)
+    .forEach(input => input.addEventListener("input", recalculateBookingFees));
+
+  recalculateBookingFees();
 }
 
 
@@ -105,6 +188,11 @@ function unlockForm() {
           : (el.readOnly = false);
       }
     });
+
+  const freightInput = document.getElementById("freight");
+  const totalInput = document.getElementById("total");
+  if (freightInput) freightInput.readOnly = true;
+  if (totalInput) totalInput.readOnly = true;
 }
 
 
@@ -126,6 +214,8 @@ function newBooking() {
   const lr = document.getElementById("lrNo");
   lr.readOnly = false;
   lr.focus();
+
+  recalculateBookingFees();
 }
 
 
@@ -276,6 +366,7 @@ async function loadLatestBooking(branch) {
     });
 
     lockForm();
+    recalculateBookingFees();
     await syncDispatchSectionForCurrentLr();
   };
 }
@@ -434,6 +525,7 @@ async function loadBookingToForm(data) {
   });
 
   lockForm();
+  recalculateBookingFees();
   await syncDispatchSectionForCurrentLr();
 }
 
