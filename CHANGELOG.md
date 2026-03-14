@@ -1,6 +1,7 @@
 ## Unreleased
 | Date | Commit | Change | File |
 |------|--------|--------|------|
+| 2026-03-14 | [7a77093](https://github.com/WorkofAditya/Mira/commit/7a7709388c88208dd6f8b167276384093c0dc6a2) | Create version.txt | [version.txt](https://github.com/WorkofAditya/Mira/blob/main/version.txt) |
 | 2026-03-14 | [eb83b80](https://github.com/WorkofAditya/Mira/commit/eb83b80d9bf14933a3c1749d9bd360780a743602) | Added version update system | [app.js](https://github.com/WorkofAditya/Mira/blob/main/app.js) |
 | 2026-03-14 | [549fb71](https://github.com/WorkofAditya/Mira/commit/549fb71dc9065d36f656b960fa1d04b6254b9111) | Test update | [Dispatch.html](https://github.com/WorkofAditya/Mira/blob/main/Dispatch.html) |
 | 2026-03-10 | [fc61ba7](https://github.com/WorkofAditya/Mira/commit/fc61ba7d51565d3d7c43048f1604d147c86318fa) | Add some general improvements | [Dispatch.html](https://github.com/WorkofAditya/Mira/blob/main/Dispatch.html) |
