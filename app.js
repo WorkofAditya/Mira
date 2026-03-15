@@ -452,14 +452,34 @@ function generateReceiptHTML(d) {
 }
 
 function previewReceipt() {
-  const dispatchNo = document.getElementById("dispatchMemo")?.value?.trim();
+  const branch = getSelectedBranch();
+  if (!branch) return alert("No branch selected");
 
-  if (!dispatchNo) {
-    alert("No dispatch memo found for this LR. Load or save dispatch details first.");
-    return;
-  }
+  const lrNo = document.getElementById("lrNo").value;
+  if (!lrNo) return alert("Enter LR No to preview");
 
-  window.open(`preview.html?dispatchNo=${encodeURIComponent(dispatchNo)}`, "_blank");
+  const tx = db.transaction(STORE_NAME, "readonly");
+  const store = tx.objectStore(STORE_NAME);
+  const req = store.get(branch);
+
+  req.onsuccess = () => {
+    const data = req.result?.bookings?.[lrNo];
+    if (!data) return alert("No booking found");
+
+    const overlay = document.createElement("div");
+    overlay.className = "overlay";
+
+    const popup = document.createElement("div");
+    popup.className = "popup";
+
+    popup.innerHTML = generateReceiptHTML(data);
+    overlay.appendChild(popup);
+    document.body.appendChild(overlay);
+
+    overlay.onclick = e => {
+      if (e.target === overlay) document.body.removeChild(overlay);
+    };
+  };
 }
 
 
