@@ -83,3 +83,15 @@ margin-bottom:5px;
 margin-top:20px;
 font-size:13px;
 }
+
+.mobile-label{
+margin-left:28px;
+}
+
+#grandLrCount,
+#grandParcel,
+#grandKg,
+#grandPaid,
+#grandToPay{
+font-weight:bold;
+}

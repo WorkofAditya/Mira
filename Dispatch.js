@@ -484,6 +484,18 @@ function setupButtons() {
   document.getElementById("btnNewDispatch").onclick = createNewDispatch;
   document.getElementById("btnEditDispatch").onclick = editCurrentDispatch;
   document.getElementById("btnFindDispatch").onclick = openFindDispatchPopup;
+  document.getElementById("btnPreviewDispatch").onclick = openDispatchPreview;
+}
+
+function openDispatchPreview() {
+  const dispatchNo = document.getElementById("dispatchNo").value.trim();
+
+  if (!dispatchNo) {
+    alert("No dispatch number loaded.");
+    return;
+  }
+
+  window.open(`preview.html?dispatchNo=${encodeURIComponent(dispatchNo)}`, "_blank");
 }
 
 async function initDispatchPage() {
