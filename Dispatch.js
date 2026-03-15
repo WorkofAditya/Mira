@@ -467,6 +467,15 @@ function normalizeSavedState(savedState) {
   return normalized;
 }
 
+
+function openDispatchPreview() {
+  const dispatchNo = document.getElementById("dispatchNo").value.trim();
+  const target = dispatchNo
+    ? `preview.html?dispatchNo=${encodeURIComponent(dispatchNo)}`
+    : "preview.html";
+  window.location.href = target;
+}
+
 function setupButtons() {
   document.getElementById("btnMoveOneToVehicle").onclick = () =>
     moveSelected("godownList", "vehicleList");
@@ -484,6 +493,7 @@ function setupButtons() {
   document.getElementById("btnNewDispatch").onclick = createNewDispatch;
   document.getElementById("btnEditDispatch").onclick = editCurrentDispatch;
   document.getElementById("btnFindDispatch").onclick = openFindDispatchPopup;
+  document.getElementById("btnPreviewDispatch").onclick = openDispatchPreview;
 }
 
 async function initDispatchPage() {

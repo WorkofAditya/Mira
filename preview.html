@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#1f2937">
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" href="icons/icon-512.png" type="image/png">
+  <link rel="apple-touch-icon" sizes="180x180" href="icons/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="icons/favicon-16x16.png">
+  <title>Dispatch Preview</title>
+  <link rel="stylesheet" href="preview.css">
+</head>
+<body>
+  <main class="preview-page" id="previewPage">
+    <header class="preview-header">
+      <section class="brand-section">
+        <div class="logo-placeholder" aria-label="Logo placeholder">
+          <!-- TODO: Replace this placeholder with actual logo image in future -->
+          <span>Logo</span>
+        </div>
+        <div>
+          <h1 class="company-name">Riya Cargo</h1>
+          <h2 class="dispatch-title">DISPATCH</h2>
+        </div>
+      </section>
+
+      <section class="meta-section">
+        <div class="meta-grid">
+          <div class="meta-label">Disp. No :</div>
+          <div id="metaDispatchNo">-</div>
+
+          <div class="meta-label">Disp. Date :</div>
+          <div id="metaDispatchDate">-</div>
+
+          <div class="meta-label">Road/Train :</div>
+          <div id="metaMethod">-</div>
+
+          <div class="meta-label route-label">Route :</div>
+          <div id="metaRoute">-</div>
+
+          <div class="meta-label">Driver :</div>
+          <div id="metaDriver">-</div>
+
+          <div class="meta-label">Mo. :</div>
+          <div id="metaMobile">-</div>
+
+          <div class="meta-label">Km Reading :</div>
+          <div id="metaKmReading">-</div>
+        </div>
+      </section>
+    </header>
+
+    <section>
+      <table class="preview-table">
+        <thead>
+          <tr>
+            <th>LR. No</th>
+            <th>Consignor</th>
+            <th>Consignee</th>
+            <th>Packages</th>
+            <th>Weight (Kg)</th>
+            <th>B-Pay Mode</th>
+          </tr>
+        </thead>
+        <tbody id="previewTableBody"></tbody>
+        <tfoot>
+          <tr>
+            <td id="totalLrCount">0</td>
+            <td colspan="2" class="grand-total">Grand Total</td>
+            <td id="totalPackages">0</td>
+            <td id="totalWeight">0</td>
+            <td></td>
+          </tr>
+        </tfoot>
+      </table>
+    </section>
+
+    <footer class="preview-footer">
+      <p><strong>Transport :</strong> RIYA CARGO</p>
+      <div class="signature-row">
+        <div>
+          <p>Driver Signature</p>
+          <div class="line"></div>
+        </div>
+        <div>
+          <p>Owner/Authorised Signature</p>
+          <div class="line"></div>
+        </div>
+      </div>
+    </footer>
+  </main>
+
+  <script src="preview.js"></script>
+</body>
+</html>
