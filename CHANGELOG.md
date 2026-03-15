@@ -1,6 +1,7 @@
 ## Unreleased
 | Date | Commit | Change | File |
 |------|--------|--------|------|
+| 2026-03-15 | [f387d15](https://github.com/WorkofAditya/Mira/commit/f387d151103602d99b861b239479ec1571cd7da1) | Update version.txt | [version.txt](https://github.com/WorkofAditya/Mira/blob/main/version.txt) |
 | 2026-03-15 | [fa2edf9](https://github.com/WorkofAditya/Mira/commit/fa2edf91141833b2241b711ac055fea672da63b9) | Update local version to 3 | [app.js](https://github.com/WorkofAditya/Mira/blob/main/app.js) |
 | 2026-03-15 | [95d736b](https://github.com/WorkofAditya/Mira/commit/95d736bf2e24a04f2d5f6662d39323485346b35f) | Improve dispatch page | [Dispatch.html](https://github.com/WorkofAditya/Mira/blob/main/Dispatch.html) |
 | 2026-03-15 | [95d736b](https://github.com/WorkofAditya/Mira/commit/95d736bf2e24a04f2d5f6662d39323485346b35f) | Improve dispatch page | [Dispatch.js](https://github.com/WorkofAditya/Mira/blob/main/Dispatch.js) |
