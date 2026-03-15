@@ -1,6 +1,6 @@
 // ================= DATABASE SETUP =================
 let isNewBooking = false;
-const APP_VERSION = 2;
+const APP_VERSION = 3;
 const REMOTE_VERSION_URL = "https://github.com/WorkofAditya/Mira/raw/refs/heads/main/version.txt";
 
 const DB_NAME = "TransportDB";
