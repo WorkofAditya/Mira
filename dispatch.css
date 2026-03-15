@@ -191,3 +191,60 @@ body {
     color:black;
     font-weight:bold;
 }
+.actions button:disabled,
+.loading-btn:disabled,
+.arrows button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.dispatch-find-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.45);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 999;
+}
+
+.dispatch-find-popup {
+    width: min(460px, 92vw);
+    background: #fff;
+    border: 2px solid #000;
+    padding: 16px;
+}
+
+.dispatch-find-popup h3 {
+    margin: 0 0 14px;
+}
+
+.find-row {
+    display: grid;
+    grid-template-columns: 150px 1fr;
+    gap: 10px;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.find-row input,
+.find-row select {
+    width: 100%;
+    border: 1px solid #000;
+    padding: 6px;
+}
+
+.find-actions {
+    margin-top: 12px;
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+}
+
+.find-actions button {
+    min-width: 90px;
+    height: 34px;
+    border: 1px solid #000;
+    background: #ececec;
+    cursor: pointer;
+}
