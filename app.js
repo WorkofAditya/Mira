@@ -482,6 +482,7 @@ function previewReceipt() {
   };
 }
 
+
 function openFindPopup() {
   const branch = getSelectedBranch();
   if (!branch) return alert("No branch selected");
