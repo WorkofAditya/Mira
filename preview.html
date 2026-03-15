@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Preview</title>
+<link rel="stylesheet" href="preview.css">
+</head>
+<body>
+
+<div class="page">
+
+<div class="header">
+<div class="logo">RC</div>
+
+<div class="title">
+<h1>Riya Cargo</h1>
+<h2>DISPATCH</h2>
+</div>
+
+<div class="info">
+<div>Disp. No : <span id="dispNo"></span></div>
+<div>Disp. Date : <span id="dispDate"></span></div>
+<div>Road/Train : TRUCK</div>
+<div>Route : JAM-AMD</div>
+<div>Driver : <span id="driver"></span></div>
+<div>Km Reading : </div>
+</div>
+</div>
+
+<table class="dispatch-table">
+
+<thead>
+<tr>
+<th>LR No</th>
+<th>Consignor</th>
+<th>Consignee</th>
+<th>Parcel</th>
+<th>Kg.</th>
+<th>Paid</th>
+<th>To Pay</th>
+<th></th>
+</tr>
+</thead>
+
+<tbody id="dispatchBody">
+
+</tbody>
+
+<tfoot>
+<tr>
+<td></td>
+<td class="city">JAMNAGAR</td>
+<td class="city">DELHI</td>
+<td id="totalParcel"></td>
+<td id="totalKg"></td>
+<td id="totalPaid"></td>
+<td>0</td>
+<td></td>
+</tr>
+</tfoot>
+
+</table>
+
+<div class="footer">
+
+<div class="transport">
+Transport : RIYA CARGO
+</div>
+
+<div class="signatures">
+
+<div>
+<div class="sign-line"></div>
+Driver Signature
+</div>
+
+<div>
+<div class="sign-line"></div>
+Owner/Authorised Signature
+</div>
+
+</div>
+
+<div class="print-time">
+Print Time : <span id="printTime"></span>
+</div>
+
+</div>
+
+</div>
+
+<script src="preview.js"></script>
+</body>
+</html>
