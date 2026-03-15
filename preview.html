@@ -18,14 +18,15 @@
 </div>
 
 <div class="info">
-<div>Disp. No : <span id="dispNo"></span></div>
-<div>Disp. Date : <span id="dispDate"></span></div>
-<div>Road/Train : TRUCK</div>
-<div>Route : JAM-AMD</div>
-<div>Driver : <span id="driver"></span></div>
-<div>Km Reading : </div>
+<div><strong>Disp. No :</strong> <span id="dispNo"></span></div>
+<div><strong>Disp. Date :</strong> <span id="dispDate"></span></div>
+<div><strong>Road/Train :</strong> <span id="dispMethod"></span></div>
+<div><strong>Route :</strong> <span id="dispRoute"></span></div>
+<div><strong>Driver :</strong> <span id="driver"></span> <strong class="mobile-label">Mo.</strong> <span id="driverMobile"></span></div>
+<div><strong>Km Reading :</strong> <span id="kmReading"></span></div>
 </div>
 </div>
+<div id="previewNotice" class="preview-notice" hidden></div>
 
 <table class="dispatch-table">
 
@@ -48,13 +49,23 @@
 
 <tfoot>
 <tr>
-<td></td>
-<td class="city">JAMNAGAR</td>
-<td class="city">DELHI</td>
+<td id="totalLrCount"></td>
+<td class="city" id="fromBranchLabel"></td>
+<td class="city" id="toBranchLabel"></td>
 <td id="totalParcel"></td>
 <td id="totalKg"></td>
 <td id="totalPaid"></td>
-<td>0</td>
+<td id="totalToPay"></td>
+<td></td>
+</tr>
+<tr>
+<td id="grandLrCount"></td>
+<td></td>
+<td><strong>Grand Total</strong></td>
+<td id="grandParcel"></td>
+<td id="grandKg"></td>
+<td id="grandPaid"></td>
+<td id="grandToPay"></td>
 <td></td>
 </tr>
 </tfoot>

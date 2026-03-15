@@ -484,6 +484,20 @@ function setupButtons() {
   document.getElementById("btnNewDispatch").onclick = createNewDispatch;
   document.getElementById("btnEditDispatch").onclick = editCurrentDispatch;
   document.getElementById("btnFindDispatch").onclick = openFindDispatchPopup;
+  document.getElementById("btnPreviewDispatch").onclick = openDispatchPreview;
+}
+
+function openDispatchPreview() {
+  const dispatchNo = document.getElementById("dispatchNo").value.trim();
+
+  if (!dispatchNo) {
+    alert("No dispatch number loaded.");
+    return;
+  }
+
+  const branch = document.getElementById("branchInput").value.trim() || selectedBranch;
+  const query = new URLSearchParams({ dispatchNo, branch }).toString();
+  window.open(`preview.html?${query}`, "_blank");
 }
 
 async function initDispatchPage() {
