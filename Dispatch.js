@@ -3,10 +3,13 @@ const BOOKING_STORE = "bookings";
 
 const DISPATCH_DB_NAME = "DispatchDB";
 const DISPATCH_STORE = "dispatchBranchState";
+const DISPATCH_START_NUMBER = 253001;
 
 let bookingDb;
 let dispatchDb;
 let selectedBranch = "";
+let allBranchLRs = [];
+let isDispatchEditable = false;
 
 function getSelectedBranch() {
   return localStorage.getItem("selectedBranch") || sessionStorage.getItem("selectedBranch");
@@ -25,7 +28,7 @@ function openBookingDb() {
 
 function openDispatchDb() {
   return new Promise((resolve, reject) => {
-    const request = indexedDB.open(DISPATCH_DB_NAME, 1);
+    const request = indexedDB.open(DISPATCH_DB_NAME, 2);
 
     request.onupgradeneeded = e => {
       const db = e.target.result;
@@ -74,18 +77,32 @@ function readDispatchState(branch) {
   });
 }
 
-function saveDispatchState() {
-  const tx = dispatchDb.transaction(DISPATCH_STORE, "readwrite");
-  const store = tx.objectStore(DISPATCH_STORE);
+function writeDispatchState(state) {
+  return new Promise((resolve, reject) => {
+    const tx = dispatchDb.transaction(DISPATCH_STORE, "readwrite");
+    const store = tx.objectStore(DISPATCH_STORE);
+    const req = store.put(state);
 
-  const state = {
-    branch: selectedBranch,
-    godown: getListValues("godownList"),
-    vehicle: getListValues("vehicleList"),
-    dispatchDetailsByLr: getSavedDispatchDetails()
-  };
+    req.onsuccess = () => resolve();
+    req.onerror = () => reject(new Error("Failed to write dispatch state"));
+  });
+}
 
-  store.put(state);
+function toDispatchNumber(value) {
+  const parsed = Number.parseInt(String(value || "").trim(), 10);
+  return Number.isFinite(parsed) ? parsed : null;
+}
+
+function getNextDispatchNumber(state) {
+  const existingNumbers = Object.keys(state.dispatchRecords || {})
+    .map(toDispatchNumber)
+    .filter(Number.isFinite);
+
+  const highest = existingNumbers.length
+    ? Math.max(...existingNumbers)
+    : Math.max(DISPATCH_START_NUMBER - 1, toDispatchNumber(state.lastDispatchNo) || DISPATCH_START_NUMBER - 1);
+
+  return String(highest + 1);
 }
 
 function getListValues(listId) {
@@ -104,36 +121,16 @@ function fillList(listId, values) {
   });
 }
 
-function moveSelected(fromId, toId) {
-  const from = document.getElementById(fromId);
-  const to = document.getElementById(toId);
-  const selected = [...from.selectedOptions];
-
-  selected.forEach(opt => to.appendChild(opt));
-  saveDispatchState();
-}
-
-function moveAll(fromId, toId) {
-  const from = document.getElementById(fromId);
-  const to = document.getElementById(toId);
-  [...from.options].forEach(opt => to.appendChild(opt));
-  saveDispatchState();
-}
-
-function setupButtons() {
-  document.getElementById("btnMoveOneToVehicle").onclick = () =>
-    moveSelected("godownList", "vehicleList");
-
-  document.getElementById("btnMoveAllToVehicle").onclick = () =>
-    moveAll("godownList", "vehicleList");
-
-  document.getElementById("btnMoveOneToGodown").onclick = () =>
-    moveSelected("vehicleList", "godownList");
-
-  document.getElementById("btnMoveAllToGodown").onclick = () =>
-    moveAll("vehicleList", "godownList");
-
-  document.getElementById("loadingBtn").onclick = saveLoadingForVehicleLRs;
+function setDispatchFormValues(values = {}) {
+  document.getElementById("dispatchNo").value = values.dispatchNo || "";
+  document.getElementById("dispatchDate").value = values.dispatchDate || "";
+  document.getElementById("method").value = values.method || "";
+  document.getElementById("branchInput").value = selectedBranch;
+  document.getElementById("driverName").value = values.driverName || "";
+  document.getElementById("mobileNo").value = values.mobileNo || "";
+  document.getElementById("vehicleNo").value = values.vehicleNo || "";
+  document.getElementById("route").value = values.route || "";
+  document.getElementById("remark").value = values.remark || "";
 }
 
 function getDispatchFormValues() {
@@ -150,13 +147,148 @@ function getDispatchFormValues() {
   };
 }
 
-function getSavedDispatchDetails() {
+function applyDispatchRecord(record, lockAfter = true) {
+  if (!record) return;
+
+  const allSet = new Set(allBranchLRs);
+  const vehicle = (record.vehicle || []).filter(lr => allSet.has(lr));
+  const vehicleSet = new Set(vehicle);
+  const godown = allBranchLRs.filter(lr => !vehicleSet.has(lr));
+
+  setDispatchFormValues(record.form);
+  fillList("godownList", godown);
+  fillList("vehicleList", vehicle);
+
   const state = window.currentDispatchState;
-  if (!state || !state.dispatchDetailsByLr) return {};
-  return { ...state.dispatchDetailsByLr };
+  state.currentDispatchNo = record.dispatchNo;
+  state.godown = godown;
+  state.vehicle = vehicle;
+
+  if (lockAfter) {
+    lockDispatchPage();
+  }
 }
 
-function saveLoadingForVehicleLRs() {
+function moveSelected(fromId, toId) {
+  if (!isDispatchEditable) return;
+  const from = document.getElementById(fromId);
+  const to = document.getElementById(toId);
+  const selected = [...from.selectedOptions];
+
+  selected.forEach(opt => to.appendChild(opt));
+}
+
+function moveAll(fromId, toId) {
+  if (!isDispatchEditable) return;
+  const from = document.getElementById(fromId);
+  const to = document.getElementById(toId);
+  [...from.options].forEach(opt => to.appendChild(opt));
+}
+
+function lockDispatchPage() {
+  isDispatchEditable = false;
+  document.querySelectorAll(".dispatch-form input").forEach(input => {
+    if (input.id !== "branchInput") {
+      input.readOnly = true;
+    }
+  });
+
+  document.getElementById("godownList").disabled = true;
+  document.getElementById("vehicleList").disabled = true;
+
+  [
+    "btnMoveOneToVehicle",
+    "btnMoveAllToVehicle",
+    "btnMoveOneToGodown",
+    "btnMoveAllToGodown",
+    "loadingBtn"
+  ].forEach(id => {
+    document.getElementById(id).disabled = true;
+  });
+}
+
+function unlockDispatchPage() {
+  isDispatchEditable = true;
+  document.querySelectorAll(".dispatch-form input").forEach(input => {
+    if (input.id !== "branchInput" && input.id !== "dispatchNo") {
+      input.readOnly = false;
+    }
+  });
+
+  document.getElementById("godownList").disabled = false;
+  document.getElementById("vehicleList").disabled = false;
+
+  [
+    "btnMoveOneToVehicle",
+    "btnMoveAllToVehicle",
+    "btnMoveOneToGodown",
+    "btnMoveAllToGodown",
+    "loadingBtn"
+  ].forEach(id => {
+    document.getElementById(id).disabled = false;
+  });
+}
+
+function buildDispatchRecordFromUI() {
+  const form = getDispatchFormValues();
+  const dispatchNo = form.dispatchNo;
+
+  return {
+    dispatchNo,
+    form,
+    godown: getListValues("godownList"),
+    vehicle: getListValues("vehicleList"),
+    dispatchDetailsByLr: getDispatchDetailsByLrFromForm(form, getListValues("vehicleList"))
+  };
+}
+
+function getDispatchDetailsByLrFromForm(form, vehicleLrs) {
+  const detailsByLr = {};
+  vehicleLrs.forEach(lr => {
+    detailsByLr[lr] = { ...form };
+  });
+  return detailsByLr;
+}
+
+function rebuildAggregateDispatchDetails(state) {
+  const aggregated = {};
+  const dispatchNumbers = Object.keys(state.dispatchRecords || {}).sort((a, b) => Number(a) - Number(b));
+
+  dispatchNumbers.forEach(dispatchNo => {
+    const record = state.dispatchRecords[dispatchNo];
+    Object.assign(aggregated, record.dispatchDetailsByLr || {});
+  });
+
+  state.dispatchDetailsByLr = aggregated;
+}
+
+async function persistCurrentRecord() {
+  const state = window.currentDispatchState;
+  const record = buildDispatchRecordFromUI();
+
+  if (!record.dispatchNo) {
+    alert("Dispatch No is required.");
+    return false;
+  }
+
+  state.dispatchRecords[record.dispatchNo] = record;
+  state.currentDispatchNo = record.dispatchNo;
+  state.lastDispatchNo = record.dispatchNo;
+  state.godown = record.godown;
+  state.vehicle = record.vehicle;
+
+  rebuildAggregateDispatchDetails(state);
+
+  await writeDispatchState(state);
+  return true;
+}
+
+async function saveLoadingForVehicleLRs() {
+  if (!isDispatchEditable) {
+    alert("Press Edit or New before making changes.");
+    return;
+  }
+
   const vehicleLRs = getListValues("vehicleList");
 
   if (!vehicleLRs.length) {
@@ -164,38 +296,194 @@ function saveLoadingForVehicleLRs() {
     return;
   }
 
-  const details = getDispatchFormValues();
-  const previousDetails = getSavedDispatchDetails();
-  const currentVehicleSet = new Set(vehicleLRs);
+  try {
+    const saved = await persistCurrentRecord();
+    if (!saved) return;
+    lockDispatchPage();
+    alert("Dispatch details saved successfully.");
+  } catch (error) {
+    console.error(error);
+    alert("Failed to save loading details.");
+  }
+}
 
-  Object.keys(previousDetails).forEach(lr => {
-    if (!currentVehicleSet.has(lr)) {
-      delete previousDetails[lr];
+async function createNewDispatch() {
+  const state = window.currentDispatchState;
+  const nextDispatchNo = getNextDispatchNumber(state);
+
+  setDispatchFormValues({
+    dispatchNo: nextDispatchNo,
+    dispatchDate: new Date().toISOString().slice(0, 10)
+  });
+
+  fillList("godownList", allBranchLRs);
+  fillList("vehicleList", []);
+
+  state.currentDispatchNo = nextDispatchNo;
+  state.godown = [...allBranchLRs];
+  state.vehicle = [];
+
+  unlockDispatchPage();
+}
+
+function editCurrentDispatch() {
+  const dispatchNo = document.getElementById("dispatchNo").value.trim();
+  if (!dispatchNo) {
+    alert("No dispatch number loaded.");
+    return;
+  }
+
+  unlockDispatchPage();
+}
+
+function createFindPopup(state) {
+  const overlay = document.createElement("div");
+  overlay.className = "overlay dispatch-find-overlay";
+
+  const popup = document.createElement("div");
+  popup.className = "popup dispatch-find-popup";
+
+  const dispatchNumbers = Object.keys(state.dispatchRecords || {}).sort((a, b) => Number(a) - Number(b));
+
+  popup.innerHTML = `
+    <h3>Find Dispatch</h3>
+    <div class="find-row">
+      <label for="findDispatchNo">Dispatch No</label>
+      <input type="text" id="findDispatchNo" placeholder="Enter dispatch number" />
+    </div>
+    <div class="find-row">
+      <label for="dispatchNoList">Available Dispatch Nos</label>
+      <select id="dispatchNoList" size="8"></select>
+    </div>
+    <div class="find-actions">
+      <button type="button" id="findDispatchLoad">Load</button>
+      <button type="button" id="findDispatchCancel">Cancel</button>
+    </div>
+  `;
+
+  overlay.appendChild(popup);
+  document.body.appendChild(overlay);
+
+  const input = popup.querySelector("#findDispatchNo");
+  const list = popup.querySelector("#dispatchNoList");
+
+  dispatchNumbers.forEach(no => {
+    const option = document.createElement("option");
+    option.value = no;
+    option.textContent = no;
+    list.appendChild(option);
+  });
+
+  list.onchange = () => {
+    input.value = list.value;
+  };
+
+  popup.querySelector("#findDispatchCancel").onclick = () => {
+    document.body.removeChild(overlay);
+  };
+
+  popup.querySelector("#findDispatchLoad").onclick = () => {
+    const dispatchNo = input.value.trim();
+    const record = state.dispatchRecords[dispatchNo];
+
+    if (!record) {
+      alert("Dispatch number not found.");
+      return;
     }
-  });
 
-  vehicleLRs.forEach(lr => {
-    previousDetails[lr] = { ...details };
-  });
+    applyDispatchRecord(record, true);
+    document.body.removeChild(overlay);
+  };
 
-  const tx = dispatchDb.transaction(DISPATCH_STORE, "readwrite");
-  const store = tx.objectStore(DISPATCH_STORE);
+  overlay.onclick = event => {
+    if (event.target === overlay) {
+      document.body.removeChild(overlay);
+    }
+  };
+}
 
-  const stateToSave = {
+function openFindDispatchPopup() {
+  const state = window.currentDispatchState;
+  if (!state) return;
+
+  if (!Object.keys(state.dispatchRecords || {}).length) {
+    alert("No dispatch records found.");
+    return;
+  }
+
+  createFindPopup(state);
+}
+
+function normalizeSavedState(savedState) {
+  if (!savedState) return null;
+
+  const normalized = {
     branch: selectedBranch,
-    godown: getListValues("godownList"),
-    vehicle: vehicleLRs,
-    dispatchDetailsByLr: previousDetails
+    dispatchRecords: {},
+    currentDispatchNo: "",
+    lastDispatchNo: "",
+    godown: [],
+    vehicle: [],
+    dispatchDetailsByLr: {}
   };
 
-  const req = store.put(stateToSave);
+  if (savedState.dispatchRecords) {
+    normalized.dispatchRecords = { ...savedState.dispatchRecords };
+    normalized.currentDispatchNo = savedState.currentDispatchNo || "";
+    normalized.lastDispatchNo = savedState.lastDispatchNo || "";
+  } else {
+    const legacyDispatchNo = savedState.dispatchDetailsByLr
+      ? Object.values(savedState.dispatchDetailsByLr)[0]?.dispatchNo || String(DISPATCH_START_NUMBER)
+      : String(DISPATCH_START_NUMBER);
 
-  req.onsuccess = () => {
-    window.currentDispatchState = stateToSave;
-    alert("Dispatch details saved for LR ON VEHICLE.");
-  };
+    const form = {
+      dispatchNo: legacyDispatchNo,
+      dispatchDate: "",
+      method: "",
+      branch: selectedBranch,
+      driverName: "",
+      mobileNo: "",
+      vehicleNo: "",
+      route: "",
+      remark: ""
+    };
 
-  req.onerror = () => alert("Failed to save loading details.");
+    Object.values(savedState.dispatchDetailsByLr || {}).forEach(detail => {
+      Object.assign(form, detail || {});
+    });
+
+    normalized.dispatchRecords[legacyDispatchNo] = {
+      dispatchNo: legacyDispatchNo,
+      form,
+      godown: savedState.godown || [],
+      vehicle: savedState.vehicle || [],
+      dispatchDetailsByLr: savedState.dispatchDetailsByLr || {}
+    };
+    normalized.currentDispatchNo = legacyDispatchNo;
+    normalized.lastDispatchNo = legacyDispatchNo;
+  }
+
+  rebuildAggregateDispatchDetails(normalized);
+  return normalized;
+}
+
+function setupButtons() {
+  document.getElementById("btnMoveOneToVehicle").onclick = () =>
+    moveSelected("godownList", "vehicleList");
+
+  document.getElementById("btnMoveAllToVehicle").onclick = () =>
+    moveAll("godownList", "vehicleList");
+
+  document.getElementById("btnMoveOneToGodown").onclick = () =>
+    moveSelected("vehicleList", "godownList");
+
+  document.getElementById("btnMoveAllToGodown").onclick = () =>
+    moveAll("vehicleList", "godownList");
+
+  document.getElementById("loadingBtn").onclick = saveLoadingForVehicleLRs;
+  document.getElementById("btnNewDispatch").onclick = createNewDispatch;
+  document.getElementById("btnEditDispatch").onclick = editCurrentDispatch;
+  document.getElementById("btnFindDispatch").onclick = openFindDispatchPopup;
 }
 
 async function initDispatchPage() {
@@ -212,41 +500,54 @@ async function initDispatchPage() {
     await openBookingDb();
     await openDispatchDb();
 
-    const allBranchLRs = await readBookingLRs(selectedBranch);
+    allBranchLRs = await readBookingLRs(selectedBranch);
     const savedState = await readDispatchState(selectedBranch);
+    let state = normalizeSavedState(savedState);
 
-    if (savedState) {
-      const allSet = new Set(allBranchLRs);
-      const vehicle = (savedState.vehicle || []).filter(lr => allSet.has(lr));
-      const vehicleSet = new Set(vehicle);
-      const godown = allBranchLRs.filter(lr => !vehicleSet.has(lr));
-
-      fillList("godownList", godown);
-      fillList("vehicleList", vehicle);
-
-      window.currentDispatchState = {
-        ...savedState,
-        godown,
-        vehicle,
-        dispatchDetailsByLr: { ...(savedState.dispatchDetailsByLr || {}) }
-      };
-    } else {
-      fillList("godownList", allBranchLRs);
-      fillList("vehicleList", []);
-      window.currentDispatchState = {
+    if (!state) {
+      const initialDispatchNo = String(DISPATCH_START_NUMBER);
+      state = {
         branch: selectedBranch,
-        godown: allBranchLRs,
+        dispatchRecords: {
+          [initialDispatchNo]: {
+            dispatchNo: initialDispatchNo,
+            form: {
+              dispatchNo: initialDispatchNo,
+              dispatchDate: new Date().toISOString().slice(0, 10),
+              method: "",
+              branch: selectedBranch,
+              driverName: "",
+              mobileNo: "",
+              vehicleNo: "",
+              route: "",
+              remark: ""
+            },
+            godown: [...allBranchLRs],
+            vehicle: [],
+            dispatchDetailsByLr: {}
+          }
+        },
+        currentDispatchNo: initialDispatchNo,
+        lastDispatchNo: initialDispatchNo,
+        godown: [...allBranchLRs],
         vehicle: [],
         dispatchDetailsByLr: {}
       };
-      saveDispatchState();
+      await writeDispatchState(state);
     }
+
+    window.currentDispatchState = state;
+
+    const lastDispatchNo = state.lastDispatchNo || state.currentDispatchNo;
+    const recordToShow = state.dispatchRecords[lastDispatchNo] || Object.values(state.dispatchRecords)[0];
+    applyDispatchRecord(recordToShow, true);
+
+    setupButtons();
+    lockDispatchPage();
   } catch (error) {
     console.error(error);
     alert("Failed to load dispatch data.");
   }
-
-  setupButtons();
 }
 
 document.addEventListener("DOMContentLoaded", initDispatchPage);
