@@ -27,9 +27,16 @@ function readStoreRecord(db, storeName, key) {
   });
 }
 
-function getDispatchNoFromQuery() {
+function getPreviewContext() {
   const params = new URLSearchParams(window.location.search);
-  return params.get("dispatchNo")?.trim() || "";
+  const dispatchNo = params.get("dispatchNo")?.trim() || "";
+  const branchFromQuery = params.get("branch")?.trim() || "";
+  const branchFromStorage = localStorage.getItem("selectedBranch") || sessionStorage.getItem("selectedBranch") || "";
+
+  return {
+    dispatchNo,
+    branchHint: branchFromQuery || branchFromStorage
+  };
 }
 
 function toNumber(value) {
@@ -62,6 +69,20 @@ function addRow(data) {
 function setText(id, value) {
   const el = document.getElementById(id);
   if (el) el.textContent = value || "";
+}
+
+function showNotice(messageHtml) {
+  const notice = document.getElementById("previewNotice");
+  if (!notice) return;
+  notice.innerHTML = messageHtml;
+  notice.hidden = false;
+}
+
+function hideNotice() {
+  const notice = document.getElementById("previewNotice");
+  if (!notice) return;
+  notice.hidden = true;
+  notice.innerHTML = "";
 }
 
 function fillHeader(dispatchRecord) {
@@ -105,10 +126,53 @@ function fillTotals(rows) {
   setText("grandToPay", String(totals.toPay));
 }
 
+function buildBranchSpecificPreviewLinks(dispatchNo, matchingBranches) {
+  return matchingBranches
+    .map(branch => {
+      const query = new URLSearchParams({ dispatchNo, branch }).toString();
+      return `<a href="preview.html?${query}">${branch}</a>`;
+    })
+    .join(", ");
+}
+
+function resolveDispatchRecord(allStates, dispatchNo, branchHint) {
+  if (branchHint) {
+    const hintedState = allStates.find(state => state?.branch === branchHint);
+    const hintedRecord = hintedState?.dispatchRecords?.[dispatchNo] || null;
+
+    if (hintedRecord) {
+      return { selectedState: hintedState, selectedRecord: hintedRecord, isAmbiguous: false, matchingBranches: [] };
+    }
+  }
+
+  const matches = allStates.filter(state => state?.dispatchRecords?.[dispatchNo]);
+
+  if (!matches.length) {
+    return { selectedState: null, selectedRecord: null, isAmbiguous: false, matchingBranches: [] };
+  }
+
+  if (matches.length === 1) {
+    return {
+      selectedState: matches[0],
+      selectedRecord: matches[0].dispatchRecords[dispatchNo],
+      isAmbiguous: false,
+      matchingBranches: [matches[0].branch]
+    };
+  }
+
+  return {
+    selectedState: null,
+    selectedRecord: null,
+    isAmbiguous: true,
+    matchingBranches: matches.map(state => state.branch).filter(Boolean)
+  };
+}
+
 async function loadPreview() {
   setPrintTime();
+  hideNotice();
 
-  const dispatchNo = getDispatchNoFromQuery();
+  const { dispatchNo, branchHint } = getPreviewContext();
   if (!dispatchNo) {
     alert("Dispatch number is missing.");
     return;
@@ -127,18 +191,18 @@ async function loadPreview() {
       stateRequest.onerror = () => resolve([]);
     });
 
-    let selectedState = null;
-    let selectedRecord = null;
+    const { selectedState, selectedRecord, isAmbiguous, matchingBranches } = resolveDispatchRecord(allStates, dispatchNo, branchHint);
 
-    allStates.some(state => {
-      const record = state?.dispatchRecords?.[dispatchNo] || null;
-      if (!record) return false;
-      selectedState = state;
-      selectedRecord = record;
-      return true;
-    });
+    if (isAmbiguous) {
+      const links = buildBranchSpecificPreviewLinks(dispatchNo, matchingBranches);
+      showNotice(
+        `Dispatch no <strong>${dispatchNo}</strong> exists in multiple branches. ` +
+        `Please open with a branch: ${links}`
+      );
+      return;
+    }
 
-    if (!selectedRecord) {
+    if (!selectedRecord || !selectedState) {
       alert(`Dispatch no ${dispatchNo} not found.`);
       return;
     }

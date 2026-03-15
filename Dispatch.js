@@ -495,7 +495,9 @@ function openDispatchPreview() {
     return;
   }
 
-  window.open(`preview.html?dispatchNo=${encodeURIComponent(dispatchNo)}`, "_blank");
+  const branch = document.getElementById("branchInput").value.trim() || selectedBranch;
+  const query = new URLSearchParams({ dispatchNo, branch }).toString();
+  window.open(`preview.html?${query}`, "_blank");
 }
 
 async function initDispatchPage() {
