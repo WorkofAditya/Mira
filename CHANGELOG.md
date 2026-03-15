@@ -1,6 +1,7 @@
 ## Unreleased
 | Date | Commit | Change | File |
 |------|--------|--------|------|
+| 2026-03-15 | [4c9a95b](https://github.com/WorkofAditya/Mira/commit/4c9a95b20034bc5689617871813c24449cc50177) | Create preview.js | [preview.js](https://github.com/WorkofAditya/Mira/blob/main/preview.js) |
 | 2026-03-15 | [4602f62](https://github.com/WorkofAditya/Mira/commit/4602f62c82657a0ea42d90ea4f229c1a4ffe4a21) | Create preview.css | [preview.css](https://github.com/WorkofAditya/Mira/blob/main/preview.css) |
 | 2026-03-15 | [7a223e9](https://github.com/WorkofAditya/Mira/commit/7a223e959f0350a2c34c9e332b7db09c729762b5) | Create preview.html | [preview.html](https://github.com/WorkofAditya/Mira/blob/main/preview.html) |
 | 2026-03-15 | [f387d15](https://github.com/WorkofAditya/Mira/commit/f387d151103602d99b861b239479ec1571cd7da1) | Update version.txt | [version.txt](https://github.com/WorkofAditya/Mira/blob/main/version.txt) |
