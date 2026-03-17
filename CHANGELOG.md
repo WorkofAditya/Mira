@@ -1,6 +1,9 @@
 ## Unreleased
 | Date | Commit | Change | File |
 |------|--------|--------|------|
+| 2026-03-17 | [39bc1ff](https://github.com/WorkofAditya/Mira/commit/39bc1ff838c04e86c8d6a7925c1c529ca1758d3b) | Merge pull request #21 from WorkofAditya/codex/update-preview-page-with-pre-filled-rows |  |
+| 2026-03-17 | [eab3ac3](https://github.com/WorkofAditya/Mira/commit/eab3ac3a4608347126b0995aa1dcf1aaf86ce329) | Place grand total as final preview row | [Preview/preview.html](https://github.com/WorkofAditya/Mira/blob/main/Preview/preview.html) |
+| 2026-03-17 | [eab3ac3](https://github.com/WorkofAditya/Mira/commit/eab3ac3a4608347126b0995aa1dcf1aaf86ce329) | Place grand total as final preview row | [Preview/preview.js](https://github.com/WorkofAditya/Mira/blob/main/Preview/preview.js) |
 | 2026-03-17 | [6a99107](https://github.com/WorkofAditya/Mira/commit/6a991070694a8a93ad223e746a27312326cb0144) | Merge pull request #19 from WorkofAditya/codex/refactor-folder-structure-for-project |  |
 | 2026-03-17 | [c7dd52e](https://github.com/WorkofAditya/Mira/commit/c7dd52ea2962b3479dad21c792a72894914fbb62) | Reorganize project files into feature-based folders | [Booking/booking.css](https://github.com/WorkofAditya/Mira/blob/main/Booking/booking.css) |
 | 2026-03-17 | [c7dd52e](https://github.com/WorkofAditya/Mira/commit/c7dd52ea2962b3479dad21c792a72894914fbb62) | Reorganize project files into feature-based folders | [Booking/booking.html](https://github.com/WorkofAditya/Mira/blob/main/Booking/booking.html) |
