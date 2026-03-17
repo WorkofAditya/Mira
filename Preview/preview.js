@@ -2,6 +2,7 @@ const BOOKING_DB_NAME = "TransportDB";
 const BOOKING_STORE = "bookings";
 const DISPATCH_DB_NAME = "DispatchDB";
 const DISPATCH_STORE = "dispatchBranchState";
+const MIN_PREVIEW_ROWS = 18;
 
 function setPrintTime() {
   const now = new Date();
@@ -66,6 +67,25 @@ function addRow(data) {
   tbody.appendChild(tr);
 }
 
+function addEmptyRow() {
+  addRow({
+    lrNo: "",
+    sender: "",
+    receiver: "",
+    packages: "",
+    weight: "",
+    paid: "",
+    toPay: ""
+  });
+}
+
+function ensureMinimumRows(existingRowCount) {
+  const emptyRowsNeeded = Math.max(0, MIN_PREVIEW_ROWS - existingRowCount);
+  for (let index = 0; index < emptyRowsNeeded; index += 1) {
+    addEmptyRow();
+  }
+}
+
 function setText(id, value) {
   const el = document.getElementById(id);
   if (el) el.textContent = value || "";
@@ -96,8 +116,8 @@ function fillHeader(dispatchRecord) {
   setText("kmReading", form.remark || "");
 }
 
-function fillTotals(rows) {
-  const totals = rows.reduce(
+function calculateTotals(rows) {
+  return rows.reduce(
     (acc, row) => {
       acc.parcel += row.packages;
       acc.kg += row.weight;
@@ -107,23 +127,44 @@ function fillTotals(rows) {
     },
     { parcel: 0, kg: 0, paid: 0, toPay: 0 }
   );
+}
 
+function addBranchSummaryRow(rows, totals) {
+  const tbody = document.getElementById("dispatchBody");
   const fromBranch = rows[0]?.branchFrom || "";
   const toBranch = rows[0]?.branchTo || "";
+  const tr = document.createElement("tr");
 
-  setText("totalLrCount", String(rows.length));
-  setText("fromBranchLabel", fromBranch);
-  setText("toBranchLabel", toBranch);
-  setText("totalParcel", String(totals.parcel));
-  setText("totalKg", String(totals.kg));
-  setText("totalPaid", String(totals.paid));
-  setText("totalToPay", String(totals.toPay));
+  tr.innerHTML = `
+<td></td>
+<td class="city" id="fromBranchLabel">${fromBranch}</td>
+<td class="city" id="toBranchLabel">${toBranch}</td>
+<td id="totalParcel">${totals.parcel}</td>
+<td id="totalKg">${totals.kg}</td>
+<td id="totalPaid">${totals.paid}</td>
+<td id="totalToPay">${totals.toPay}</td>
+<td></td>
+`;
 
-  setText("grandLrCount", String(rows.length));
-  setText("grandParcel", String(totals.parcel));
-  setText("grandKg", String(totals.kg));
-  setText("grandPaid", String(totals.paid));
-  setText("grandToPay", String(totals.toPay));
+  tbody.appendChild(tr);
+}
+
+function addGrandTotalRow(totals) {
+  const tbody = document.getElementById("dispatchBody");
+  const tr = document.createElement("tr");
+
+  tr.innerHTML = `
+<td></td>
+<td></td>
+<td><strong>Grand Total</strong></td>
+<td id="grandParcel"><strong>${totals.parcel}</strong></td>
+<td id="grandKg"><strong>${totals.kg}</strong></td>
+<td id="grandPaid"><strong>${totals.paid}</strong></td>
+<td id="grandToPay"><strong>${totals.toPay}</strong></td>
+<td></td>
+`;
+
+  tbody.appendChild(tr);
 }
 
 function buildBranchSpecificPreviewLinks(dispatchNo, matchingBranches) {
@@ -240,7 +281,12 @@ async function loadPreview() {
       .filter(Boolean);
 
     rows.forEach(addRow);
-    fillTotals(rows);
+
+    const totals = calculateTotals(rows);
+    addBranchSummaryRow(rows, totals);
+
+    ensureMinimumRows(rows.length + 1);
+    addGrandTotalRow(totals);
   } finally {
     dispatchDb.close();
     bookingDb.close();
