@@ -309,21 +309,33 @@ function getDispatchDetailsForLr(branch, lrNo) {
       return;
     }
 
-    const request = indexedDB.open(DISPATCH_DB_NAME, 1);
+    const request = indexedDB.open(DISPATCH_DB_NAME);
 
     request.onsuccess = e => {
       const dispatchDb = e.target.result;
-      const tx = dispatchDb.transaction(DISPATCH_STORE, "readonly");
-      const store = tx.objectStore(DISPATCH_STORE);
-      const req = store.get(branch);
 
-      req.onsuccess = () => {
-        const details = req.result?.dispatchDetailsByLr?.[lrNo] || null;
-        resolve(details);
-      };
+      if (!dispatchDb.objectStoreNames.contains(DISPATCH_STORE)) {
+        dispatchDb.close();
+        resolve(null);
+        return;
+      }
 
-      req.onerror = () => resolve(null);
-      tx.oncomplete = () => dispatchDb.close();
+      try {
+        const tx = dispatchDb.transaction(DISPATCH_STORE, "readonly");
+        const store = tx.objectStore(DISPATCH_STORE);
+        const req = store.get(branch);
+
+        req.onsuccess = () => {
+          const details = req.result?.dispatchDetailsByLr?.[lrNo] || null;
+          resolve(details);
+        };
+
+        req.onerror = () => resolve(null);
+        tx.oncomplete = () => dispatchDb.close();
+      } catch (error) {
+        dispatchDb.close();
+        resolve(null);
+      }
     };
 
     request.onerror = () => resolve(null);
