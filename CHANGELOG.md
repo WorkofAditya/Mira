@@ -1,6 +1,13 @@
 ## Unreleased
 | Date | Commit | Change | File |
 |------|--------|--------|------|
+| 2026-03-17 | [b01295b](https://github.com/WorkofAditya/Mira/commit/b01295b00b36ac34685941c4ca00a7bb4c951157) | Merge pull request #17 from WorkofAditya/beta |  |
+| 2026-03-17 | [e3ef9e8](https://github.com/WorkofAditya/Mira/commit/e3ef9e89ac2824f6d4109cdb0ffca2c207888862) | Merge pull request #16 from WorkofAditya/codex/update-booking-page-to-auto-fill-dispatch-data-uq6j2o |  |
+| 2026-03-17 | [52a5c7a](https://github.com/WorkofAditya/Mira/commit/52a5c7af9944f36598356899e9eb0b734c254a2b) | Fix dispatch DB lookup on booking page autofill | [app.js](https://github.com/WorkofAditya/Mira/blob/main/app.js) |
+| 2026-03-17 | [52a5c7a](https://github.com/WorkofAditya/Mira/commit/52a5c7af9944f36598356899e9eb0b734c254a2b) | Fix dispatch DB lookup on booking page autofill | [booking.html](https://github.com/WorkofAditya/Mira/blob/main/booking.html) |
+| 2026-03-17 | [b38a1dd](https://github.com/WorkofAditya/Mira/commit/b38a1ddd6ee768f6c64f75aab4a3a19e52ea363b) | Merge pull request #15 from WorkofAditya/codex/update-booking-page-to-auto-fill-dispatch-data |  |
+| 2026-03-17 | [0012c25](https://github.com/WorkofAditya/Mira/commit/0012c25942b43b4a3eb90aedc8cbb301e18b1424) | Auto-fill booking dispatch fields from dispatch records | [app.js](https://github.com/WorkofAditya/Mira/blob/main/app.js) |
+| 2026-03-17 | [0012c25](https://github.com/WorkofAditya/Mira/commit/0012c25942b43b4a3eb90aedc8cbb301e18b1424) | Auto-fill booking dispatch fields from dispatch records | [booking.html](https://github.com/WorkofAditya/Mira/blob/main/booking.html) |
 | 2026-03-15 | [c17d14f](https://github.com/WorkofAditya/Mira/commit/c17d14f84320ba0419677d7bbda2674a11836fbe) | Added Preview functionality in Dispatch | [Dispatch.html](https://github.com/WorkofAditya/Mira/blob/main/Dispatch.html) |
 | 2026-03-15 | [c17d14f](https://github.com/WorkofAditya/Mira/commit/c17d14f84320ba0419677d7bbda2674a11836fbe) | Added Preview functionality in Dispatch | [Dispatch.js](https://github.com/WorkofAditya/Mira/blob/main/Dispatch.js) |
 | 2026-03-15 | [c17d14f](https://github.com/WorkofAditya/Mira/commit/c17d14f84320ba0419677d7bbda2674a11836fbe) | Added Preview functionality in Dispatch | [preview.css](https://github.com/WorkofAditya/Mira/blob/main/preview.css) |
