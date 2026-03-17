@@ -114,6 +114,7 @@ function initBookingPage() {
   setupButtons(branch);
   setupEnterNavigation();
   setupBookingFeeCalculations();
+  setupDispatchAutoSync();
 }
 
 function toNumber(value) {
@@ -332,13 +333,13 @@ function getDispatchDetailsForLr(branch, lrNo) {
 function applyDispatchDetailsToForm(details) {
   const memo = document.getElementById("dispatchMemo");
   const dispatchDate = document.getElementById("dispatchDate");
-  const vehicleNo = document.getElementById("vehicleNo");
+  const driverName = document.getElementById("driverName");
 
-  if (!memo || !dispatchDate || !vehicleNo) return;
+  if (!memo || !dispatchDate || !driverName) return;
 
   memo.value = details?.dispatchNo || "";
   dispatchDate.value = details?.dispatchDate || "";
-  vehicleNo.value = details?.vehicleNo || "";
+  driverName.value = details?.driverName || "";
 }
 
 async function syncDispatchSectionForCurrentLr() {
@@ -346,6 +347,18 @@ async function syncDispatchSectionForCurrentLr() {
   const lrNo = document.getElementById("lrNo")?.value?.trim();
   const details = await getDispatchDetailsForLr(branch, lrNo);
   applyDispatchDetailsToForm(details);
+}
+
+function setupDispatchAutoSync() {
+  const lrInput = document.getElementById("lrNo");
+  if (!lrInput) return;
+
+  const sync = () => {
+    syncDispatchSectionForCurrentLr();
+  };
+
+  lrInput.addEventListener("change", sync);
+  lrInput.addEventListener("blur", sync);
 }
 
 // ================= LOAD LATEST =================
