@@ -497,7 +497,7 @@ function openDispatchPreview() {
 
   const branch = document.getElementById("branchInput").value.trim() || selectedBranch;
   const query = new URLSearchParams({ dispatchNo, branch }).toString();
-  window.open(`preview.html?${query}`, "_blank");
+  window.open(`../Preview/preview.html?${query}`, "_blank");
 }
 
 async function initDispatchPage() {
