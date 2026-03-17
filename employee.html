@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Add Employee Data</title>
+
+
+    <script>
+        // Employee photo auto preview + hide input
+        function showEmployeePhoto(event) {
+            var img = document.getElementById("empPhoto");
+            var input = document.getElementById("empInput");
+
+
+            img.src = URL.createObjectURL(event.target.files[0]);
+            img.style.display = "block";
+            input.style.display = "none";
+        }
+
+
+        // Aadhaar photo show on button click + hide input
+        function showAadhaarPhoto() {
+            var input = document.getElementById("aadhaarInput");
+            var img = document.getElementById("aadhaarPhoto");
+
+
+            if (input.files.length > 0) {
+                img.src = URL.createObjectURL(input.files[0]);
+                img.style.display = "block";
+                input.style.display = "none";
+            } else {
+                alert("Please select Aadhaar card photo first");
+            }
+        }
+    </script>
+</head>
+
+
+<body>
+    <table border="2">
+    <td>
+
+
+<table width="100%" cellpadding="20">
+    <!-- Header -->
+    <tr>
+        <td width="20%"><b>RC logo</b></td>
+        <td width="60%" align="center"><h2>Add employee data</h2></td>
+        <td width="20%"></td>
+    </tr>
+
+
+    <!-- Main content -->
+    <tr>
+        <!-- Left form -->
+        <td colspan="2" width="70%" valign="top">
+            <table width="100%" cellpadding="10">
+                <tr>
+                    <td width="40%">Name</td>
+                    <td width="60%"><input type="text" size="40"></td>
+                </tr>
+                <tr>
+                    <td>Mobile number</td>
+                    <td><input type="text" size="40"></td>
+                </tr>
+                <tr>
+                    <td>Monthly salary</td>
+                    <td><input type="text" size="40"></td>
+                </tr>
+                <tr>
+                    <td>Per day salary</td>
+                    <td><input type="text" size="40"></td>
+                </tr>
+
+
+                <!-- Aadhaar card -->
+                <tr>
+                    <td>Aadhaar card photo</td>
+                    <td>
+                        <input type="file" id="aadhaarInput" accept="image/*"><br><br>
+                        <input type="button" value="Show Aadhaar Photo" onclick="showAadhaarPhoto()"><br><br>
+                        <img id="aadhaarPhoto" width="200" height="120" style="display:none;">
+                    </td>
+                </tr>
+            </table>
+        </td>
+
+
+        <!-- Right employee photo -->
+        <td width="30%" align="center" valign="top">
+            <table width="100%" 
+            border="2"
+            height="250">
+                <tr>
+                    <td align="center">
+                        <img id="empPhoto" width="200" height="200" style="display:none;"><br><br>
+                        <input type="file" id="empInput" accept="image/*" onchange="showEmployeePhoto(event)">
+                    </td>
+                </tr>
+            </table>
+        </td>
+    </tr>
+
+
+    <!-- Buttons -->
+    <tr>
+        <td colspan="3" align="center">
+            <input type="button" value="NEW">
+            <input type="button" value="Edit">
+            <input type="button" value="Delete">
+            <input type="button" value="Find">
+        </td>
+    </tr>
+</table>
+</td>
+    </table>
+
+
+</body>
+</html>
