@@ -114,6 +114,7 @@ function initBookingPage() {
   setupButtons(branch);
   setupEnterNavigation();
   setupBookingFeeCalculations();
+  setupDispatchAutoSync();
 }
 
 function toNumber(value) {
@@ -308,21 +309,33 @@ function getDispatchDetailsForLr(branch, lrNo) {
       return;
     }
 
-    const request = indexedDB.open(DISPATCH_DB_NAME, 1);
+    const request = indexedDB.open(DISPATCH_DB_NAME);
 
     request.onsuccess = e => {
       const dispatchDb = e.target.result;
-      const tx = dispatchDb.transaction(DISPATCH_STORE, "readonly");
-      const store = tx.objectStore(DISPATCH_STORE);
-      const req = store.get(branch);
 
-      req.onsuccess = () => {
-        const details = req.result?.dispatchDetailsByLr?.[lrNo] || null;
-        resolve(details);
-      };
+      if (!dispatchDb.objectStoreNames.contains(DISPATCH_STORE)) {
+        dispatchDb.close();
+        resolve(null);
+        return;
+      }
 
-      req.onerror = () => resolve(null);
-      tx.oncomplete = () => dispatchDb.close();
+      try {
+        const tx = dispatchDb.transaction(DISPATCH_STORE, "readonly");
+        const store = tx.objectStore(DISPATCH_STORE);
+        const req = store.get(branch);
+
+        req.onsuccess = () => {
+          const details = req.result?.dispatchDetailsByLr?.[lrNo] || null;
+          resolve(details);
+        };
+
+        req.onerror = () => resolve(null);
+        tx.oncomplete = () => dispatchDb.close();
+      } catch (error) {
+        dispatchDb.close();
+        resolve(null);
+      }
     };
 
     request.onerror = () => resolve(null);
@@ -332,13 +345,13 @@ function getDispatchDetailsForLr(branch, lrNo) {
 function applyDispatchDetailsToForm(details) {
   const memo = document.getElementById("dispatchMemo");
   const dispatchDate = document.getElementById("dispatchDate");
-  const vehicleNo = document.getElementById("vehicleNo");
+  const driverName = document.getElementById("driverName");
 
-  if (!memo || !dispatchDate || !vehicleNo) return;
+  if (!memo || !dispatchDate || !driverName) return;
 
   memo.value = details?.dispatchNo || "";
   dispatchDate.value = details?.dispatchDate || "";
-  vehicleNo.value = details?.vehicleNo || "";
+  driverName.value = details?.driverName || "";
 }
 
 async function syncDispatchSectionForCurrentLr() {
@@ -346,6 +359,18 @@ async function syncDispatchSectionForCurrentLr() {
   const lrNo = document.getElementById("lrNo")?.value?.trim();
   const details = await getDispatchDetailsForLr(branch, lrNo);
   applyDispatchDetailsToForm(details);
+}
+
+function setupDispatchAutoSync() {
+  const lrInput = document.getElementById("lrNo");
+  if (!lrInput) return;
+
+  const sync = () => {
+    syncDispatchSectionForCurrentLr();
+  };
+
+  lrInput.addEventListener("change", sync);
+  lrInput.addEventListener("blur", sync);
 }
 
 // ================= LOAD LATEST =================
