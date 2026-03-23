@@ -1,6 +1,11 @@
 ## Unreleased
 | Date | Commit | Change | File |
 |------|--------|--------|------|
+| 2026-03-23 | [06fcd00](https://github.com/WorkofAditya/Mira/commit/06fcd004c8605ebf17e19423f1174f55c68f4b83) | Merge pull request #23 from WorkofAditya/codex/add-godown-stock-preview-page |  |
+| 2026-03-23 | [9c1c4f9](https://github.com/WorkofAditya/Mira/commit/9c1c4f9634c9149aaef3d5849c8ca1776a28a028) | Add godown stock preview page and homepage menu link | [Index/index.css](https://github.com/WorkofAditya/Mira/blob/main/Index/index.css) |
+| 2026-03-23 | [9c1c4f9](https://github.com/WorkofAditya/Mira/commit/9c1c4f9634c9149aaef3d5849c8ca1776a28a028) | Add godown stock preview page and homepage menu link | [Preview/godown-preview.html](https://github.com/WorkofAditya/Mira/blob/main/Preview/godown-preview.html) |
+| 2026-03-23 | [9c1c4f9](https://github.com/WorkofAditya/Mira/commit/9c1c4f9634c9149aaef3d5849c8ca1776a28a028) | Add godown stock preview page and homepage menu link | [Preview/godown-preview.js](https://github.com/WorkofAditya/Mira/blob/main/Preview/godown-preview.js) |
+| 2026-03-23 | [9c1c4f9](https://github.com/WorkofAditya/Mira/commit/9c1c4f9634c9149aaef3d5849c8ca1776a28a028) | Add godown stock preview page and homepage menu link | [index.html](https://github.com/WorkofAditya/Mira/blob/main/index.html) |
 | 2026-03-17 | [39bc1ff](https://github.com/WorkofAditya/Mira/commit/39bc1ff838c04e86c8d6a7925c1c529ca1758d3b) | Merge pull request #21 from WorkofAditya/codex/update-preview-page-with-pre-filled-rows |  |
 | 2026-03-17 | [eab3ac3](https://github.com/WorkofAditya/Mira/commit/eab3ac3a4608347126b0995aa1dcf1aaf86ce329) | Place grand total as final preview row | [Preview/preview.html](https://github.com/WorkofAditya/Mira/blob/main/Preview/preview.html) |
 | 2026-03-17 | [eab3ac3](https://github.com/WorkofAditya/Mira/commit/eab3ac3a4608347126b0995aa1dcf1aaf86ce329) | Place grand total as final preview row | [Preview/preview.js](https://github.com/WorkofAditya/Mira/blob/main/Preview/preview.js) |
