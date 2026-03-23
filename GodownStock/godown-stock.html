@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Godown Stock Preview</title>
+<link rel="stylesheet" href="godown-stock.css">
+</head>
+<body>
+
+<div class="page">
+
+<div class="header">
+<div class="logo">RC</div>
+
+<div class="title">
+<h1>Riya Cargo</h1>
+<h2>GODOWN STOCK</h2>
+</div>
+
+<div class="info">
+<div><strong>Road/Train :</strong> <span id="dispMethod"></span></div>
+<div><strong>Route :</strong> <span id="dispRoute"></span></div>
+<div><strong>Driver :</strong> <span id="driver"></span> <strong class="mobile-label">Mo.</strong> <span id="driverMobile"></span></div>
+<div><strong>Km Reading :</strong> <span id="kmReading"></span></div>
+</div>
+</div>
+<div id="previewNotice" class="preview-notice" hidden></div>
+
+<table class="dispatch-table">
+
+<thead>
+<tr>
+<th>LR No</th>
+<th>Consignor</th>
+<th>Consignee</th>
+<th>Parcel</th>
+<th>Kg.</th>
+<th>Paid</th>
+<th>To Pay</th>
+<th></th>
+</tr>
+</thead>
+
+<tbody id="dispatchBody">
+
+</tbody>
+
+
+
+</table>
+
+<div class="footer">
+
+<div class="transport">
+Transport : RIYA CARGO
+</div>
+
+<div class="signatures">
+
+<div>
+<div class="sign-line"></div>
+Driver Signature
+</div>
+
+<div>
+<div class="sign-line"></div>
+Owner/Authorised Signature
+</div>
+
+</div>
+
+<div class="print-time">
+Print Time : <span id="printTime"></span>
+</div>
+
+</div>
+
+</div>
+
+<script src="godown-stock.js"></script>
+</body>
+</html>
