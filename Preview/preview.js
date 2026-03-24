@@ -33,10 +33,12 @@ function getPreviewContext() {
   const dispatchNo = params.get("dispatchNo")?.trim() || "";
   const branchFromQuery = params.get("branch")?.trim() || "";
   const branchFromStorage = localStorage.getItem("selectedBranch") || sessionStorage.getItem("selectedBranch") || "";
+  const autoPrint = params.get("autoPrint") === "1";
 
   return {
     dispatchNo,
-    branchHint: branchFromQuery || branchFromStorage
+    branchHint: branchFromQuery || branchFromStorage,
+    autoPrint
   };
 }
 
@@ -213,7 +215,7 @@ async function loadPreview() {
   setPrintTime();
   hideNotice();
 
-  const { dispatchNo, branchHint } = getPreviewContext();
+  const { dispatchNo, branchHint, autoPrint } = getPreviewContext();
   if (!dispatchNo) {
     alert("Dispatch number is missing.");
     return;
@@ -287,6 +289,10 @@ async function loadPreview() {
 
     ensureMinimumRows(rows.length + 1);
     addGrandTotalRow(totals);
+
+    if (autoPrint) {
+      setTimeout(() => window.print(), 250);
+    }
   } finally {
     dispatchDb.close();
     bookingDb.close();

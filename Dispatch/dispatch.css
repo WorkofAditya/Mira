@@ -248,3 +248,64 @@ body {
     background: #ececec;
     cursor: pointer;
 }
+
+.overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+}
+
+.popup {
+    background: #fff;
+    padding: 20px;
+    width: 600px;
+    max-height: 90%;
+    overflow-y: auto;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    position: relative;
+}
+
+.popup h3 {
+    margin-top: 0;
+}
+
+.popup input,
+.popup select {
+    width: 100%;
+    margin-bottom: 10px;
+}
+
+.delete-confirm-popup {
+    width: min(420px, 92vw);
+    padding: 18px;
+}
+
+.delete-confirm-popup p {
+    margin: 0 0 12px;
+}
+
+.delete-confirm-popup input {
+    width: 100%;
+    border: 1px solid #000;
+    padding: 8px;
+}
+
+.delete-confirm-actions {
+    margin-top: 14px;
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+}
+
+.delete-confirm-actions button {
+    min-width: 90px;
+    height: 34px;
+    border: 1px solid #000;
+    background: #ececec;
+    cursor: pointer;
+}
