@@ -262,6 +262,21 @@ function rebuildAggregateDispatchDetails(state) {
   state.dispatchDetailsByLr = aggregated;
 }
 
+function getPersistedVehicleLrs(state) {
+  const allSet = new Set(allBranchLRs);
+  const movedSet = new Set();
+
+  Object.values(state.dispatchRecords || {}).forEach(record => {
+    (record.vehicle || []).forEach(lr => {
+      if (allSet.has(lr)) {
+        movedSet.add(lr);
+      }
+    });
+  });
+
+  return allBranchLRs.filter(lr => movedSet.has(lr));
+}
+
 async function persistCurrentRecord() {
   const state = window.currentDispatchState;
   const record = buildDispatchRecordFromUI();
@@ -310,18 +325,21 @@ async function saveLoadingForVehicleLRs() {
 async function createNewDispatch() {
   const state = window.currentDispatchState;
   const nextDispatchNo = getNextDispatchNumber(state);
+  const persistedVehicleLrs = getPersistedVehicleLrs(state);
+  const persistedVehicleSet = new Set(persistedVehicleLrs);
+  const remainingGodownLrs = allBranchLRs.filter(lr => !persistedVehicleSet.has(lr));
 
   setDispatchFormValues({
     dispatchNo: nextDispatchNo,
     dispatchDate: new Date().toISOString().slice(0, 10)
   });
 
-  fillList("godownList", allBranchLRs);
-  fillList("vehicleList", []);
+  fillList("godownList", remainingGodownLrs);
+  fillList("vehicleList", persistedVehicleLrs);
 
   state.currentDispatchNo = nextDispatchNo;
-  state.godown = [...allBranchLRs];
-  state.vehicle = [];
+  state.godown = [...remainingGodownLrs];
+  state.vehicle = [...persistedVehicleLrs];
 
   unlockDispatchPage();
 }
