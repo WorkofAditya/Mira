@@ -380,7 +380,18 @@ async function loadLatestBooking(branch) {
   const req = store.get(branch);
 
   req.onsuccess = async () => {
-    if (!req.result || !req.result.bookings) return;
+    if (!req.result || !req.result.bookings || !Object.keys(req.result.bookings).length) {
+      document
+        .querySelectorAll(".booking-body input, .booking-body select")
+        .forEach(el => {
+          if (el.id !== "branchFrom") el.value = "";
+        });
+      document.getElementById("pickupFrom").value = branch;
+      lockForm();
+      recalculateBookingFees();
+      applyDispatchDetailsToForm(null);
+      return;
+    }
 
     const bookings = req.result.bookings;
     const lastLR = Object.keys(bookings).sort().pop();
@@ -403,9 +414,90 @@ function setupButtons(branch) {
   document.getElementById("btnEdit").onclick = unlockForm;
   document.getElementById("btnSave").onclick = () => saveData(branch);
   document.getElementById("btnPrint").onclick = printReceipt;
-  document.getElementById("btnDelete").onclick = () => alert("Delete later");
+  document.getElementById("btnDelete").onclick = () => deleteCurrentBooking(branch);
   document.getElementById("btnFind").onclick = openFindPopup;
   document.getElementById("btnPreview").onclick = previewReceipt;
+}
+
+function createDeleteConfirmPopup({ onDelete }) {
+  const overlay = document.createElement("div");
+  overlay.className = "overlay delete-confirm-overlay";
+
+  const popup = document.createElement("div");
+  popup.className = "popup delete-confirm-popup";
+  popup.innerHTML = `
+    <h3>Confirm Delete</h3>
+    <p>Type <strong>DELETE</strong> and press Delete to remove this entry.</p>
+    <input type="text" id="deleteConfirmInput" placeholder="Type DELETE" autocomplete="off" />
+    <div class="delete-confirm-actions">
+      <button type="button" id="deleteConfirmBack">Back</button>
+      <button type="button" id="deleteConfirmSubmit">Delete</button>
+    </div>
+  `;
+
+  overlay.appendChild(popup);
+  document.body.appendChild(overlay);
+
+  const input = popup.querySelector("#deleteConfirmInput");
+  const backBtn = popup.querySelector("#deleteConfirmBack");
+  const submitBtn = popup.querySelector("#deleteConfirmSubmit");
+
+  const closePopup = () => {
+    if (overlay.parentNode) document.body.removeChild(overlay);
+  };
+
+  backBtn.onclick = closePopup;
+  submitBtn.onclick = () => {
+    if (input.value.trim() !== "DELETE") {
+      alert('Please type "DELETE" in capital letters to confirm.');
+      input.focus();
+      return;
+    }
+
+    closePopup();
+    onDelete();
+  };
+
+  overlay.onclick = event => {
+    if (event.target === overlay) closePopup();
+  };
+
+  input.focus();
+}
+
+function deleteCurrentBooking(branch) {
+  const lrNo = document.getElementById("lrNo")?.value?.trim();
+  if (!lrNo) {
+    alert("No LR number loaded to delete.");
+    return;
+  }
+
+  createDeleteConfirmPopup({
+    onDelete: () => {
+      const tx = db.transaction(STORE_NAME, "readwrite");
+      const store = tx.objectStore(STORE_NAME);
+      const req = store.get(branch);
+
+      req.onsuccess = () => {
+        const branchData = req.result;
+        if (!branchData?.bookings?.[lrNo]) {
+          alert("No booking found for the current LR number.");
+          return;
+        }
+
+        delete branchData.bookings[lrNo];
+
+        const putReq = store.put(branchData);
+        putReq.onsuccess = () => {
+          alert("Booking deleted successfully.");
+          loadLatestBooking(branch);
+        };
+        putReq.onerror = () => alert("Failed to delete booking.");
+      };
+
+      req.onerror = () => alert("Failed to read bookings for deletion.");
+    }
+  });
 }
 
 // ================= ENTER NAV =================

@@ -501,8 +501,10 @@ function setupButtons() {
   document.getElementById("loadingBtn").onclick = saveLoadingForVehicleLRs;
   document.getElementById("btnNewDispatch").onclick = createNewDispatch;
   document.getElementById("btnEditDispatch").onclick = editCurrentDispatch;
+  document.getElementById("btnDeleteDispatch").onclick = deleteCurrentDispatchEntry;
   document.getElementById("btnFindDispatch").onclick = openFindDispatchPopup;
   document.getElementById("btnPreviewDispatch").onclick = openDispatchPreview;
+  document.getElementById("btnPrintDispatch").onclick = openDispatchPrintPreview;
 }
 
 function openDispatchPreview() {
@@ -516,6 +518,137 @@ function openDispatchPreview() {
   const branch = document.getElementById("branchInput").value.trim() || selectedBranch;
   const query = new URLSearchParams({ dispatchNo, branch }).toString();
   window.open(`../Preview/preview.html?${query}`, "_blank");
+}
+
+function openDispatchPrintPreview() {
+  const dispatchNo = document.getElementById("dispatchNo").value.trim();
+
+  if (!dispatchNo) {
+    alert("No dispatch number loaded.");
+    return;
+  }
+
+  const branch = document.getElementById("branchInput").value.trim() || selectedBranch;
+  const query = new URLSearchParams({ dispatchNo, branch, autoPrint: "1" }).toString();
+  window.open(`../Preview/preview.html?${query}`, "_blank");
+}
+
+function createDeleteConfirmPopup({ onDelete }) {
+  const overlay = document.createElement("div");
+  overlay.className = "overlay delete-confirm-overlay";
+
+  const popup = document.createElement("div");
+  popup.className = "popup delete-confirm-popup";
+  popup.innerHTML = `
+    <h3>Confirm Delete</h3>
+    <p>Type <strong>DELETE</strong> and press Delete to remove this entry.</p>
+    <input type="text" id="deleteConfirmInput" placeholder="Type DELETE" autocomplete="off" />
+    <div class="delete-confirm-actions">
+      <button type="button" id="deleteConfirmBack">Back</button>
+      <button type="button" id="deleteConfirmSubmit">Delete</button>
+    </div>
+  `;
+
+  overlay.appendChild(popup);
+  document.body.appendChild(overlay);
+
+  const input = popup.querySelector("#deleteConfirmInput");
+  const backBtn = popup.querySelector("#deleteConfirmBack");
+  const submitBtn = popup.querySelector("#deleteConfirmSubmit");
+
+  const closePopup = () => {
+    if (overlay.parentNode) {
+      document.body.removeChild(overlay);
+    }
+  };
+
+  backBtn.onclick = closePopup;
+  submitBtn.onclick = () => {
+    if (input.value.trim() !== "DELETE") {
+      alert('Please type "DELETE" in capital letters to confirm.');
+      input.focus();
+      return;
+    }
+
+    closePopup();
+    onDelete();
+  };
+
+  overlay.onclick = event => {
+    if (event.target === overlay) {
+      closePopup();
+    }
+  };
+
+  input.focus();
+}
+
+async function deleteCurrentDispatchEntry() {
+  const state = window.currentDispatchState;
+  if (!state) return;
+
+  const dispatchNo = document.getElementById("dispatchNo").value.trim();
+  if (!dispatchNo || !state.dispatchRecords?.[dispatchNo]) {
+    alert("No dispatch record found to delete.");
+    return;
+  }
+
+  createDeleteConfirmPopup({
+    onDelete: async () => {
+      try {
+        delete state.dispatchRecords[dispatchNo];
+        const remainingNumbers = Object.keys(state.dispatchRecords || {}).sort((a, b) => Number(a) - Number(b));
+
+        if (!remainingNumbers.length) {
+          const resetDispatchNo = String(DISPATCH_START_NUMBER);
+          const freshRecord = {
+            dispatchNo: resetDispatchNo,
+            form: {
+              dispatchNo: resetDispatchNo,
+              dispatchDate: new Date().toISOString().slice(0, 10),
+              method: "",
+              branch: selectedBranch,
+              driverName: "",
+              mobileNo: "",
+              vehicleNo: "",
+              route: "",
+              remark: ""
+            },
+            godown: [...allBranchLRs],
+            vehicle: [],
+            dispatchDetailsByLr: {}
+          };
+
+          state.dispatchRecords = { [resetDispatchNo]: freshRecord };
+          state.currentDispatchNo = resetDispatchNo;
+          state.lastDispatchNo = resetDispatchNo;
+          state.godown = [...allBranchLRs];
+          state.vehicle = [];
+          rebuildAggregateDispatchDetails(state);
+          await writeDispatchState(state);
+          applyDispatchRecord(freshRecord, true);
+          lockDispatchPage();
+          alert("Dispatch entry deleted.");
+          return;
+        }
+
+        const lastDispatchNo = remainingNumbers[remainingNumbers.length - 1];
+        const recordToShow = state.dispatchRecords[lastDispatchNo];
+        state.currentDispatchNo = lastDispatchNo;
+        state.lastDispatchNo = lastDispatchNo;
+        state.godown = [...(recordToShow.godown || [])];
+        state.vehicle = [...(recordToShow.vehicle || [])];
+        rebuildAggregateDispatchDetails(state);
+        await writeDispatchState(state);
+        applyDispatchRecord(recordToShow, true);
+        lockDispatchPage();
+        alert("Dispatch entry deleted.");
+      } catch (error) {
+        console.error(error);
+        alert("Failed to delete dispatch entry.");
+      }
+    }
+  });
 }
 
 async function initDispatchPage() {

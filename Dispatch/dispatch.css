@@ -248,3 +248,35 @@ body {
     background: #ececec;
     cursor: pointer;
 }
+
+.delete-confirm-popup {
+    width: min(420px, 92vw);
+    background: #fff;
+    border: 2px solid #000;
+    padding: 18px;
+}
+
+.delete-confirm-popup p {
+    margin: 0 0 12px;
+}
+
+.delete-confirm-popup input {
+    width: 100%;
+    border: 1px solid #000;
+    padding: 8px;
+}
+
+.delete-confirm-actions {
+    margin-top: 14px;
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+}
+
+.delete-confirm-actions button {
+    min-width: 90px;
+    height: 34px;
+    border: 1px solid #000;
+    background: #ececec;
+    cursor: pointer;
+}
