@@ -1,6 +1,12 @@
 ## Unreleased
 | Date | Commit | Change | File |
 |------|--------|--------|------|
+| 2026-03-24 | [188a38d](https://github.com/WorkofAditya/Mira/commit/188a38d16e88579a542954d4b736c444474bccee) | Added Delete function for Dispatch and booking page | [Booking/booking.css](https://github.com/WorkofAditya/Mira/blob/main/Booking/booking.css) |
+| 2026-03-24 | [188a38d](https://github.com/WorkofAditya/Mira/commit/188a38d16e88579a542954d4b736c444474bccee) | Added Delete function for Dispatch and booking page | [Dispatch/Dispatch.html](https://github.com/WorkofAditya/Mira/blob/main/Dispatch/Dispatch.html) |
+| 2026-03-24 | [188a38d](https://github.com/WorkofAditya/Mira/commit/188a38d16e88579a542954d4b736c444474bccee) | Added Delete function for Dispatch and booking page | [Dispatch/Dispatch.js](https://github.com/WorkofAditya/Mira/blob/main/Dispatch/Dispatch.js) |
+| 2026-03-24 | [188a38d](https://github.com/WorkofAditya/Mira/commit/188a38d16e88579a542954d4b736c444474bccee) | Added Delete function for Dispatch and booking page | [Dispatch/dispatch.css](https://github.com/WorkofAditya/Mira/blob/main/Dispatch/dispatch.css) |
+| 2026-03-24 | [188a38d](https://github.com/WorkofAditya/Mira/commit/188a38d16e88579a542954d4b736c444474bccee) | Added Delete function for Dispatch and booking page | [Index/app.js](https://github.com/WorkofAditya/Mira/blob/main/Index/app.js) |
+| 2026-03-24 | [188a38d](https://github.com/WorkofAditya/Mira/commit/188a38d16e88579a542954d4b736c444474bccee) | Added Delete function for Dispatch and booking page | [Preview/preview.js](https://github.com/WorkofAditya/Mira/blob/main/Preview/preview.js) |
 | 2026-03-24 | [0f4b9b9](https://github.com/WorkofAditya/Mira/commit/0f4b9b9ed1301e70084a34453a8167066744dc90) | Removed PDF and Exit button from dispatch | [Dispatch/Dispatch.html](https://github.com/WorkofAditya/Mira/blob/main/Dispatch/Dispatch.html) |
 | 2026-03-24 | [8c7f33d](https://github.com/WorkofAditya/Mira/commit/8c7f33d65f5141adf2d9544861bc4dccf69be934) | Remove  top-right info block for godown preview | [Preview/godown-preview.html](https://github.com/WorkofAditya/Mira/blob/main/Preview/godown-preview.html) |
 | 2026-03-24 | [636ae14](https://github.com/WorkofAditya/Mira/commit/636ae146c5916f55da9bfa1a1a07e9b267307d77) | Use latest dispatch state for persisted "vehicle LRs" | [Dispatch/Dispatch.js](https://github.com/WorkofAditya/Mira/blob/main/Dispatch/Dispatch.js) |
