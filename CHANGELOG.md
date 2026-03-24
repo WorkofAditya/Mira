@@ -1,6 +1,7 @@
 ## Unreleased
 | Date | Commit | Change | File |
 |------|--------|--------|------|
+| 2026-03-24 | [8c7f33d](https://github.com/WorkofAditya/Mira/commit/8c7f33d65f5141adf2d9544861bc4dccf69be934) | Remove  top-right info block for godown preview | [Preview/godown-preview.html](https://github.com/WorkofAditya/Mira/blob/main/Preview/godown-preview.html) |
 | 2026-03-24 | [636ae14](https://github.com/WorkofAditya/Mira/commit/636ae146c5916f55da9bfa1a1a07e9b267307d77) | Use latest dispatch state for persisted "vehicle LRs" | [Dispatch/Dispatch.js](https://github.com/WorkofAditya/Mira/blob/main/Dispatch/Dispatch.js) |
 | 2026-03-23 | [06fcd00](https://github.com/WorkofAditya/Mira/commit/06fcd004c8605ebf17e19423f1174f55c68f4b83) | Merge pull request #23 from WorkofAditya/codex/add-godown-stock-preview-page |  |
 | 2026-03-23 | [9c1c4f9](https://github.com/WorkofAditya/Mira/commit/9c1c4f9634c9149aaef3d5849c8ca1776a28a028) | Add godown stock preview page and homepage menu link | [Index/index.css](https://github.com/WorkofAditya/Mira/blob/main/Index/index.css) |
