@@ -107,10 +107,19 @@ function hideNotice() {
   notice.innerHTML = "";
 }
 
+function formatDispatchDate(value) {
+  if (!value) return "";
+  const match = String(value).match(/^(\d{4})-(\d{2})-(\d{2})$/);
+  if (!match) return value;
+
+  const [, year, month, day] = match;
+  return `${day}/${month}/${year.slice(-2)}`;
+}
+
 function fillHeader(dispatchRecord) {
   const form = dispatchRecord?.form || {};
   setText("dispNo", form.dispatchNo || "");
-  setText("dispDate", form.dispatchDate || "");
+  setText("dispDate", formatDispatchDate(form.dispatchDate || ""));
   setText("dispMethod", form.method || "TRUCK");
   setText("dispRoute", form.route || "");
   setText("driver", form.driverName || "");
