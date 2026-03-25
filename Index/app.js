@@ -117,6 +117,19 @@ function initBookingPage() {
   setupDispatchAutoSync();
 }
 
+function setDefaultBookingSelections() {
+  const branchToSelect = document.getElementById("branchTo");
+  const payModeSelect = document.getElementById("payMode");
+  const deliveryToInput = document.getElementById("deliveryTo");
+
+  if (branchToSelect) {
+    branchToSelect.value = "DELHI";
+    if (deliveryToInput) deliveryToInput.value = "DELHI";
+  }
+
+  if (payModeSelect) payModeSelect.value = "TO PAY";
+}
+
 function toNumber(value) {
   const parsed = Number.parseFloat(value);
   return Number.isFinite(parsed) ? parsed : 0;
@@ -212,6 +225,7 @@ function newBooking() {
   // Re-sync pickup after clear
   document.getElementById("pickupFrom").value =
     document.getElementById("branchFrom").value;
+  setDefaultBookingSelections();
 
   const lr = document.getElementById("lrNo");
   lr.readOnly = false;
@@ -387,6 +401,7 @@ async function loadLatestBooking(branch) {
           if (el.id !== "branchFrom") el.value = "";
         });
       document.getElementById("pickupFrom").value = branch;
+      setDefaultBookingSelections();
       lockForm();
       recalculateBookingFees();
       applyDispatchDetailsToForm(null);
@@ -502,14 +517,40 @@ function deleteCurrentBooking(branch) {
 
 // ================= ENTER NAV =================
 function setupEnterNavigation() {
-  const inputs = [...document.querySelectorAll(".booking-body input")];
-  inputs.forEach((input, i) => {
-    input.onkeydown = e => {
-      if (e.key === "Enter") {
-        e.preventDefault();
-        inputs[i + 1]?.focus();
+  const enterOrder = [
+    "lrNo",
+    "payMode",
+    "sender",
+    "receiver",
+    "content",
+    "packages",
+    "weight",
+    "reminder",
+    "mobile",
+    "pkgDetail",
+    "freightExtra",
+    "doorDelivery",
+    "extraCharges1",
+    "extraCharges2",
+    "total"
+  ]
+    .map(id => document.getElementById(id))
+    .filter(Boolean);
+
+  enterOrder.forEach((field, index) => {
+    field.addEventListener("keydown", event => {
+      if (event.key !== "Enter") return;
+      event.preventDefault();
+
+      const nextField = enterOrder[index + 1];
+      if (nextField) {
+        nextField.focus();
+        if (typeof nextField.select === "function") nextField.select();
+        return;
       }
-    };
+
+      document.getElementById("btnSave")?.click();
+    });
   });
 }
 
