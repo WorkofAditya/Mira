@@ -90,6 +90,57 @@ function initHomePage() {
     setSelectedBranch(branchSelect.value);
     alert(`Branch set to ${branchSelect.value}`);
   };
+
+  const employDataEntryBtn = document.getElementById("employDataEntryBtn");
+  if (employDataEntryBtn) {
+    employDataEntryBtn.onclick = event => {
+      event.stopPropagation();
+      openEmployeePopup();
+      document.querySelectorAll(".drop-menu").forEach(menu => {
+        menu.style.display = "none";
+      });
+    };
+  }
+}
+
+function openEmployeePopup() {
+  const existingPopup = document.getElementById("employeePopupOverlay");
+  if (existingPopup) {
+    existingPopup.remove();
+  }
+
+  const overlay = document.createElement("div");
+  overlay.className = "employee-popup-overlay";
+  overlay.id = "employeePopupOverlay";
+
+  const shell = document.createElement("div");
+  shell.className = "employee-popup-shell";
+
+  const header = document.createElement("div");
+  header.className = "employee-popup-header";
+  header.innerHTML = `
+    <span>Employee Data Entry</span>
+    <button type="button" class="employee-popup-close" id="employeePopupClose">Close</button>
+  `;
+
+  const frame = document.createElement("iframe");
+  frame.className = "employee-popup-frame";
+  frame.src = "employee/employee.html";
+  frame.title = "Employee Data Entry";
+
+  shell.appendChild(header);
+  shell.appendChild(frame);
+  overlay.appendChild(shell);
+  document.body.appendChild(overlay);
+
+  const closePopup = () => {
+    overlay.remove();
+  };
+
+  header.querySelector("#employeePopupClose").onclick = closePopup;
+  overlay.onclick = event => {
+    if (event.target === overlay) closePopup();
+  };
 }
 
 // ================= BOOKING INIT =================

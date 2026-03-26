@@ -1,119 +1,81 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Add Employee Data</title>
-
-
-    <script>
-        // Employee photo auto preview + hide input
-        function showEmployeePhoto(event) {
-            var img = document.getElementById("empPhoto");
-            var input = document.getElementById("empInput");
-
-
-            img.src = URL.createObjectURL(event.target.files[0]);
-            img.style.display = "block";
-            input.style.display = "none";
-        }
-
-
-        // Aadhaar photo show on button click + hide input
-        function showAadhaarPhoto() {
-            var input = document.getElementById("aadhaarInput");
-            var img = document.getElementById("aadhaarPhoto");
-
-
-            if (input.files.length > 0) {
-                img.src = URL.createObjectURL(input.files[0]);
-                img.style.display = "block";
-                input.style.display = "none";
-            } else {
-                alert("Please select Aadhaar card photo first");
-            }
-        }
-    </script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Employee Data Entry</title>
+  <link rel="stylesheet" href="employee.css">
 </head>
-
-
 <body>
-    <table border="2">
-    <td>
+  <div class="employee-app">
+    <header class="employee-topbar">
+      <div class="logo">RC</div>
+      <div class="title">Employee Data Entry</div>
+      <div class="branch" id="employeeBranchLabel"></div>
+    </header>
 
+    <main class="employee-body">
+      <section class="form-grid">
+        <div class="row">
+          <label for="name">Name</label>
+          <input type="text" id="name" autocomplete="off">
+        </div>
+        <div class="row">
+          <label for="mobileNumber">Mobile Number</label>
+          <input type="text" id="mobileNumber" autocomplete="off">
+        </div>
+        <div class="row">
+          <label for="designation">Designation</label>
+          <input type="text" id="designation" autocomplete="off">
+        </div>
+        <div class="row">
+          <label for="joiningDate">Joining Date</label>
+          <input type="date" id="joiningDate">
+        </div>
+        <div class="row">
+          <label for="monthlySalary">Monthly Salary</label>
+          <input type="number" id="monthlySalary" min="0">
+        </div>
+        <div class="row">
+          <label for="perDaySalary">Per Day Salary</label>
+          <input type="number" id="perDaySalary" min="0">
+        </div>
+        <div class="row full">
+          <label for="address">Address</label>
+          <textarea id="address" rows="3"></textarea>
+        </div>
+      </section>
 
-<table width="100%" cellpadding="20">
-    <!-- Header -->
-    <tr>
-        <td width="20%"><b>RC logo</b></td>
-        <td width="60%" align="center"><h2>Add employee data</h2></td>
-        <td width="20%"></td>
-    </tr>
+      <aside class="photo-panel">
+        <div class="photo-card">
+          <h4>Employee Photo</h4>
+          <div class="photo-box">
+            <img id="employeePhotoPreview" alt="Employee preview">
+            <span id="employeePhotoPlaceholder">No image selected</span>
+          </div>
+          <input type="file" id="employeePhotoInput" accept="image/*">
+        </div>
 
+        <div class="photo-card">
+          <h4>Aadhaar Card Photo</h4>
+          <div class="photo-box">
+            <img id="aadhaarPhotoPreview" alt="Aadhaar preview">
+            <span id="aadhaarPhotoPlaceholder">No image selected</span>
+          </div>
+          <input type="file" id="aadhaarPhotoInput" accept="image/*">
+        </div>
+      </aside>
+    </main>
 
-    <!-- Main content -->
-    <tr>
-        <!-- Left form -->
-        <td colspan="2" width="70%" valign="top">
-            <table width="100%" cellpadding="10">
-                <tr>
-                    <td width="40%">Name</td>
-                    <td width="60%"><input type="text" size="40"></td>
-                </tr>
-                <tr>
-                    <td>Mobile number</td>
-                    <td><input type="text" size="40"></td>
-                </tr>
-                <tr>
-                    <td>Monthly salary</td>
-                    <td><input type="text" size="40"></td>
-                </tr>
-                <tr>
-                    <td>Per day salary</td>
-                    <td><input type="text" size="40"></td>
-                </tr>
+    <footer class="actions">
+      <button type="button" id="btnEmpNew">New</button>
+      <button type="button" id="btnEmpEdit">Edit</button>
+      <button type="button" id="btnEmpSave">Save</button>
+      <button type="button" id="btnEmpDelete">Delete</button>
+      <button type="button" id="btnEmpFind">Find</button>
+    </footer>
+  </div>
 
-
-                <!-- Aadhaar card -->
-                <tr>
-                    <td>Aadhaar card photo</td>
-                    <td>
-                        <input type="file" id="aadhaarInput" accept="image/*"><br><br>
-                        <input type="button" value="Show Aadhaar Photo" onclick="showAadhaarPhoto()"><br><br>
-                        <img id="aadhaarPhoto" width="200" height="120" style="display:none;">
-                    </td>
-                </tr>
-            </table>
-        </td>
-
-
-        <!-- Right employee photo -->
-        <td width="30%" align="center" valign="top">
-            <table width="100%" 
-            border="2"
-            height="250">
-                <tr>
-                    <td align="center">
-                        <img id="empPhoto" width="200" height="200" style="display:none;"><br><br>
-                        <input type="file" id="empInput" accept="image/*" onchange="showEmployeePhoto(event)">
-                    </td>
-                </tr>
-            </table>
-        </td>
-    </tr>
-
-
-    <!-- Buttons -->
-    <tr>
-        <td colspan="3" align="center">
-            <input type="button" value="NEW">
-            <input type="button" value="Edit">
-            <input type="button" value="Delete">
-            <input type="button" value="Find">
-        </td>
-    </tr>
-</table>
-</td>
-    </table>
-
-
+  <script src="employee.js"></script>
 </body>
 </html>
