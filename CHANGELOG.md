@@ -1,6 +1,12 @@
 ## Unreleased
 | Date | Commit | Change | File |
 |------|--------|--------|------|
+| 2026-03-26 | [69bec3a](https://github.com/WorkofAditya/Mira/commit/69bec3a10e44befb144de7a83f38f53d4a53de73) | Added Employee page's functionality | [Index/app.js](https://github.com/WorkofAditya/Mira/blob/main/Index/app.js) |
+| 2026-03-26 | [69bec3a](https://github.com/WorkofAditya/Mira/commit/69bec3a10e44befb144de7a83f38f53d4a53de73) | Added Employee page's functionality | [Index/index.css](https://github.com/WorkofAditya/Mira/blob/main/Index/index.css) |
+| 2026-03-26 | [69bec3a](https://github.com/WorkofAditya/Mira/commit/69bec3a10e44befb144de7a83f38f53d4a53de73) | Added Employee page's functionality | [employee/employee.css](https://github.com/WorkofAditya/Mira/blob/main/employee/employee.css) |
+| 2026-03-26 | [69bec3a](https://github.com/WorkofAditya/Mira/commit/69bec3a10e44befb144de7a83f38f53d4a53de73) | Added Employee page's functionality | [employee/employee.html](https://github.com/WorkofAditya/Mira/blob/main/employee/employee.html) |
+| 2026-03-26 | [69bec3a](https://github.com/WorkofAditya/Mira/commit/69bec3a10e44befb144de7a83f38f53d4a53de73) | Added Employee page's functionality | [employee/employee.js](https://github.com/WorkofAditya/Mira/blob/main/employee/employee.js) |
+| 2026-03-26 | [69bec3a](https://github.com/WorkofAditya/Mira/commit/69bec3a10e44befb144de7a83f38f53d4a53de73) | Added Employee page's functionality | [index.html](https://github.com/WorkofAditya/Mira/blob/main/index.html) |
 | 2026-03-26 | [e01bfef](https://github.com/WorkofAditya/Mira/commit/e01bfef59feab471036fe8515d20aac5724cb98d) | Improve booking and dispatch page behavior | [Index/app.js](https://github.com/WorkofAditya/Mira/blob/main/Index/app.js) |
 | 2026-03-26 | [e01bfef](https://github.com/WorkofAditya/Mira/commit/e01bfef59feab471036fe8515d20aac5724cb98d) | Improve booking and dispatch page behavior | [Preview/preview.js](https://github.com/WorkofAditya/Mira/blob/main/Preview/preview.js) |
 | 2026-03-24 | [188a38d](https://github.com/WorkofAditya/Mira/commit/188a38d16e88579a542954d4b736c444474bccee) | Added Delete function for Dispatch and booking page | [Booking/booking.css](https://github.com/WorkofAditya/Mira/blob/main/Booking/booking.css) |
