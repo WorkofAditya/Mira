@@ -23,24 +23,52 @@ jobs:
           REPO="${{ github.repository }}"
           BRANCH="main"
 
-          echo "## Unreleased" > CHANGELOG.md
-          echo "| Date | Commit | Change | File |" >> CHANGELOG.md
-          echo "|------|--------|--------|------|" >> CHANGELOG.md
+          echo "" > CHANGELOG.md
 
-          git log --pretty=format:'%H|%h|%ad|%s' --date=short \
+          LAST_TAG=$(git describe --tags --abbrev=0 2>/dev/null)
+
+          echo "## Unreleased" >> CHANGELOG.md
+          echo "| Date | Commit | Change | Files |" >> CHANGELOG.md
+          echo "|------|--------|--------|-------|" >> CHANGELOG.md
+
+          if [ -n "$LAST_TAG" ]; then
+            RANGE="$LAST_TAG..HEAD"
+          else
+            RANGE="HEAD"
+          fi
+
+          git log $RANGE --pretty=format:'%H|%h|%ad|%s' --date=short \
           | grep -v "Auto-update CHANGELOG.md" \
           | while IFS="|" read HASH SHORTHASH DATE MESSAGE
           do
-            FILES=$(git show --name-only --pretty="" "$HASH")
+            FILES=$(git show --name-only --pretty="" "$HASH" | paste -sd ", " -)
 
-            if [ -z "$FILES" ]; then
-              echo "| $DATE | [$SHORTHASH](https://github.com/$REPO/commit/$HASH) | $MESSAGE |  |" >> CHANGELOG.md
+            echo "| $DATE | [$SHORTHASH](https://github.com/$REPO/commit/$HASH) | $MESSAGE | $FILES |" >> CHANGELOG.md
+          done
+
+          for TAG in $(git tag --sort=-creatordate)
+          do
+            echo "" >> CHANGELOG.md
+            echo "## $TAG" >> CHANGELOG.md
+            echo "| Date | Commit | Change | Files |" >> CHANGELOG.md
+            echo "|------|--------|--------|-------|" >> CHANGELOG.md
+
+            PREV_TAG=$(git tag --sort=-creatordate | grep -A1 "^$TAG$" | tail -n1)
+
+            if [ "$TAG" == "$LAST_TAG" ]; then
+              RANGE="$TAG"
             else
-              for FILE in $FILES
-              do
-                echo "| $DATE | [$SHORTHASH](https://github.com/$REPO/commit/$HASH) | $MESSAGE | [$FILE](https://github.com/$REPO/blob/$BRANCH/$FILE) |" >> CHANGELOG.md
-              done
+              RANGE="$PREV_TAG..$TAG"
             fi
+
+            git log $RANGE --pretty=format:'%H|%h|%ad|%s' --date=short \
+            | grep -v "Auto-update CHANGELOG.md" \
+            | while IFS="|" read HASH SHORTHASH DATE MESSAGE
+            do
+              FILES=$(git show --name-only --pretty="" "$HASH" | paste -sd ", " -)
+
+              echo "| $DATE | [$SHORTHASH](https://github.com/$REPO/commit/$HASH) | $MESSAGE | $FILES |" >> CHANGELOG.md
+            done
           done
 
       - name: Commit changelog
