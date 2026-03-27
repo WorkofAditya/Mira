@@ -2,6 +2,7 @@
 ## Unreleased
 | Date | Commit | Change | Files |
 |------|--------|--------|-------|
+| 2026-03-27 | [4edd35a](https://github.com/WorkofAditya/Mira/commit/4edd35a09460ea85b5af19f0f7411f40a085a6fc) | Update service-worker.js | service-worker.js |
 | 2026-03-27 | [2bf4b77](https://github.com/WorkofAditya/Mira/commit/2bf4b779ae482fee4d6c44dde18af8d56592072d) | Merge pull request #30 from WorkofAditya/codex/add-data-button-with-import/export-functionality-4ya5db |  |
 | 2026-03-27 | [0812af1](https://github.com/WorkofAditya/Mira/commit/0812af14bb7a22da5e6881ce5980ca13dc2afd89) | Update index.html | index.html |
 | 2026-03-27 | [9377837](https://github.com/WorkofAditya/Mira/commit/93778376aedeb2da6dd0eea479705baec03b3068) | Add delete controls to Data popup for full and module data | Index/app.js,Index/index.css index.html |
