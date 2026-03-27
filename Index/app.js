@@ -7,6 +7,35 @@ const DB_NAME = "TransportDB";
 const STORE_NAME = "bookings";
 const DISPATCH_DB_NAME = "DispatchDB";
 const DISPATCH_STORE = "dispatchBranchState";
+const EMPLOYEE_DB_NAME = "EmployeeDB";
+const EMPLOYEE_STORE = "employees";
+const BACKUP_DB_CONFIG = {
+  booking: {
+    dbName: DB_NAME,
+    defaultVersion: 3,
+    stores: [STORE_NAME, "counters"],
+    storeOptions: {
+      [STORE_NAME]: { keyPath: "branch" },
+      counters: { keyPath: "name" }
+    }
+  },
+  dispatch: {
+    dbName: DISPATCH_DB_NAME,
+    defaultVersion: 2,
+    stores: [DISPATCH_STORE],
+    storeOptions: {
+      [DISPATCH_STORE]: { keyPath: "branch" }
+    }
+  },
+  employee: {
+    dbName: EMPLOYEE_DB_NAME,
+    defaultVersion: 1,
+    stores: [EMPLOYEE_STORE],
+    storeOptions: {
+      [EMPLOYEE_STORE]: { keyPath: "branch" }
+    }
+  }
+};
 let db;
 
 const request = indexedDB.open(DB_NAME, 3);
@@ -101,6 +130,363 @@ function initHomePage() {
       });
     };
   }
+
+  const dataToolsBtn = document.getElementById("dataToolsBtn");
+  if (dataToolsBtn) {
+    dataToolsBtn.onclick = () => openDataToolsPopup();
+  }
+}
+
+async function readStoreRecords(idb, storeName) {
+  return new Promise((resolve, reject) => {
+    const tx = idb.transaction(storeName, "readonly");
+    const store = tx.objectStore(storeName);
+    const request = store.getAll();
+
+    request.onsuccess = () => resolve(request.result || []);
+    request.onerror = () => reject(new Error(`Failed to read ${storeName}`));
+  });
+}
+
+function openDbWithVersion(dbName, version, stores = [], storeOptions = {}) {
+  return new Promise((resolve, reject) => {
+    const request = indexedDB.open(dbName, version);
+
+    request.onupgradeneeded = event => {
+      const idb = event.target.result;
+      stores.forEach(storeName => {
+        if (!idb.objectStoreNames.contains(storeName)) {
+          idb.createObjectStore(storeName, storeOptions[storeName] || { keyPath: "branch" });
+        }
+      });
+    };
+
+    request.onsuccess = event => resolve(event.target.result);
+    request.onerror = () => reject(request.error || new Error(`Failed opening ${dbName}`));
+  });
+}
+
+function normalizeDbVersion(value, fallback = 1) {
+  const parsed = Number.parseInt(String(value), 10);
+  return Number.isFinite(parsed) && parsed > 0 ? parsed : fallback;
+}
+
+async function exportDataGroup(groupKey) {
+  const config = BACKUP_DB_CONFIG[groupKey];
+  if (!config) throw new Error("Invalid export group");
+
+  const idb = await openDbWithVersion(config.dbName, config.defaultVersion, config.stores, config.storeOptions);
+  try {
+    const stores = {};
+    for (const storeName of config.stores) {
+      if (!idb.objectStoreNames.contains(storeName)) continue;
+      stores[storeName] = await readStoreRecords(idb, storeName);
+    }
+
+    const payload = {
+      backupType: groupKey,
+      createdAt: new Date().toISOString(),
+      databases: {
+        [config.dbName]: {
+          version: idb.version,
+          stores
+        }
+      }
+    };
+
+    downloadBackupFile(payload, `mira-${groupKey}-backup`);
+  } finally {
+    idb.close();
+  }
+}
+
+function triggerFilePicker(onFile) {
+  const input = document.createElement("input");
+  input.type = "file";
+  input.accept = "application/json";
+  input.onchange = () => {
+    const [file] = input.files || [];
+    if (file) onFile(file);
+  };
+  input.click();
+}
+
+function parseJsonFile(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => {
+      try {
+        resolve(JSON.parse(String(reader.result || "")));
+      } catch {
+        reject(new Error("Invalid JSON backup file."));
+      }
+    };
+    reader.onerror = () => reject(new Error("Could not read backup file."));
+    reader.readAsText(file);
+  });
+}
+
+async function exportAllDatabases() {
+  const payload = {
+    backupType: "all",
+    createdAt: new Date().toISOString(),
+    databases: {}
+  };
+
+  for (const config of Object.values(BACKUP_DB_CONFIG)) {
+    const idb = await openDbWithVersion(config.dbName, config.defaultVersion, config.stores, config.storeOptions);
+    try {
+      const stores = {};
+      for (const storeName of config.stores) {
+        if (!idb.objectStoreNames.contains(storeName)) continue;
+        stores[storeName] = await readStoreRecords(idb, storeName);
+      }
+      payload.databases[config.dbName] = {
+        version: idb.version,
+        stores
+      };
+    } finally {
+      idb.close();
+    }
+  }
+
+  downloadBackupFile(payload, "mira-full-backup");
+}
+
+async function clearDataGroup(groupKey) {
+  const config = BACKUP_DB_CONFIG[groupKey];
+  if (!config) throw new Error("Invalid delete group");
+
+  const idb = await openDbWithVersion(config.dbName, config.defaultVersion, config.stores, config.storeOptions);
+  try {
+    for (const storeName of config.stores) {
+      if (!idb.objectStoreNames.contains(storeName)) continue;
+      await overwriteStore(idb, storeName, []);
+    }
+  } finally {
+    idb.close();
+  }
+}
+
+async function clearAllDatabases() {
+  for (const groupKey of Object.keys(BACKUP_DB_CONFIG)) {
+    await clearDataGroup(groupKey);
+  }
+}
+
+function downloadBackupFile(payload, filePrefix) {
+  const stamp = new Date().toISOString().replace(/[:.]/g, "-");
+  const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = `${filePrefix}-${stamp}.json`;
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+  URL.revokeObjectURL(url);
+}
+
+function overwriteStore(idb, storeName, records) {
+  return new Promise((resolve, reject) => {
+    const tx = idb.transaction(storeName, "readwrite");
+    const store = tx.objectStore(storeName);
+    const clearReq = store.clear();
+    clearReq.onerror = () => reject(new Error(`Failed clearing ${storeName}`));
+    clearReq.onsuccess = () => {
+      records.forEach(record => {
+        store.put(record);
+      });
+    };
+
+    tx.oncomplete = () => resolve();
+    tx.onerror = () => reject(tx.error || new Error(`Failed writing ${storeName}`));
+  });
+}
+
+async function restoreBackupPayload(payload) {
+  const databases = payload?.databases;
+  if (!databases || typeof databases !== "object") {
+    throw new Error("Backup file format is not supported.");
+  }
+
+  for (const [dbName, dbBackup] of Object.entries(databases)) {
+    const stores = dbBackup?.stores || {};
+    const matchingConfig = Object.values(BACKUP_DB_CONFIG).find(cfg => cfg.dbName === dbName);
+    const defaultVersion = matchingConfig?.defaultVersion || 1;
+    const backupVersion = normalizeDbVersion(dbBackup?.version, defaultVersion);
+    const openVersion = Math.max(defaultVersion, backupVersion);
+    const storeNames = Object.keys(stores);
+    const upgradeStores = matchingConfig ? matchingConfig.stores : storeNames;
+    const upgradeStoreOptions = matchingConfig?.storeOptions || {};
+
+    const idb = await openDbWithVersion(dbName, openVersion, upgradeStores, upgradeStoreOptions);
+    try {
+      for (const storeName of storeNames) {
+        if (!idb.objectStoreNames.contains(storeName)) continue;
+        const records = Array.isArray(stores[storeName]) ? stores[storeName] : [];
+        await overwriteStore(idb, storeName, records);
+      }
+    } finally {
+      idb.close();
+    }
+  }
+}
+
+function openDataToolsPopup() {
+  const existingPopup = document.getElementById("dataPopupOverlay");
+  if (existingPopup) existingPopup.remove();
+
+  const overlay = document.createElement("div");
+  overlay.className = "data-popup-overlay";
+  overlay.id = "dataPopupOverlay";
+
+  const shell = document.createElement("div");
+  shell.className = "data-popup-shell";
+  shell.innerHTML = `
+    <div class="data-popup-header">
+      <h3>Data Backup & Restore</h3>
+      <button type="button" class="data-popup-close" id="dataPopupClose">Close</button>
+    </div>
+    <div class="data-popup-body">
+      <div class="data-actions-grid">
+        <section class="data-card">
+          <h4>Export data</h4>
+          <p>Download complete backup or export each module separately.</p>
+          <button type="button" class="data-btn primary" id="exportAllBtn">Export All</button>
+          <button type="button" class="data-btn" id="exportBookingBtn">Booking</button>
+          <button type="button" class="data-btn" id="exportDispatchBtn">Dispatch</button>
+          <button type="button" class="data-btn" id="exportEmployeeBtn">Employee</button>
+          <div class="data-hint">Includes LR numbers, dispatch numbers, and all saved entries branch-wise.</div>
+        </section>
+        <section class="data-card">
+          <h4>Import data</h4>
+          <p>Restore from a downloaded JSON backup file.</p>
+          <button type="button" class="data-btn primary" id="importDataBtn">Import Backup</button>
+          <div class="data-hint">Import replaces existing data for included modules and restores it as backed up.</div>
+        </section>
+        <section class="data-card danger">
+          <h4>Delete data</h4>
+          <p>Delete all data at once or clear only one module's saved records.</p>
+          <button type="button" class="data-btn danger" id="deleteAllBtn">Delete All</button>
+          <button type="button" class="data-btn danger-outline" id="deleteBookingBtn">Booking</button>
+          <button type="button" class="data-btn danger-outline" id="deleteDispatchBtn">Dispatch</button>
+          <button type="button" class="data-btn danger-outline" id="deleteEmployeeBtn">Employee</button>
+          <div class="data-hint">Deleting is immediate and cannot be undone. Please export a backup first if needed.</div>
+        </section>
+      </div>
+    </div>
+  `;
+
+  overlay.appendChild(shell);
+  document.body.appendChild(overlay);
+
+  const closePopup = () => overlay.remove();
+  shell.querySelector("#dataPopupClose").onclick = closePopup;
+  overlay.onclick = event => {
+    if (event.target === overlay) closePopup();
+  };
+
+  shell.querySelector("#exportAllBtn").onclick = async () => {
+    try {
+      await exportAllDatabases();
+      alert("Full backup downloaded.");
+    } catch (error) {
+      console.error(error);
+      alert("Could not export full backup.");
+    }
+  };
+
+  shell.querySelector("#exportBookingBtn").onclick = async () => {
+    try {
+      await exportDataGroup("booking");
+      alert("Booking backup downloaded.");
+    } catch (error) {
+      console.error(error);
+      alert("Could not export booking backup.");
+    }
+  };
+
+  shell.querySelector("#exportDispatchBtn").onclick = async () => {
+    try {
+      await exportDataGroup("dispatch");
+      alert("Dispatch backup downloaded.");
+    } catch (error) {
+      console.error(error);
+      alert("Could not export dispatch backup.");
+    }
+  };
+
+  shell.querySelector("#exportEmployeeBtn").onclick = async () => {
+    try {
+      await exportDataGroup("employee");
+      alert("Employee backup downloaded.");
+    } catch (error) {
+      console.error(error);
+      alert("Could not export employee backup.");
+    }
+  };
+
+  shell.querySelector("#importDataBtn").onclick = () => {
+    triggerFilePicker(async file => {
+      try {
+        const payload = await parseJsonFile(file);
+        await restoreBackupPayload(payload);
+        alert("Backup imported successfully. Reload pages to see restored data.");
+      } catch (error) {
+        console.error(error);
+        alert(error.message || "Could not import backup.");
+      }
+    });
+  };
+
+  shell.querySelector("#deleteAllBtn").onclick = async () => {
+    const shouldDelete = window.confirm("Delete ALL booking, dispatch, and employee data? This cannot be undone.");
+    if (!shouldDelete) return;
+    try {
+      await clearAllDatabases();
+      alert("All data deleted successfully.");
+    } catch (error) {
+      console.error(error);
+      alert("Could not delete all data.");
+    }
+  };
+
+  shell.querySelector("#deleteBookingBtn").onclick = async () => {
+    const shouldDelete = window.confirm("Delete all booking data and counters? This cannot be undone.");
+    if (!shouldDelete) return;
+    try {
+      await clearDataGroup("booking");
+      alert("Booking data deleted successfully.");
+    } catch (error) {
+      console.error(error);
+      alert("Could not delete booking data.");
+    }
+  };
+
+  shell.querySelector("#deleteDispatchBtn").onclick = async () => {
+    const shouldDelete = window.confirm("Delete all dispatch data? This cannot be undone.");
+    if (!shouldDelete) return;
+    try {
+      await clearDataGroup("dispatch");
+      alert("Dispatch data deleted successfully.");
+    } catch (error) {
+      console.error(error);
+      alert("Could not delete dispatch data.");
+    }
+  };
+
+  shell.querySelector("#deleteEmployeeBtn").onclick = async () => {
+    const shouldDelete = window.confirm("Delete all employee data? This cannot be undone.");
+    if (!shouldDelete) return;
+    try {
+      await clearDataGroup("employee");
+      alert("Employee data deleted successfully.");
+    } catch (error) {
+      console.error(error);
+      alert("Could not delete employee data.");
+    }
+  };
 }
 
 function openEmployeePopup() {
