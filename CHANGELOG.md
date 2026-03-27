@@ -2,6 +2,9 @@
 ## Unreleased
 | Date | Commit | Change | Files |
 |------|--------|--------|-------|
+| 2026-03-27 | [2bf4b77](https://github.com/WorkofAditya/Mira/commit/2bf4b779ae482fee4d6c44dde18af8d56592072d) | Merge pull request #30 from WorkofAditya/codex/add-data-button-with-import/export-functionality-4ya5db |  |
+| 2026-03-27 | [0812af1](https://github.com/WorkofAditya/Mira/commit/0812af14bb7a22da5e6881ce5980ca13dc2afd89) | Update index.html | index.html |
+| 2026-03-27 | [9377837](https://github.com/WorkofAditya/Mira/commit/93778376aedeb2da6dd0eea479705baec03b3068) | Add delete controls to Data popup for full and module data | Index/app.js,Index/index.css index.html |
 | 2026-03-26 | [86cf1ef](https://github.com/WorkofAditya/Mira/commit/86cf1ef2bebeccc03480ba0c3c36e3d1b57fa022) | Update changelog.yml | .github/workflows/changelog.yml |
 | 2026-03-26 | [69bec3a](https://github.com/WorkofAditya/Mira/commit/69bec3a10e44befb144de7a83f38f53d4a53de73) | Added Employee page's functionality | Index/app.js,Index/index.css employee/employee.css,employee/employee.html employee/employee.js,index.html |
 | 2026-03-26 | [e01bfef](https://github.com/WorkofAditya/Mira/commit/e01bfef59feab471036fe8515d20aac5724cb98d) | Improve booking and dispatch page behavior | Index/app.js,Preview/preview.js |
