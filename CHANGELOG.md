@@ -2,6 +2,10 @@
 ## Unreleased
 | Date | Commit | Change | Files |
 |------|--------|--------|-------|
+| 2026-03-29 | [89d5ea5](https://github.com/WorkofAditya/Mira/commit/89d5ea5d36545ea90e4e7f60d6ce768c4cadceb7) | Merge pull request #32 from WorkofAditya/beta |  |
+| 2026-03-28 | [f0c4284](https://github.com/WorkofAditya/Mira/commit/f0c4284c3f3a108186fafb03ab7812d52b6b649f) | Remove PDF and Exit buttons from Dispatch.html | Dispatch/Dispatch.html |
+| 2026-03-28 | [6a734d9](https://github.com/WorkofAditya/Mira/commit/6a734d986217548864e4c25e2d90613e76f0b66a) | Merge pull request #31 from WorkofAditya/codex/add-button-to-update-godown-stock-list |  |
+| 2026-03-28 | [c063f69](https://github.com/WorkofAditya/Mira/commit/c063f697d88f62aac8a15600d87626f3e8757127) | Add separate save action for godown stock updates | Dispatch/Dispatch.html,Dispatch/Dispatch.js |
 | 2026-03-27 | [4edd35a](https://github.com/WorkofAditya/Mira/commit/4edd35a09460ea85b5af19f0f7411f40a085a6fc) | Update service-worker.js | service-worker.js |
 | 2026-03-27 | [2bf4b77](https://github.com/WorkofAditya/Mira/commit/2bf4b779ae482fee4d6c44dde18af8d56592072d) | Merge pull request #30 from WorkofAditya/codex/add-data-button-with-import/export-functionality-4ya5db |  |
 | 2026-03-27 | [0812af1](https://github.com/WorkofAditya/Mira/commit/0812af14bb7a22da5e6881ce5980ca13dc2afd89) | Update index.html | index.html |
