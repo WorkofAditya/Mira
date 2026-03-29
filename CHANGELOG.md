@@ -2,6 +2,7 @@
 ## Unreleased
 | Date | Commit | Change | Files |
 |------|--------|--------|-------|
+| 2026-03-29 | [f26f82a](https://github.com/WorkofAditya/Mira/commit/f26f82a8452771f378c48e71391d603c2d2fc3dd) | Update vehicle and godown list filtering | Dispatch/Dispatch.js |
 | 2026-03-29 | [89d5ea5](https://github.com/WorkofAditya/Mira/commit/89d5ea5d36545ea90e4e7f60d6ce768c4cadceb7) | Merge pull request #32 from WorkofAditya/beta |  |
 | 2026-03-28 | [f0c4284](https://github.com/WorkofAditya/Mira/commit/f0c4284c3f3a108186fafb03ab7812d52b6b649f) | Remove PDF and Exit buttons from Dispatch.html | Dispatch/Dispatch.html |
 | 2026-03-28 | [6a734d9](https://github.com/WorkofAditya/Mira/commit/6a734d986217548864e4c25e2d90613e76f0b66a) | Merge pull request #31 from WorkofAditya/codex/add-button-to-update-godown-stock-list |  |
