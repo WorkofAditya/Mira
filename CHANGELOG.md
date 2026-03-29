@@ -2,6 +2,7 @@
 ## Unreleased
 | Date | Commit | Change | Files |
 |------|--------|--------|-------|
+| 2026-03-29 | [f437ea1](https://github.com/WorkofAditya/Mira/commit/f437ea1224f2f3a6029ad9995933549eb71d089f) | Change window.open to window.location.href for navigation | Dispatch/Dispatch.js |
 | 2026-03-29 | [e7ec0b0](https://github.com/WorkofAditya/Mira/commit/e7ec0b01cf3d7752d7915595c58dda750950c3ee) | Update cache name to rc-transport-cache-v6 | service-worker.js |
 | 2026-03-29 | [17e7a26](https://github.com/WorkofAditya/Mira/commit/17e7a26719078c36ecae48b084f6c928e7683ba5) | Change preview to redirect instead of opening a new window | Dispatch/Dispatch.js |
 | 2026-03-29 | [693266f](https://github.com/WorkofAditya/Mira/commit/693266fc4d1acc67fc24c497d6c894f2c6490047) | General improvements | Booking/booking.css,Booking/booking.html Preview/godown-preview.html,Preview/preview.css Preview/preview.html,employee/employee.css |
