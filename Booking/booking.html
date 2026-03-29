@@ -203,18 +203,20 @@
 
     <!-- ===== Find Popup Template ===== -->
     <template id="findPopupTemplate">
-        <div id="previewOverlay" class="overlay">
-            <div class="popup find-popup">
+        <div id="previewOverlay" class="overlay dispatch-find-overlay">
+            <div class="popup dispatch-find-popup">
                 <h3>Find Booking</h3>
-                <label>LR No</label>
-                <input type="text" id="findLR">
-                <label>Available LR Numbers</label>
-                <select id="lrList">
-                    <option value="">-- Select LR --</option>
-                </select>
-                <div class="popup-actions">
-                    <button id="findCancel">Cancel</button>
+                <div class="find-row">
+                    <label for="findLR">LR No</label>
+                    <input type="text" id="findLR" placeholder="Enter LR number">
+                </div>
+                <div class="find-row">
+                    <label for="lrList">Available LR Numbers</label>
+                    <select id="lrList" size="8"></select>
+                </div>
+                <div class="find-actions">
                     <button id="findLoad">Load</button>
+                    <button id="findCancel">Cancel</button>
                 </div>
             </div>
         </div>

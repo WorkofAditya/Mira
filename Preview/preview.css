@@ -3,6 +3,7 @@ font-family: Arial;
 background:#fff;
 margin:0;
 padding:20px;
+position:relative;
 }
 
 .page{
@@ -108,4 +109,14 @@ font-size:13px;
 
 .preview-notice a{
 color:#1d4ed8;
+}
+
+.back-arrow{
+position:absolute;
+right:15px;
+top:15px;
+font-size:22px;
+text-decoration:none;
+color:black;
+font-weight:bold;
 }
