@@ -2,6 +2,7 @@
 ## Unreleased
 | Date | Commit | Change | Files |
 |------|--------|--------|-------|
+| 2026-03-29 | [17e7a26](https://github.com/WorkofAditya/Mira/commit/17e7a26719078c36ecae48b084f6c928e7683ba5) | Change preview to redirect instead of opening a new window | Dispatch/Dispatch.js |
 | 2026-03-29 | [693266f](https://github.com/WorkofAditya/Mira/commit/693266fc4d1acc67fc24c497d6c894f2c6490047) | General improvements | Booking/booking.css,Booking/booking.html Preview/godown-preview.html,Preview/preview.css Preview/preview.html,employee/employee.css |
 | 2026-03-29 | [f26f82a](https://github.com/WorkofAditya/Mira/commit/f26f82a8452771f378c48e71391d603c2d2fc3dd) | Update vehicle and godown list filtering | Dispatch/Dispatch.js |
 | 2026-03-29 | [89d5ea5](https://github.com/WorkofAditya/Mira/commit/89d5ea5d36545ea90e4e7f60d6ce768c4cadceb7) | Merge pull request #32 from WorkofAditya/beta |  |
