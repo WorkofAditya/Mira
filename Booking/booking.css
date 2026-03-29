@@ -147,6 +147,9 @@ select {
 .actions button {
     width: 110px;
     height: 35px;
+    border: 1px solid #000;
+    background: #eaeaea;
+    font-weight: 600;
     cursor: pointer;
 }
 
@@ -297,6 +300,50 @@ select {
 
 .popup.find-popup {
     width: 320px;
+}
+
+.dispatch-find-popup {
+    width: min(460px, 92vw);
+    background: #fff;
+    border: 2px solid #000;
+    padding: 16px;
+    border-radius: 0;
+    box-shadow: none;
+}
+
+.dispatch-find-popup h3 {
+    margin: 0 0 14px;
+}
+
+.find-row {
+    display: grid;
+    grid-template-columns: 150px 1fr;
+    gap: 10px;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.find-row input,
+.find-row select {
+    width: 100%;
+    border: 1px solid #000;
+    padding: 6px;
+    margin-bottom: 0;
+}
+
+.find-actions {
+    margin-top: 12px;
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+}
+
+.find-actions button {
+    min-width: 90px;
+    height: 34px;
+    border: 1px solid #000;
+    background: #ececec;
+    cursor: pointer;
 }
 
 .col.left {
