@@ -536,7 +536,7 @@ function openDispatchPreview() {
 
   const branch = document.getElementById("branchInput").value.trim() || selectedBranch;
   const query = new URLSearchParams({ dispatchNo, branch }).toString();
-  window.open(`../Preview/preview.html?${query}`, "_blank");
+  window.location.href = `../Preview/preview.html?${query}`;
 }
 
 function openDispatchPrintPreview() {
