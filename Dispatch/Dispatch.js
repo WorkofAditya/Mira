@@ -152,9 +152,8 @@ function applyDispatchRecord(record, lockAfter = true) {
 
   const allSet = new Set(allBranchLRs);
   const vehicle = (record.vehicle || []).filter(lr => allSet.has(lr));
-  const vehicleSet = new Set(vehicle);
-  const godown = allBranchLRs.filter(lr => !vehicleSet.has(lr));
-
+  const godown = (record.godown || []).filter(lr => allSet.has(lr));
+  
   setDispatchFormValues(record.form);
   fillList("godownList", godown);
   fillList("vehicleList", vehicle);
@@ -354,12 +353,12 @@ async function createNewDispatch() {
   });
 
   fillList("godownList", remainingGodownLrs);
-  fillList("vehicleList", persistedVehicleLrs);
-
+  fillList("vehicleList", []);
+  
   state.currentDispatchNo = nextDispatchNo;
   state.godown = [...remainingGodownLrs];
-  state.vehicle = [...persistedVehicleLrs];
-
+  state.vehicle = [];
+  
   unlockDispatchPage();
 }
 
