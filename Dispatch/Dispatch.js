@@ -549,7 +549,7 @@ function openDispatchPrintPreview() {
 
   const branch = document.getElementById("branchInput").value.trim() || selectedBranch;
   const query = new URLSearchParams({ dispatchNo, branch, autoPrint: "1" }).toString();
-  const previewWindow = window.open(`../Preview/preview.html?${query}`, "_blank");
+  window.location.href = `../Preview/preview.html?${query}`;
 
   if (!previewWindow) {
     alert("Popup blocked. Please allow popups to print preview.");
