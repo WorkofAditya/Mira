@@ -549,6 +549,7 @@ function initBookingPage() {
   lockForm();
   loadLatestBooking(branch);
   setupButtons(branch);
+  setupNameFilterButtons(branch);
   setupEnterNavigation();
   setupBookingFeeCalculations();
   setupDispatchAutoSync();
@@ -869,6 +870,250 @@ function setupButtons(branch) {
   document.getElementById("btnDelete").onclick = () => deleteCurrentBooking(branch);
   document.getElementById("btnFind").onclick = openFindPopup;
   document.getElementById("btnPreview").onclick = previewReceipt;
+}
+
+function setupNameFilterButtons(branch) {
+  const senderBtn = document.getElementById("senderFilterBtn");
+  const receiverBtn = document.getElementById("receiverFilterBtn");
+
+  if (senderBtn) {
+    senderBtn.onclick = () => openNameFilterPopup({ branch, target: "sender" });
+  }
+
+  if (receiverBtn) {
+    receiverBtn.onclick = () => openNameFilterPopup({ branch, target: "receiver" });
+  }
+}
+
+function loadBookingsForBranch(branch) {
+  return new Promise(resolve => {
+    const tx = db.transaction(STORE_NAME, "readonly");
+    const store = tx.objectStore(STORE_NAME);
+    const req = store.get(branch);
+
+    req.onsuccess = () => {
+      resolve(req.result?.bookings || {});
+    };
+
+    req.onerror = () => resolve({});
+  });
+}
+
+function filterBookingsByCriteria(bookings, { dateFrom, dateTo, payMode }) {
+  return Object.values(bookings).filter(booking => {
+    const bookingDate = booking.bookingDate || "";
+    const bookingPayMode = booking.payMode || "";
+
+    if (dateFrom && bookingDate < dateFrom) return false;
+    if (dateTo && bookingDate > dateTo) return false;
+    if (payMode && bookingPayMode !== payMode) return false;
+    return true;
+  });
+}
+
+async function openNameFilterPopup({ branch, target }) {
+  const nameKey = target === "receiver" ? "receiver" : "sender";
+  const label = nameKey === "receiver" ? "Receiver" : "Sender";
+  const bookings = await loadBookingsForBranch(branch);
+
+  const overlay = document.createElement("div");
+  overlay.className = "overlay";
+
+  const popup = document.createElement("div");
+  popup.className = "popup name-filter-popup";
+  popup.innerHTML = `
+    <h3>${label} Filter</h3>
+    <div class="name-filter-fields">
+      <label for="filterDateFrom">Date from</label>
+      <input type="date" id="filterDateFrom">
+
+      <label for="filterDateTo">Date to</label>
+      <input type="date" id="filterDateTo">
+
+      <label for="filterPayMode">B-Pay Mode</label>
+      <select id="filterPayMode">
+        <option value="">-- Select --</option>
+        <option value="TO PAY">To Pay</option>
+        <option value="PAID">Paid</option>
+        <option value="ACCOUNT">Account</option>
+      </select>
+
+      <label for="nameFilterResults">${label} box</label>
+      <select id="nameFilterResults" class="name-filter-results" size="8"></select>
+    </div>
+    <div class="name-filter-actions">
+      <button type="button" id="nameFilterClose">Close</button>
+      <button type="button" id="nameFilterApply">Apply</button>
+      <button type="button" id="nameFilterOpen">Open</button>
+    </div>
+  `;
+
+  overlay.appendChild(popup);
+  document.body.appendChild(overlay);
+
+  const dateFromEl = popup.querySelector("#filterDateFrom");
+  const dateToEl = popup.querySelector("#filterDateTo");
+  const payModeEl = popup.querySelector("#filterPayMode");
+  const resultsEl = popup.querySelector("#nameFilterResults");
+  const closeBtn = popup.querySelector("#nameFilterClose");
+  const applyBtn = popup.querySelector("#nameFilterApply");
+  const openBtn = popup.querySelector("#nameFilterOpen");
+  const targetInput = document.getElementById(nameKey);
+
+  if (payModeEl) {
+    payModeEl.value = document.getElementById("payMode")?.value || "";
+  }
+
+  const closePopup = () => {
+    if (overlay.parentNode) document.body.removeChild(overlay);
+  };
+
+  const renderResults = names => {
+    resultsEl.innerHTML = "";
+
+    if (!names.length) {
+      const option = document.createElement("option");
+      option.value = "";
+      option.textContent = "No matching records";
+      option.disabled = true;
+      resultsEl.appendChild(option);
+      return;
+    }
+
+    names.forEach(name => {
+      const option = document.createElement("option");
+      option.value = name;
+      option.textContent = name;
+      resultsEl.appendChild(option);
+    });
+  };
+
+  const applyFilter = () => {
+    if (dateFromEl.value && dateToEl.value && dateFromEl.value > dateToEl.value) {
+      alert("Date from cannot be after Date to.");
+      return;
+    }
+
+    const filteredBookings = filterBookingsByCriteria(bookings, {
+      dateFrom: dateFromEl.value,
+      dateTo: dateToEl.value,
+      payMode: payModeEl.value
+    });
+
+    const names = [...new Set(
+      filteredBookings
+        .map(booking => (booking[nameKey] || "").trim())
+        .filter(Boolean)
+    )].sort((a, b) => a.localeCompare(b));
+
+    renderResults(names);
+
+    if (targetInput && names.length) {
+      targetInput.value = names[0];
+    }
+
+    return filteredBookings;
+  };
+
+  closeBtn.onclick = closePopup;
+  applyBtn.onclick = applyFilter;
+  openBtn.onclick = () => {
+    const filteredBookings = applyFilter();
+    if (!filteredBookings) return;
+
+    const selectedName = resultsEl.value || targetInput?.value?.trim() || "";
+    if (!selectedName) {
+      alert(`Select a ${label.toLowerCase()} name first.`);
+      return;
+    }
+
+    const rows = filteredBookings
+      .filter(booking => (booking[nameKey] || "").trim() === selectedName)
+      .sort((a, b) => (a.bookingDate || "").localeCompare(b.bookingDate || ""));
+
+    if (!rows.length) {
+      alert("No booking rows found for selected name.");
+      return;
+    }
+
+    openNameLedgerPopup({
+      target: nameKey,
+      selectedName,
+      rows
+    });
+  };
+  resultsEl.onchange = () => {
+    if (targetInput && resultsEl.value) {
+      targetInput.value = resultsEl.value;
+    }
+  };
+
+  overlay.onclick = event => {
+    if (event.target === overlay) closePopup();
+  };
+}
+
+function openNameLedgerPopup({ target, selectedName, rows }) {
+  const counterPartyLabel = target === "sender" ? "Receiver" : "Sender";
+  const counterPartyKey = target === "sender" ? "receiver" : "sender";
+
+  const overlay = document.createElement("div");
+  overlay.className = "overlay";
+
+  const popup = document.createElement("div");
+  popup.className = "popup name-ledger-popup";
+  popup.innerHTML = `
+    <div class="name-ledger-header">
+      <div class="name-ledger-logo">RC</div>
+      <div class="name-ledger-title">
+        <h3>Riya Cargo</h3>
+        <h4>${target === "sender" ? "SENDER" : "RECEIVER"} BOOKING LIST</h4>
+      </div>
+    </div>
+    <p class="name-ledger-info"><strong>${target === "sender" ? "Sender" : "Receiver"}:</strong> ${selectedName}</p>
+    <table class="dispatch-table">
+      <thead>
+        <tr>
+          <th>LR</th>
+          <th>Date</th>
+          <th>${counterPartyLabel}</th>
+          <th>Content</th>
+          <th>Total</th>
+          <th>B-Pay Mode</th>
+        </tr>
+      </thead>
+      <tbody id="nameLedgerBody"></tbody>
+    </table>
+    <div class="name-filter-actions">
+      <button type="button" id="nameLedgerClose">Close</button>
+    </div>
+  `;
+
+  overlay.appendChild(popup);
+  document.body.appendChild(overlay);
+
+  const tbody = popup.querySelector("#nameLedgerBody");
+  rows.forEach(booking => {
+    const tr = document.createElement("tr");
+    tr.innerHTML = `
+      <td>${booking.lrNo || ""}</td>
+      <td>${booking.bookingDate || ""}</td>
+      <td>${booking[counterPartyKey] || ""}</td>
+      <td>${booking.content || ""}</td>
+      <td>${booking.total || ""}</td>
+      <td>${booking.payMode || ""}</td>
+    `;
+    tbody.appendChild(tr);
+  });
+
+  const closePopup = () => {
+    if (overlay.parentNode) document.body.removeChild(overlay);
+  };
+
+  popup.querySelector("#nameLedgerClose").onclick = closePopup;
+  overlay.onclick = event => {
+    if (event.target === overlay) closePopup();
+  };
 }
 
 function createDeleteConfirmPopup({ onDelete }) {
