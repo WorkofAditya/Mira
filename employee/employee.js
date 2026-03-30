@@ -1,5 +1,8 @@
-const EMPLOYEE_DB_NAME = "EmployeeDB";
-const EMPLOYEE_STORE = "employees";
+const urlParams = new URLSearchParams(window.location.search);
+const isDriverMode = urlParams.get("mode") === "driver";
+const ENTRY_DB_NAME = isDriverMode ? "DriverDB" : "EmployeeDB";
+const ENTRY_STORE = isDriverMode ? "drivers" : "employees";
+const ENTRY_LABEL = isDriverMode ? "Driver" : "Employee";
 let employeeDb;
 let isNewEmployee = false;
 let currentBranch = "";
@@ -10,12 +13,12 @@ function getSelectedBranch() {
 
 function openEmployeeDb() {
   return new Promise((resolve, reject) => {
-    const request = indexedDB.open(EMPLOYEE_DB_NAME, 1);
+    const request = indexedDB.open(ENTRY_DB_NAME, 1);
 
     request.onupgradeneeded = event => {
       const db = event.target.result;
-      if (!db.objectStoreNames.contains(EMPLOYEE_STORE)) {
-        db.createObjectStore(EMPLOYEE_STORE, { keyPath: "branch" });
+      if (!db.objectStoreNames.contains(ENTRY_STORE)) {
+        db.createObjectStore(ENTRY_STORE, { keyPath: "branch" });
       }
     };
 
@@ -109,8 +112,8 @@ function loadEmployeeToForm(employee) {
 
 function readBranchRecord() {
   return new Promise((resolve, reject) => {
-    const tx = employeeDb.transaction(EMPLOYEE_STORE, "readonly");
-    const store = tx.objectStore(EMPLOYEE_STORE);
+    const tx = employeeDb.transaction(ENTRY_STORE, "readonly");
+    const store = tx.objectStore(ENTRY_STORE);
     const request = store.get(currentBranch);
 
     request.onsuccess = () => resolve(request.result || { branch: currentBranch, employees: {} });
@@ -120,8 +123,8 @@ function readBranchRecord() {
 
 function writeBranchRecord(record) {
   return new Promise((resolve, reject) => {
-    const tx = employeeDb.transaction(EMPLOYEE_STORE, "readwrite");
-    const store = tx.objectStore(EMPLOYEE_STORE);
+    const tx = employeeDb.transaction(ENTRY_STORE, "readwrite");
+    const store = tx.objectStore(ENTRY_STORE);
     const request = store.put(record);
 
     request.onsuccess = () => resolve();
@@ -156,7 +159,7 @@ function createNewEmployee() {
 function editCurrentEmployee() {
   const currentName = document.getElementById("name").value.trim();
   if (!currentName) {
-    alert("No employee loaded.");
+    alert(`No ${ENTRY_LABEL.toLowerCase()} loaded.`);
     return;
   }
 
@@ -198,7 +201,7 @@ async function saveEmployee() {
   document.getElementById("name").defaultValue = payload.name;
   isNewEmployee = false;
   lockEmployeeForm();
-  alert("Employee saved successfully.");
+  alert(`${ENTRY_LABEL} saved successfully.`);
 }
 
 function createDeleteConfirmPopup({ onDelete }) {
@@ -250,7 +253,7 @@ function createDeleteConfirmPopup({ onDelete }) {
 async function deleteCurrentEmployee() {
   const currentName = document.getElementById("name").value.trim();
   if (!currentName) {
-    alert("No employee record loaded to delete.");
+    alert(`No ${ENTRY_LABEL.toLowerCase()} record loaded to delete.`);
     return;
   }
 
@@ -258,7 +261,7 @@ async function deleteCurrentEmployee() {
     onDelete: async () => {
       const record = await readBranchRecord();
       if (!record.employees?.[currentName]) {
-        alert("Employee name not found.");
+        alert(`${ENTRY_LABEL} name not found.`);
         return;
       }
 
@@ -268,7 +271,7 @@ async function deleteCurrentEmployee() {
       }
 
       await writeBranchRecord(record);
-      alert("Employee entry deleted.");
+      alert(`${ENTRY_LABEL} entry deleted.`);
       await loadLatestEmployee();
     }
   });
@@ -279,7 +282,7 @@ async function openFindEmployeePopup() {
   const names = Object.keys(record.employees || {}).sort((a, b) => a.localeCompare(b));
 
   if (!names.length) {
-    alert("No employee records found.");
+    alert(`No ${ENTRY_LABEL.toLowerCase()} records found.`);
     return;
   }
 
@@ -289,10 +292,10 @@ async function openFindEmployeePopup() {
   const popup = document.createElement("div");
   popup.className = "popup dispatch-find-popup";
   popup.innerHTML = `
-    <h3>Find Employee</h3>
+    <h3>Find ${ENTRY_LABEL}</h3>
     <div class="find-row">
       <label for="findEmployeeName">Name</label>
-      <input type="text" id="findEmployeeName" placeholder="Enter employee name" />
+      <input type="text" id="findEmployeeName" placeholder="Enter ${ENTRY_LABEL.toLowerCase()} name" />
     </div>
     <div class="find-row">
       <label for="employeeNameList">Available Names</label>
@@ -330,7 +333,7 @@ async function openFindEmployeePopup() {
     const employee = record.employees[employeeName];
 
     if (!employee) {
-      alert("Employee name not found.");
+      alert(`${ENTRY_LABEL} name not found.`);
       return;
     }
 
@@ -393,6 +396,10 @@ function bindActions() {
 
 async function initEmployeePage() {
   currentBranch = getSelectedBranch() || "UNASSIGNED";
+  const pageTitle = `${ENTRY_LABEL} Data Entry`;
+  document.title = pageTitle;
+  const entryModeTitle = document.getElementById("entryModeTitle");
+  if (entryModeTitle) entryModeTitle.textContent = pageTitle;
   document.getElementById("employeeBranchLabel").textContent = `Branch: ${currentBranch}`;
 
   bindPhotoInput("employeePhotoInput", "employeePhotoPreview", "employeePhotoPlaceholder");

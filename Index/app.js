@@ -124,7 +124,18 @@ function initHomePage() {
   if (employDataEntryBtn) {
     employDataEntryBtn.onclick = event => {
       event.stopPropagation();
-      openEmployeePopup();
+      openEntryPopup({ mode: "employee" });
+      document.querySelectorAll(".drop-menu").forEach(menu => {
+        menu.style.display = "none";
+      });
+    };
+  }
+
+  const driverDataEntryBtn = document.getElementById("driverDataEntryBtn");
+  if (driverDataEntryBtn) {
+    driverDataEntryBtn.onclick = event => {
+      event.stopPropagation();
+      openEntryPopup({ mode: "driver" });
       document.querySelectorAll(".drop-menu").forEach(menu => {
         menu.style.display = "none";
       });
@@ -489,7 +500,10 @@ function openDataToolsPopup() {
   };
 }
 
-function openEmployeePopup() {
+function openEntryPopup({ mode = "employee" } = {}) {
+  const isDriverMode = mode === "driver";
+  const popupTitle = isDriverMode ? "Driver Data Entry" : "Employee Data Entry";
+  const frameSrc = isDriverMode ? "employee/employee.html?mode=driver" : "employee/employee.html";
   const existingPopup = document.getElementById("employeePopupOverlay");
   if (existingPopup) {
     existingPopup.remove();
@@ -505,14 +519,14 @@ function openEmployeePopup() {
   const header = document.createElement("div");
   header.className = "employee-popup-header";
   header.innerHTML = `
-    <span>Employee Data Entry</span>
+    <span>${popupTitle}</span>
     <button type="button" class="employee-popup-close" id="employeePopupClose">Close</button>
   `;
 
   const frame = document.createElement("iframe");
   frame.className = "employee-popup-frame";
-  frame.src = "employee/employee.html";
-  frame.title = "Employee Data Entry";
+  frame.src = frameSrc;
+  frame.title = popupTitle;
 
   shell.appendChild(header);
   shell.appendChild(frame);
@@ -653,6 +667,9 @@ function unlockForm() {
 function newBooking() {
   isNewBooking = true;
   unlockForm();
+  const previousBranchTo = document.getElementById("branchTo")?.value || "";
+  const previousPayMode = document.getElementById("payMode")?.value || "";
+  const previousBookingDate = document.getElementById("bookingDate")?.value || "";
 
   document
     .querySelectorAll(".booking-body input, .booking-body select")
@@ -664,6 +681,20 @@ function newBooking() {
   document.getElementById("pickupFrom").value =
     document.getElementById("branchFrom").value;
   setDefaultBookingSelections();
+
+  if (previousBranchTo && document.getElementById("branchTo")) {
+    document.getElementById("branchTo").value = previousBranchTo;
+    const deliveryToInput = document.getElementById("deliveryTo");
+    if (deliveryToInput) deliveryToInput.value = previousBranchTo;
+  }
+
+  if (previousPayMode && document.getElementById("payMode")) {
+    document.getElementById("payMode").value = previousPayMode;
+  }
+
+  if (previousBookingDate && document.getElementById("bookingDate")) {
+    document.getElementById("bookingDate").value = previousBookingDate;
+  }
 
   const lr = document.getElementById("lrNo");
   lr.readOnly = false;
