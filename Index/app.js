@@ -987,7 +987,7 @@ async function openNameFilterPopup({ branch, target }) {
     });
   };
 
-  const applyFilter = () => {
+  const applyFilter = (preferredSelection = "") => {
     if (dateFromEl.value && dateToEl.value && dateFromEl.value > dateToEl.value) {
       alert("Date from cannot be after Date to.");
       return;
@@ -1007,15 +1007,21 @@ async function openNameFilterPopup({ branch, target }) {
 
     renderResults(names);
 
-    if (names.length) resultsEl.selectedIndex = 0;
+    if (names.length) {
+      const preferredIndex = preferredSelection
+        ? names.findIndex(name => name === preferredSelection)
+        : -1;
+      resultsEl.selectedIndex = preferredIndex >= 0 ? preferredIndex : 0;
+    }
 
     return filteredBookings;
   };
 
   closeBtn.onclick = closePopup;
-  applyBtn.onclick = applyFilter;
+  applyBtn.onclick = () => applyFilter(resultsEl.value || "");
   openBtn.onclick = () => {
-    const filteredBookings = applyFilter();
+    const selectedBeforeApply = resultsEl.value || "";
+    const filteredBookings = applyFilter(selectedBeforeApply);
     if (!filteredBookings) return;
 
     const selectedName = resultsEl.value || "";
