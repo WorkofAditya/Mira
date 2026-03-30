@@ -478,3 +478,63 @@ select {
     background: #ececec;
     cursor: pointer;
 }
+
+.name-ledger-popup {
+    width: min(920px, 95vw);
+    max-height: 92vh;
+    border: 2px solid #000;
+    border-radius: 0;
+    box-shadow: none;
+    overflow: auto;
+}
+
+.name-ledger-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 8px;
+}
+
+.name-ledger-logo {
+    font-size: 42px;
+    font-weight: 700;
+}
+
+.name-ledger-title {
+    text-align: center;
+    flex: 1;
+    margin-right: 42px;
+}
+
+.name-ledger-title h3 {
+    margin: 0;
+    color: #8b0000;
+}
+
+.name-ledger-title h4 {
+    margin: 2px 0 0;
+    color: #003399;
+}
+
+.name-ledger-info {
+    margin: 0 0 10px;
+    font-size: 13px;
+}
+
+.name-ledger-popup .dispatch-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+}
+
+.name-ledger-popup .dispatch-table th,
+.name-ledger-popup .dispatch-table td {
+    border: 1px solid #000;
+    padding: 6px;
+    font-size: 13px;
+    text-align: center;
+}
+
+.name-ledger-popup .dispatch-table th {
+    background: #eee;
+}

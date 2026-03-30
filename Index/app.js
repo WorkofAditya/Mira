@@ -944,6 +944,7 @@ async function openNameFilterPopup({ branch, target }) {
     <div class="name-filter-actions">
       <button type="button" id="nameFilterClose">Close</button>
       <button type="button" id="nameFilterApply">Apply</button>
+      <button type="button" id="nameFilterOpen">Open</button>
     </div>
   `;
 
@@ -956,7 +957,7 @@ async function openNameFilterPopup({ branch, target }) {
   const resultsEl = popup.querySelector("#nameFilterResults");
   const closeBtn = popup.querySelector("#nameFilterClose");
   const applyBtn = popup.querySelector("#nameFilterApply");
-  const targetInput = document.getElementById(nameKey);
+  const openBtn = popup.querySelector("#nameFilterOpen");
 
   if (payModeEl) {
     payModeEl.value = document.getElementById("payMode")?.value || "";
@@ -986,7 +987,7 @@ async function openNameFilterPopup({ branch, target }) {
     });
   };
 
-  const applyFilter = () => {
+  const applyFilter = (preferredSelection = "") => {
     if (dateFromEl.value && dateToEl.value && dateFromEl.value > dateToEl.value) {
       alert("Date from cannot be after Date to.");
       return;
@@ -1006,19 +1007,107 @@ async function openNameFilterPopup({ branch, target }) {
 
     renderResults(names);
 
-    if (targetInput && names.length) {
-      targetInput.value = names[0];
+    if (names.length) {
+      const preferredIndex = preferredSelection
+        ? names.findIndex(name => name === preferredSelection)
+        : -1;
+      resultsEl.selectedIndex = preferredIndex >= 0 ? preferredIndex : 0;
     }
+
+    return filteredBookings;
   };
 
   closeBtn.onclick = closePopup;
-  applyBtn.onclick = applyFilter;
-  resultsEl.onchange = () => {
-    if (targetInput && resultsEl.value) {
-      targetInput.value = resultsEl.value;
+  applyBtn.onclick = () => applyFilter(resultsEl.value || "");
+  openBtn.onclick = () => {
+    const selectedBeforeApply = resultsEl.value || "";
+    const filteredBookings = applyFilter(selectedBeforeApply);
+    if (!filteredBookings) return;
+
+    const selectedName = resultsEl.value || "";
+    if (!selectedName) {
+      alert(`Select a ${label.toLowerCase()} name first.`);
+      return;
     }
+
+    const rows = filteredBookings
+      .filter(booking => (booking[nameKey] || "").trim() === selectedName)
+      .sort((a, b) => (a.bookingDate || "").localeCompare(b.bookingDate || ""));
+
+    if (!rows.length) {
+      alert("No booking rows found for selected name.");
+      return;
+    }
+
+    openNameLedgerPopup({
+      target: nameKey,
+      selectedName,
+      rows
+    });
+  };
+  overlay.onclick = event => {
+    if (event.target === overlay) closePopup();
+  };
+}
+
+function openNameLedgerPopup({ target, selectedName, rows }) {
+  const counterPartyLabel = target === "sender" ? "Receiver" : "Sender";
+  const counterPartyKey = target === "sender" ? "receiver" : "sender";
+
+  const overlay = document.createElement("div");
+  overlay.className = "overlay";
+
+  const popup = document.createElement("div");
+  popup.className = "popup name-ledger-popup";
+  popup.innerHTML = `
+    <div class="name-ledger-header">
+      <div class="name-ledger-logo">RC</div>
+      <div class="name-ledger-title">
+        <h3>Riya Cargo</h3>
+        <h4>${target === "sender" ? "SENDER" : "RECEIVER"} BOOKING LIST</h4>
+      </div>
+    </div>
+    <p class="name-ledger-info"><strong>${target === "sender" ? "Sender" : "Receiver"}:</strong> ${selectedName}</p>
+    <table class="dispatch-table">
+      <thead>
+        <tr>
+          <th>LR</th>
+          <th>Date</th>
+          <th>${counterPartyLabel}</th>
+          <th>Content</th>
+          <th>Total</th>
+          <th>B-Pay Mode</th>
+        </tr>
+      </thead>
+      <tbody id="nameLedgerBody"></tbody>
+    </table>
+    <div class="name-filter-actions">
+      <button type="button" id="nameLedgerClose">Close</button>
+    </div>
+  `;
+
+  overlay.appendChild(popup);
+  document.body.appendChild(overlay);
+
+  const tbody = popup.querySelector("#nameLedgerBody");
+  rows.forEach(booking => {
+    const tr = document.createElement("tr");
+    tr.innerHTML = `
+      <td>${booking.lrNo || ""}</td>
+      <td>${booking.bookingDate || ""}</td>
+      <td>${booking[counterPartyKey] || ""}</td>
+      <td>${booking.content || ""}</td>
+      <td>${booking.total || ""}</td>
+      <td>${booking.payMode || ""}</td>
+    `;
+    tbody.appendChild(tr);
+  });
+
+  const closePopup = () => {
+    if (overlay.parentNode) document.body.removeChild(overlay);
   };
 
+  popup.querySelector("#nameLedgerClose").onclick = closePopup;
   overlay.onclick = event => {
     if (event.target === overlay) closePopup();
   };
