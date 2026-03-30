@@ -958,7 +958,6 @@ async function openNameFilterPopup({ branch, target }) {
   const closeBtn = popup.querySelector("#nameFilterClose");
   const applyBtn = popup.querySelector("#nameFilterApply");
   const openBtn = popup.querySelector("#nameFilterOpen");
-  const targetInput = document.getElementById(nameKey);
 
   if (payModeEl) {
     payModeEl.value = document.getElementById("payMode")?.value || "";
@@ -1008,9 +1007,7 @@ async function openNameFilterPopup({ branch, target }) {
 
     renderResults(names);
 
-    if (targetInput && names.length) {
-      targetInput.value = names[0];
-    }
+    if (names.length) resultsEl.selectedIndex = 0;
 
     return filteredBookings;
   };
@@ -1021,7 +1018,7 @@ async function openNameFilterPopup({ branch, target }) {
     const filteredBookings = applyFilter();
     if (!filteredBookings) return;
 
-    const selectedName = resultsEl.value || targetInput?.value?.trim() || "";
+    const selectedName = resultsEl.value || "";
     if (!selectedName) {
       alert(`Select a ${label.toLowerCase()} name first.`);
       return;
@@ -1042,12 +1039,6 @@ async function openNameFilterPopup({ branch, target }) {
       rows
     });
   };
-  resultsEl.onchange = () => {
-    if (targetInput && resultsEl.value) {
-      targetInput.value = resultsEl.value;
-    }
-  };
-
   overlay.onclick = event => {
     if (event.target === overlay) closePopup();
   };
