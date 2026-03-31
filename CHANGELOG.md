@@ -2,6 +2,7 @@
 ## Unreleased
 | Date | Commit | Change | Files |
 |------|--------|--------|-------|
+| 2026-03-31 | [7fd3e7c](https://github.com/WorkofAditya/Mira/commit/7fd3e7cb3e0969d7918632f48fa5cdd3b1a9a4cc) | Change 'Apply' button to 'Search' | Index/app.js |
 | 2026-03-31 | [30dfed2](https://github.com/WorkofAditya/Mira/commit/30dfed29b86d9f492805ee63250cd972bf3c07ff) | Added Driver data entry | Index/app.js,employee/employee.html employee/employee.js,index.html |
 | 2026-03-31 | [c9eaa08](https://github.com/WorkofAditya/Mira/commit/c9eaa08ccefbb42a5b37ffe370639a8bdd3bc075) | Added full data list for filterd names | Booking/booking.css,Index/app.js |
 | 2026-03-30 | [c5a1d90](https://github.com/WorkofAditya/Mira/commit/c5a1d904de53eb0771ee436bb118c2662436dea1) | Added filter logic to booking page | Booking/booking.css,Booking/booking.html Index/app.js |
