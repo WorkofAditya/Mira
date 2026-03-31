@@ -974,7 +974,7 @@ async function openNameFilterPopup({ branch, target }) {
     </div>
     <div class="name-filter-actions">
       <button type="button" id="nameFilterClose">Close</button>
-      <button type="button" id="nameFilterApply">Apply</button>
+      <button type="button" id="nameFilterApply">Search</button>
       <button type="button" id="nameFilterOpen">Open</button>
     </div>
   `;
