@@ -1,7 +1,5 @@
 // ================= DATABASE SETUP =================
 let isNewBooking = false;
-const APP_VERSION = 3;
-const REMOTE_VERSION_URL = "https://github.com/WorkofAditya/Mira/raw/refs/heads/main/version.txt";
 
 const DB_NAME = "TransportDB";
 const STORE_NAME = "bookings";
@@ -56,43 +54,11 @@ request.onupgradeneeded = e => {
 request.onsuccess = e => {
   db = e.target.result;
 
-  checkForAppUpdate();
-
   if (document.getElementById("branchSelect")) initHomePage();
   if (document.getElementById("branchFrom")) initBookingPage();
 };
 
 request.onerror = e => console.error("IndexedDB error:", e);
-
-async function checkForAppUpdate() {
-  try {
-    const response = await fetch(REMOTE_VERSION_URL, { cache: "no-store" });
-    if (!response.ok) return;
-
-    const remoteVersion = Number.parseInt((await response.text()).trim(), 10);
-    if (!Number.isFinite(remoteVersion)) return;
-
-    if (APP_VERSION < remoteVersion) {
-  const shouldUpdate = window.confirm("A new update is available. Click OK to refresh the app now.");
-  if (!shouldUpdate) return;
-
-  if ("serviceWorker" in navigator) {
-    const registrations = await navigator.serviceWorker.getRegistrations();
-    await Promise.all(registrations.map(reg => reg.unregister()));
-  }
-
-  if (window.caches?.keys) {
-    const cacheKeys = await window.caches.keys();
-    await Promise.all(cacheKeys.map(key => window.caches.delete(key)));
-  }
-
-  window.location.href = window.location.href.split("?")[0] + "?v=" + remoteVersion;
-}
-    
-  } catch (error) {
-    console.error("Version check failed:", error);
-  }
-}
 
 function getSelectedBranch() {
   return localStorage.getItem("selectedBranch") || sessionStorage.getItem("selectedBranch");
