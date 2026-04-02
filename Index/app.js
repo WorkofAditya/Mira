@@ -110,7 +110,7 @@ function initHomePage() {
   }
 
   const openMenuNameData = target => {
-    const branch = getSelectedBranch() || branchSelect?.value || "";
+    const branch = getSelectedBranch() || "";
     if (!branch) {
       alert("Please select a branch first.");
       return;
