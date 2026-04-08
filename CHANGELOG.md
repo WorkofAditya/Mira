@@ -2,6 +2,8 @@
 ## Unreleased
 | Date | Commit | Change | Files |
 |------|--------|--------|-------|
+| 2026-04-08 | [d3b4622](https://github.com/WorkofAditya/Mira/commit/d3b462277d99c0de5f50c3f2cf6e3a700a0f7775) | Fix godown auto-sync on booking edits | Index/app.js |
+| 2026-04-08 | [2f387fb](https://github.com/WorkofAditya/Mira/commit/2f387fb9b1a1bdcb9a3eefaea31cdff58612b236) | Auto-sync godown stock from booking saves | Dispatch/Dispatch.html,Dispatch/Dispatch.js Index/app.js |
 | 2026-04-08 | [a6fe38f](https://github.com/WorkofAditya/Mira/commit/a6fe38f9787963d9982751bad36ca0c4f30d14e6) | Replace divs with buttons for Consignor and Consignee Data | index.html |
 | 2026-04-08 | [c5b967b](https://github.com/WorkofAditya/Mira/commit/c5b967b6909af058a5dc40730a638a6e956ad2f6) | Add styles for overlay and popup components | Index/index.css |
 | 2026-04-08 | [cb2728d](https://github.com/WorkofAditya/Mira/commit/cb2728d2d2e7ffb8c55bcc48fe6ea7f7e8a70d2d) | Add closeAllMenus function to manage dropdown visibility | Index/app.js |
