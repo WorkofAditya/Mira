@@ -735,6 +735,7 @@ function saveData(branch) {
   }
 
   const doSave = receiptNo => {
+    const wasNewBooking = isNewBooking;
     if (receiptNo !== null) booking.receiptNo = receiptNo;
 
     const tx = db.transaction(STORE_NAME, "readwrite");
@@ -759,7 +760,9 @@ function saveData(branch) {
 
   putReq.onsuccess = async () => {
     try {
-      await syncGodownStockOnBookingSave(branch, booking.lrNo);
+      if (wasNewBooking) {
+        await syncGodownStockOnBookingSave(branch, booking.lrNo);
+      }
       isNewBooking = false;
       lockForm();
       alert("Booking saved successfully");
@@ -826,8 +829,11 @@ function syncGodownStockOnBookingSave(branch, lrNo) {
           return;
         }
 
-        const vehicleSet = new Set(targetRecord.vehicle || []);
-        if (vehicleSet.has(lrNo)) {
+        const isLrAlreadyOnAnyVehicle = dispatchNumbers.some(dispatchNo => {
+          const record = state.dispatchRecords?.[dispatchNo];
+          return Array.isArray(record?.vehicle) && record.vehicle.includes(lrNo);
+        });
+        if (isLrAlreadyOnAnyVehicle) {
           dispatchDb.close();
           resolve();
           return;
