@@ -73,6 +73,11 @@ function setSelectedBranch(branch) {
 function initHomePage() {
   const selectBtn = document.querySelector(".select-btn");
   const branchSelect = document.getElementById("branchSelect");
+  const closeAllMenus = () => {
+    document.querySelectorAll(".drop-menu").forEach(menu => {
+      menu.style.display = "none";
+    });
+  };
 
   const savedBranch = getSelectedBranch();
   if (savedBranch) branchSelect.value = savedBranch;
@@ -91,9 +96,7 @@ function initHomePage() {
     employDataEntryBtn.onclick = event => {
       event.stopPropagation();
       openEntryPopup({ mode: "employee" });
-      document.querySelectorAll(".drop-menu").forEach(menu => {
-        menu.style.display = "none";
-      });
+      closeAllMenus();
     };
   }
 
@@ -102,9 +105,33 @@ function initHomePage() {
     driverDataEntryBtn.onclick = event => {
       event.stopPropagation();
       openEntryPopup({ mode: "driver" });
-      document.querySelectorAll(".drop-menu").forEach(menu => {
-        menu.style.display = "none";
-      });
+      closeAllMenus();
+    };
+  }
+
+  const openMenuNameData = target => {
+    const branch = getSelectedBranch() || "";
+    if (!branch) {
+      alert("Please select a branch first.");
+      return;
+    }
+    openNameFilterPopup({ branch, target });
+    closeAllMenus();
+  };
+
+  const consignorDataBtn = document.getElementById("consignorDataBtn");
+  if (consignorDataBtn) {
+    consignorDataBtn.onclick = event => {
+      event.stopPropagation();
+      openMenuNameData("sender");
+    };
+  }
+
+  const consigneeDataBtn = document.getElementById("consigneeDataBtn");
+  if (consigneeDataBtn) {
+    consigneeDataBtn.onclick = event => {
+      event.stopPropagation();
+      openMenuNameData("receiver");
     };
   }
 
