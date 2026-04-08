@@ -2,6 +2,7 @@
 ## Unreleased
 | Date | Commit | Change | Files |
 |------|--------|--------|-------|
+| 2026-04-08 | [cb2728d](https://github.com/WorkofAditya/Mira/commit/cb2728d2d2e7ffb8c55bcc48fe6ea7f7e8a70d2d) | Add closeAllMenus function to manage dropdown visibility | Index/app.js |
 | 2026-04-08 | [981111d](https://github.com/WorkofAditya/Mira/commit/981111d9727a381c7667c4dd09cc67bca65e2c8c) | Add RAJKOT option to branch selection dropdown | Booking/booking.html |
 | 2026-03-31 | [1b33be2](https://github.com/WorkofAditya/Mira/commit/1b33be2222745c7f0cd78d817479f668fc378d89) | Remove Version update system | Index/app.js,service-worker.js version.txt |
 | 2026-03-31 | [7fd3e7c](https://github.com/WorkofAditya/Mira/commit/7fd3e7cb3e0969d7918632f48fa5cdd3b1a9a4cc) | Change 'Apply' button to 'Search' | Index/app.js |
