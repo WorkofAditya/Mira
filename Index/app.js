@@ -757,10 +757,18 @@ function saveData(branch) {
 
   const putReq = store.put(data);
 
-  putReq.onsuccess = () => {
-    isNewBooking = false;
-    lockForm();
-    alert("Booking saved successfully");
+  putReq.onsuccess = async () => {
+    try {
+      await syncGodownStockOnBookingSave(branch, booking.lrNo);
+      isNewBooking = false;
+      lockForm();
+      alert("Booking saved successfully");
+    } catch (error) {
+      console.error("Failed to sync godown stock:", error);
+      isNewBooking = false;
+      lockForm();
+      alert("Booking saved, but failed to sync godown stock.");
+    }
   };
 
   putReq.onerror = () => alert("Save failed");
@@ -775,6 +783,83 @@ function saveData(branch) {
     // EDIT existing: keep receipt number
     doSave(booking.receiptNo || null);
   }
+}
+
+function syncGodownStockOnBookingSave(branch, lrNo) {
+  return new Promise((resolve, reject) => {
+    if (!branch || !lrNo) {
+      resolve();
+      return;
+    }
+
+    const request = indexedDB.open(DISPATCH_DB_NAME, 2);
+
+    request.onupgradeneeded = event => {
+      const dispatchDb = event.target.result;
+      if (!dispatchDb.objectStoreNames.contains(DISPATCH_STORE)) {
+        dispatchDb.createObjectStore(DISPATCH_STORE, { keyPath: "branch" });
+      }
+    };
+
+    request.onsuccess = event => {
+      const dispatchDb = event.target.result;
+      const tx = dispatchDb.transaction(DISPATCH_STORE, "readwrite");
+      const store = tx.objectStore(DISPATCH_STORE);
+      const getReq = store.get(branch);
+
+      getReq.onsuccess = () => {
+        const savedState = getReq.result;
+        if (!savedState) {
+          dispatchDb.close();
+          resolve();
+          return;
+        }
+
+        const state = savedState;
+        const dispatchNumbers = Object.keys(state.dispatchRecords || {}).sort((a, b) => Number(a) - Number(b));
+        const targetDispatchNo = state.currentDispatchNo || state.lastDispatchNo || dispatchNumbers[dispatchNumbers.length - 1];
+        const targetRecord = targetDispatchNo ? state.dispatchRecords?.[targetDispatchNo] : null;
+
+        if (!targetRecord) {
+          dispatchDb.close();
+          resolve();
+          return;
+        }
+
+        const vehicleSet = new Set(targetRecord.vehicle || []);
+        if (vehicleSet.has(lrNo)) {
+          dispatchDb.close();
+          resolve();
+          return;
+        }
+
+        const godownSet = new Set(targetRecord.godown || []);
+        if (!godownSet.has(lrNo)) {
+          targetRecord.godown = [...(targetRecord.godown || []), lrNo].sort();
+          state.godown = [...targetRecord.godown];
+          state.dispatchRecords[targetDispatchNo] = targetRecord;
+        }
+
+        const putReq = store.put(state);
+
+        putReq.onsuccess = () => {
+          dispatchDb.close();
+          resolve();
+        };
+        putReq.onerror = () => {
+          dispatchDb.close();
+          reject(new Error("Could not update dispatch state for godown sync"));
+        };
+      };
+
+      getReq.onerror = () => {
+        dispatchDb.close();
+        reject(new Error("Could not read dispatch state for godown sync"));
+      };
+    };
+
+    request.onerror = () => reject(new Error("Could not open dispatch DB for godown sync"));
+  });
 }
 
 

@@ -200,8 +200,7 @@ function lockDispatchPage() {
     "btnMoveAllToVehicle",
     "btnMoveOneToGodown",
     "btnMoveAllToGodown",
-    "loadingBtn",
-    "saveGodownBtn"
+    "loadingBtn"
   ].forEach(id => {
     document.getElementById(id).disabled = true;
   });
@@ -223,8 +222,7 @@ function unlockDispatchPage() {
     "btnMoveAllToVehicle",
     "btnMoveOneToGodown",
     "btnMoveAllToGodown",
-    "loadingBtn",
-    "saveGodownBtn"
+    "loadingBtn"
   ].forEach(id => {
     document.getElementById(id).disabled = false;
   });
@@ -320,23 +318,6 @@ async function saveLoadingForVehicleLRs() {
   } catch (error) {
     console.error(error);
     alert("Failed to save loading details.");
-  }
-}
-
-async function saveGodownStockOnly() {
-  if (!isDispatchEditable) {
-    alert("Press Edit or New before making changes.");
-    return;
-  }
-
-  try {
-    const saved = await persistCurrentRecord();
-    if (!saved) return;
-    lockDispatchPage();
-    alert("Godown stock saved successfully.");
-  } catch (error) {
-    console.error(error);
-    alert("Failed to save godown stock.");
   }
 }
 
@@ -517,7 +498,6 @@ function setupButtons() {
     moveAll("vehicleList", "godownList");
 
   document.getElementById("loadingBtn").onclick = saveLoadingForVehicleLRs;
-  document.getElementById("saveGodownBtn").onclick = saveGodownStockOnly;
   document.getElementById("btnNewDispatch").onclick = createNewDispatch;
   document.getElementById("btnEditDispatch").onclick = editCurrentDispatch;
   document.getElementById("btnDeleteDispatch").onclick = deleteCurrentDispatchEntry;
