@@ -2,6 +2,7 @@
 ## Unreleased
 | Date | Commit | Change | Files |
 |------|--------|--------|-------|
+| 2026-04-10 | [d41f57c](https://github.com/WorkofAditya/Mira/commit/d41f57ce51257046db126296abf1b12a8d5f7a65) | Delete auth directory | auth/auth.css,auth/auth.js |
 | 2026-04-10 | [4748bbb](https://github.com/WorkofAditya/Mira/commit/4748bbbdae3fbd63d645065ce040e09f3260ea93) | Add Auth files to application shell cache | service-worker.js |
 | 2026-04-10 | [b64880a](https://github.com/WorkofAditya/Mira/commit/b64880a255d7d00da40e7f0e919c62462ee0715a) | Merge branch 'main' of https://github.com/WorkofAditya/Mira |  |
 | 2026-04-10 | [383965b](https://github.com/WorkofAditya/Mira/commit/383965b72a9617812d0618b7c5b4f4659c9977e1) | Refactor autontication logic | Auth/auth.css,Auth/auth.js Booking/booking.css,Booking/booking.html Dispatch/Dispatch.html,Index/app.js Preview/godown-preview.html,Preview/preview.html employee/employee.html,index.html service-worker.js |
