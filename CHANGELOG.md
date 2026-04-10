@@ -2,6 +2,7 @@
 ## Unreleased
 | Date | Commit | Change | Files |
 |------|--------|--------|-------|
+| 2026-04-10 | [dde1d1b](https://github.com/WorkofAditya/Mira/commit/dde1d1b416d9dbff859d3e7e6a2467b8fb9e6099) | Added authentication to use Mira | Booking/booking.html,Dispatch/Dispatch.html Preview/godown-preview.html,Preview/preview.html auth/auth.css,auth/auth.js employee/employee.html,service-worker.js |
 | 2026-04-08 | [d3b4622](https://github.com/WorkofAditya/Mira/commit/d3b462277d99c0de5f50c3f2cf6e3a700a0f7775) | Fix godown auto-sync on booking edits | Index/app.js |
 | 2026-04-08 | [2f387fb](https://github.com/WorkofAditya/Mira/commit/2f387fb9b1a1bdcb9a3eefaea31cdff58612b236) | Auto-sync godown stock from booking saves | Dispatch/Dispatch.html,Dispatch/Dispatch.js Index/app.js |
 | 2026-04-08 | [a6fe38f](https://github.com/WorkofAditya/Mira/commit/a6fe38f9787963d9982751bad36ca0c4f30d14e6) | Replace divs with buttons for Consignor and Consignee Data | index.html |
