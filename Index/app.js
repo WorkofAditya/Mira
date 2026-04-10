@@ -35,6 +35,136 @@ const BACKUP_DB_CONFIG = {
   }
 };
 let db;
+const AUTH_USERNAME_B64 = "cml5YWNhcmdv";
+const AUTH_PASSWORD_B64 = "MTIzNDU2";
+const AUTH_SESSION_KEY = "miraAuthSession";
+const AUTH_EXPIRY_KEY = "miraAuthExpiry";
+const AUTH_DURATION_MS = 60 * 60 * 1000;
+let authExpiryTimer = null;
+
+function decodeBase64(value) {
+  try {
+    return atob(value);
+  } catch {
+    return "";
+  }
+}
+
+function isSessionValid() {
+  const sessionValue = sessionStorage.getItem(AUTH_SESSION_KEY);
+  const expiryValue = Number(sessionStorage.getItem(AUTH_EXPIRY_KEY));
+  return sessionValue === "active" && Number.isFinite(expiryValue) && Date.now() < expiryValue;
+}
+
+function startSession() {
+  const expiryAt = Date.now() + AUTH_DURATION_MS;
+  sessionStorage.setItem(AUTH_SESSION_KEY, "active");
+  sessionStorage.setItem(AUTH_EXPIRY_KEY, String(expiryAt));
+  scheduleSessionExpiry();
+}
+
+function clearSession() {
+  sessionStorage.removeItem(AUTH_SESSION_KEY);
+  sessionStorage.removeItem(AUTH_EXPIRY_KEY);
+  if (authExpiryTimer) {
+    clearTimeout(authExpiryTimer);
+    authExpiryTimer = null;
+  }
+}
+
+function scheduleSessionExpiry() {
+  if (authExpiryTimer) {
+    clearTimeout(authExpiryTimer);
+    authExpiryTimer = null;
+  }
+  const expiryValue = Number(sessionStorage.getItem(AUTH_EXPIRY_KEY));
+  if (!Number.isFinite(expiryValue)) return;
+  const remaining = expiryValue - Date.now();
+  if (remaining <= 0) {
+    enforceRelogin();
+    return;
+  }
+  authExpiryTimer = setTimeout(enforceRelogin, remaining + 50);
+}
+
+function setAuthLock(isLocked) {
+  document.body.classList.toggle("auth-locked", Boolean(isLocked));
+}
+
+function removeExistingAuthModal() {
+  const existing = document.getElementById("authOverlay");
+  if (existing) existing.remove();
+}
+
+function showAuthModal(onSuccess) {
+  removeExistingAuthModal();
+  setAuthLock(true);
+
+  const overlay = document.createElement("div");
+  overlay.className = "auth-overlay";
+  overlay.id = "authOverlay";
+  overlay.innerHTML = `
+    <div class="auth-card">
+      <h2>Sign in</h2>
+      <p>Enter credentials to continue.</p>
+      <label for="authUsername">Username</label>
+      <input type="text" id="authUsername" autocomplete="username" />
+      <label for="authPassword">Password</label>
+      <input type="password" id="authPassword" autocomplete="current-password" />
+      <button type="button" id="authLoginBtn">Login</button>
+      <div id="authErrorMsg" class="auth-error" aria-live="polite"></div>
+    </div>
+  `;
+  document.body.appendChild(overlay);
+
+  const usernameInput = overlay.querySelector("#authUsername");
+  const passwordInput = overlay.querySelector("#authPassword");
+  const loginBtn = overlay.querySelector("#authLoginBtn");
+  const errorMsg = overlay.querySelector("#authErrorMsg");
+
+  const submitAuth = () => {
+    const expectedUsername = decodeBase64(AUTH_USERNAME_B64);
+    const expectedPassword = decodeBase64(AUTH_PASSWORD_B64);
+    const inputUsername = usernameInput.value.trim();
+    const inputPassword = passwordInput.value;
+
+    if (inputUsername === expectedUsername && inputPassword === expectedPassword) {
+      startSession();
+      setAuthLock(false);
+      removeExistingAuthModal();
+      onSuccess();
+      return;
+    }
+
+    errorMsg.textContent = "Incorrect username or password.";
+    passwordInput.value = "";
+    passwordInput.focus();
+  };
+
+  loginBtn.onclick = submitAuth;
+  overlay.addEventListener("keydown", event => {
+    if (event.key === "Enter") submitAuth();
+  });
+  usernameInput.focus();
+}
+
+function enforceRelogin() {
+  clearSession();
+  showAuthModal(() => {
+    scheduleSessionExpiry();
+  });
+}
+
+function withAuthentication(onAuthenticated) {
+  if (isSessionValid()) {
+    scheduleSessionExpiry();
+    onAuthenticated();
+    return;
+  }
+  showAuthModal(() => {
+    onAuthenticated();
+  });
+}
 
 const request = indexedDB.open(DB_NAME, 3);
 
@@ -53,9 +183,10 @@ request.onupgradeneeded = e => {
 
 request.onsuccess = e => {
   db = e.target.result;
-
-  if (document.getElementById("branchSelect")) initHomePage();
-  if (document.getElementById("branchFrom")) initBookingPage();
+  withAuthentication(() => {
+    if (document.getElementById("branchSelect")) initHomePage();
+    if (document.getElementById("branchFrom")) initBookingPage();
+  });
 };
 
 request.onerror = e => console.error("IndexedDB error:", e);
