@@ -218,65 +218,6 @@ select {
     }
 }
 
-body.auth-locked {
-    overflow: hidden;
-}
-
-.auth-overlay {
-    position: fixed;
-    inset: 0;
-    background: rgba(0, 0, 0, 0.55);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 10000;
-}
-
-.auth-card {
-    width: min(420px, 92vw);
-    border: 2px solid #000;
-    background: #fff;
-    padding: 20px;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-}
-
-.auth-card h2 {
-    margin: 0;
-}
-
-.auth-card p {
-    margin: 0 0 6px;
-    font-size: 14px;
-}
-
-.auth-card label {
-    font-size: 14px;
-    font-weight: 600;
-}
-
-.auth-card input {
-    border: 1px solid #000;
-    padding: 8px;
-    width: 100%;
-}
-
-.auth-card button {
-    margin-top: 8px;
-    height: 36px;
-    border: 1px solid #000;
-    background: #ececec;
-    cursor: pointer;
-    font-weight: 600;
-}
-
-.auth-error {
-    min-height: 20px;
-    color: #b91c1c;
-    font-size: 13px;
-}
-
 .print-page {
     display: flex;
     justify-content: space-between;
