@@ -2,6 +2,8 @@ const CACHE_NAME = "rc-transport-cache-v7";
 const APP_SHELL = [
   "./",
   "./index.html",
+  "./Auth/auth.css",
+  "./Auth/auth.js",
   "./Booking/booking.html",
   "./Dispatch/Dispatch.html",
   "./Dispatch/dispatch.css",
