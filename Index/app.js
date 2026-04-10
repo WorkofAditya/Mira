@@ -53,7 +53,6 @@ request.onupgradeneeded = e => {
 
 request.onsuccess = e => {
   db = e.target.result;
-
   if (document.getElementById("branchSelect")) initHomePage();
   if (document.getElementById("branchFrom")) initBookingPage();
 };
