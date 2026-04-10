@@ -4,7 +4,8 @@
   const AUTH_SESSION_KEY = "miraAuthSession";
   const AUTH_EXPIRY_KEY = "miraAuthExpiry";
   const AUTH_DURATION_MS = 60 * 60 * 1000;
-  const INDEX_PATH = "/index.html";
+  const INDEX_URL = "https://workofaditya.github.io/Mira/";
+  const INDEX_PATH = new URL(INDEX_URL).pathname;
   let expiryTimer = null;
 
   const decodeBase64 = value => {
@@ -32,11 +33,14 @@
     }
   };
 
-  const isIndexPage = () => window.location.pathname.endsWith("/") || window.location.pathname.endsWith(INDEX_PATH);
+  const isIndexPage = () =>
+    window.location.href === INDEX_URL ||
+    window.location.pathname === INDEX_PATH ||
+    window.location.pathname === `${INDEX_PATH}index.html`;
 
   const redirectToLogin = () => {
     const redirectTarget = `${window.location.pathname}${window.location.search}${window.location.hash}`;
-    const url = new URL(`${window.location.origin}${INDEX_PATH}`);
+    const url = new URL(INDEX_URL);
     url.searchParams.set("redirect", redirectTarget);
     window.location.replace(url.toString());
   };
@@ -87,7 +91,7 @@
   const goToRedirectTarget = () => {
     const params = new URLSearchParams(window.location.search);
     const redirect = params.get("redirect");
-    if (!redirect || redirect === "/" || redirect.endsWith(INDEX_PATH)) return;
+    if (!redirect || redirect === "/" || redirect === INDEX_PATH || redirect === `${INDEX_PATH}index.html`) return;
     window.location.replace(redirect);
   };
 
