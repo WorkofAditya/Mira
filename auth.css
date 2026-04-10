@@ -1,0 +1,63 @@
+.mira-auth-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.92);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 99999;
+  padding: 16px;
+}
+
+.mira-auth-card {
+  width: min(360px, 92vw);
+  background: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.25);
+  padding: 20px;
+  font-family: Arial, sans-serif;
+}
+
+.mira-auth-card h2 {
+  margin: 0 0 14px;
+  font-size: 20px;
+  color: #0f172a;
+}
+
+.mira-auth-row {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 10px;
+}
+
+.mira-auth-row label {
+  margin-bottom: 6px;
+  font-size: 13px;
+  color: #334155;
+}
+
+.mira-auth-row input {
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  padding: 10px;
+  font-size: 14px;
+}
+
+.mira-auth-error {
+  min-height: 18px;
+  color: #dc2626;
+  font-size: 12px;
+  margin-bottom: 10px;
+}
+
+.mira-auth-submit {
+  width: 100%;
+  border: none;
+  border-radius: 8px;
+  padding: 10px;
+  font-size: 14px;
+  font-weight: 700;
+  background: #1d4ed8;
+  color: #ffffff;
+  cursor: pointer;
+}
