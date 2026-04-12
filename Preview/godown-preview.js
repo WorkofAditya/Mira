@@ -3,6 +3,7 @@ const BOOKING_STORE = "bookings";
 const DISPATCH_DB_NAME = "DispatchDB";
 const DISPATCH_STORE = "dispatchBranchState";
 const MIN_PREVIEW_ROWS = 18;
+const BOOKING_PAGE_BRANCHES = ["JAMNAGAR", "RAJKOT", "DARED", "KOLKATA", "MUMBAI", "DELHI"];
 
 function setPrintTime() {
   const now = new Date();
@@ -25,6 +26,16 @@ function readStoreRecord(db, storeName, key) {
 
     req.onsuccess = () => resolve(req.result || null);
     req.onerror = () => resolve(null);
+  });
+}
+
+function readAllStoreKeys(db, storeName) {
+  return new Promise(resolve => {
+    const tx = db.transaction(storeName, "readonly");
+    const store = tx.objectStore(storeName);
+    const request = store.getAllKeys();
+    request.onsuccess = () => resolve(request.result || []);
+    request.onerror = () => resolve([]);
   });
 }
 
@@ -194,6 +205,7 @@ async function loadPreview() {
   setPrintTime();
   const { dispatchNo, branchHint } = getPreviewContext();
   const dispatchDb = await openDb(DISPATCH_DB_NAME, 2);
+  const bookingDb = await openDb(BOOKING_DB_NAME, 3);
 
   try {
     const allStates = await new Promise(resolve => {
@@ -204,9 +216,12 @@ async function loadPreview() {
       request.onerror = () => resolve([]);
     });
 
-    const branches = allStates
-      .map(state => String(state?.branch || "").trim())
+    const bookingBranches = await readAllStoreKeys(bookingDb, BOOKING_STORE);
+    const dispatchBranches = allStates.map(state => String(state?.branch || "").trim());
+    const branches = [...BOOKING_PAGE_BRANCHES, ...bookingBranches, ...dispatchBranches]
+      .map(branch => String(branch || "").trim())
       .filter(Boolean)
+      .filter((branch, index, branchList) => branchList.indexOf(branch) === index)
       .sort((a, b) => a.localeCompare(b));
 
     if (!branches.length) {
@@ -247,6 +262,7 @@ async function loadPreview() {
     await renderPreviewForBranch(activeBranch, dispatchNo);
   } finally {
     dispatchDb.close();
+    bookingDb.close();
   }
 }
 
