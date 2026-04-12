@@ -79,6 +79,13 @@ function addEmptyRow() {
   });
 }
 
+function clearTableBody() {
+  const tbody = document.getElementById("dispatchBody");
+  if (tbody) {
+    tbody.innerHTML = "";
+  }
+}
+
 function ensureMinimumRows(existingRowCount) {
   const emptyRowsNeeded = Math.max(0, MIN_PREVIEW_ROWS - existingRowCount);
   for (let index = 0; index < emptyRowsNeeded; index += 1) {
@@ -185,22 +192,76 @@ function resolveGodownRecord(state, dispatchNo) {
 
 async function loadPreview() {
   setPrintTime();
-  hideNotice();
-
   const { dispatchNo, branchHint } = getPreviewContext();
-  if (!branchHint) {
-    alert("Please select a branch from the home page first.");
-    return;
+  const dispatchDb = await openDb(DISPATCH_DB_NAME, 2);
+
+  try {
+    const allStates = await new Promise(resolve => {
+      const tx = dispatchDb.transaction(DISPATCH_STORE, "readonly");
+      const store = tx.objectStore(DISPATCH_STORE);
+      const request = store.getAll();
+      request.onsuccess = () => resolve(request.result || []);
+      request.onerror = () => resolve([]);
+    });
+
+    const branches = allStates
+      .map(state => String(state?.branch || "").trim())
+      .filter(Boolean)
+      .sort((a, b) => a.localeCompare(b));
+
+    if (!branches.length) {
+      hideNotice();
+      clearTableBody();
+      showNotice("No branch data found in dispatch records.");
+      ensureMinimumRows(0);
+      return;
+    }
+
+    const toolbar = document.getElementById("godownToolbar");
+    const selector = document.getElementById("branchSelector");
+    if (toolbar && selector) {
+      selector.innerHTML = branches
+        .map(branch => `<option value="${branch}">${branch}</option>`)
+        .join("");
+      toolbar.hidden = false;
+    }
+
+    const activeBranch = branches.includes(branchHint) ? branchHint : branches[0];
+    if (selector) {
+      selector.value = activeBranch;
+      selector.addEventListener("change", () => {
+        const selectedBranch = selector.value;
+        localStorage.setItem("selectedBranch", selectedBranch);
+        sessionStorage.setItem("selectedBranch", selectedBranch);
+        const params = new URLSearchParams(window.location.search);
+        params.set("branch", selectedBranch);
+        const nextUrl = `${window.location.pathname}?${params.toString()}`;
+        window.history.replaceState({}, "", nextUrl);
+        renderPreviewForBranch(selectedBranch, dispatchNo).catch(error => {
+          console.error(error);
+          alert("Failed to load selected branch data.");
+        });
+      });
+    }
+
+    await renderPreviewForBranch(activeBranch, dispatchNo);
+  } finally {
+    dispatchDb.close();
   }
+}
+
+async function renderPreviewForBranch(branch, dispatchNo) {
+  hideNotice();
+  clearTableBody();
 
   const dispatchDb = await openDb(DISPATCH_DB_NAME, 2);
   const bookingDb = await openDb(BOOKING_DB_NAME, 3);
 
   try {
-    const state = await readStoreRecord(dispatchDb, DISPATCH_STORE, branchHint);
+    const state = await readStoreRecord(dispatchDb, DISPATCH_STORE, branch);
 
     if (!state) {
-      showNotice(`No dispatch state found for branch <strong>${branchHint}</strong>.`);
+      showNotice(`No dispatch state found for branch <strong>${branch}</strong>.`);
       ensureMinimumRows(0);
       return;
     }
@@ -208,16 +269,15 @@ async function loadPreview() {
     const selectedRecord = resolveGodownRecord(state, dispatchNo);
 
     if (!selectedRecord) {
-      showNotice(`No dispatch record found for branch <strong>${branchHint}</strong>.`);
+      showNotice(`No dispatch record found for branch <strong>${branch}</strong>.`);
       ensureMinimumRows(0);
       return;
     }
 
     fillHeader(selectedRecord);
 
-    const bookingBranchData = await readStoreRecord(bookingDb, BOOKING_STORE, branchHint);
+    const bookingBranchData = await readStoreRecord(bookingDb, BOOKING_STORE, branch);
     const bookings = bookingBranchData?.bookings || {};
-
     const godownLrs = (selectedRecord.godown || []).map(lr => String(lr));
 
     const rows = godownLrs
@@ -245,10 +305,8 @@ async function loadPreview() {
       .filter(Boolean);
 
     rows.forEach(addRow);
-
     const totals = calculateTotals(rows);
     addBranchSummaryRow(rows, totals);
-
     ensureMinimumRows(rows.length + 1);
     addGrandTotalRow(totals);
   } finally {

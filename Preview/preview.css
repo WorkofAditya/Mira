@@ -107,6 +107,19 @@ color:#7f1d1d;
 font-size:13px;
 }
 
+.toolbar{
+display:flex;
+justify-content:flex-end;
+align-items:center;
+gap:8px;
+margin-top:10px;
+}
+
+.toolbar select{
+min-width:180px;
+padding:4px 6px;
+}
+
 .preview-notice a{
 color:#1d4ed8;
 }
