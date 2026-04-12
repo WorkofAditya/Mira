@@ -201,6 +201,22 @@ function resolveGodownRecord(state, dispatchNo) {
   return Object.values(state.dispatchRecords || {})[0] || null;
 }
 
+function getVehicleLrSet(state, dispatchNo) {
+  const vehicleSet = new Set();
+  if (!state?.dispatchRecords) return vehicleSet;
+
+  if (dispatchNo && state.dispatchRecords[dispatchNo]) {
+    (state.dispatchRecords[dispatchNo].vehicle || []).forEach(lrNo => vehicleSet.add(String(lrNo)));
+    return vehicleSet;
+  }
+
+  Object.values(state.dispatchRecords).forEach(record => {
+    (record?.vehicle || []).forEach(lrNo => vehicleSet.add(String(lrNo)));
+  });
+
+  return vehicleSet;
+}
+
 async function loadPreview() {
   setPrintTime();
   const { dispatchNo, branchHint } = getPreviewContext();
@@ -275,26 +291,20 @@ async function renderPreviewForBranch(branch, dispatchNo) {
 
   try {
     const state = await readStoreRecord(dispatchDb, DISPATCH_STORE, branch);
-
-    if (!state) {
-      showNotice(`No dispatch state found for branch <strong>${branch}</strong>.`);
-      ensureMinimumRows(0);
-      return;
-    }
-
-    const selectedRecord = resolveGodownRecord(state, dispatchNo);
-
-    if (!selectedRecord) {
-      showNotice(`No dispatch record found for branch <strong>${branch}</strong>.`);
-      ensureMinimumRows(0);
-      return;
-    }
-
-    fillHeader(selectedRecord);
-
     const bookingBranchData = await readStoreRecord(bookingDb, BOOKING_STORE, branch);
     const bookings = bookingBranchData?.bookings || {};
-    const godownLrs = (selectedRecord.godown || []).map(lr => String(lr));
+    const selectedRecord = resolveGodownRecord(state, dispatchNo);
+    fillHeader(selectedRecord);
+
+    const vehicleSet = getVehicleLrSet(state, dispatchNo);
+    const godownLrs = Object.keys(bookings)
+      .map(lrNo => String(lrNo))
+      .filter(lrNo => !vehicleSet.has(lrNo))
+      .sort((a, b) => a.localeCompare(b, undefined, { numeric: true }));
+
+    if (!state) {
+      showNotice(`No dispatch state found for branch <strong>${branch}</strong>. Showing all booking entries in godown stock.`);
+    }
 
     const rows = godownLrs
       .map(lrNo => {
