@@ -2,6 +2,8 @@
 ## Unreleased
 | Date | Commit | Change | Files |
 |------|--------|--------|-------|
+| 2026-04-13 | [9555d8c](https://github.com/WorkofAditya/Mira/commit/9555d8cd151337566a9a852c37ac0e6fbee623f3) | Merge branch 'main' of https://github.com/WorkofAditya/Mira |  |
+| 2026-04-13 | [6352178](https://github.com/WorkofAditya/Mira/commit/6352178b8c859ee17bfb80e9fdd904d474355649) | General improvements | Auth/auth.css,Index/app.js |
 | 2026-04-13 | [e1d59ee](https://github.com/WorkofAditya/Mira/commit/e1d59ee767d364f8a421f54538a7c86b2dd1a825) | Added Branch selector in godown stock | Preview/godown-preview.html,Preview/godown-preview.js Preview/preview.css |
 | 2026-04-13 | [9a01479](https://github.com/WorkofAditya/Mira/commit/9a014797cc03f11554ec6b2326696e7c1847d20b) | Fix LR no. Editing issue on booking and dispatch page | Index/app.js |
 | 2026-04-10 | [d41f57c](https://github.com/WorkofAditya/Mira/commit/d41f57ce51257046db126296abf1b12a8d5f7a65) | Delete auth directory | auth/auth.css,auth/auth.js |
