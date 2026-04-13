@@ -2,6 +2,7 @@
 ## Unreleased
 | Date | Commit | Change | Files |
 |------|--------|--------|-------|
+| 2026-04-13 | [9a01479](https://github.com/WorkofAditya/Mira/commit/9a014797cc03f11554ec6b2326696e7c1847d20b) | Fix LR no. Editing issue on booking and dispatch page | Index/app.js |
 | 2026-04-10 | [d41f57c](https://github.com/WorkofAditya/Mira/commit/d41f57ce51257046db126296abf1b12a8d5f7a65) | Delete auth directory | auth/auth.css,auth/auth.js |
 | 2026-04-10 | [4748bbb](https://github.com/WorkofAditya/Mira/commit/4748bbbdae3fbd63d645065ce040e09f3260ea93) | Add Auth files to application shell cache | service-worker.js |
 | 2026-04-10 | [b64880a](https://github.com/WorkofAditya/Mira/commit/b64880a255d7d00da40e7f0e919c62462ee0715a) | Merge branch 'main' of https://github.com/WorkofAditya/Mira |  |
