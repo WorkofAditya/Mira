@@ -1,5 +1,6 @@
 // ================= DATABASE SETUP =================
 let isNewBooking = false;
+let currentLoadedBookingLrNo = "";
 
 const DB_NAME = "TransportDB";
 const STORE_NAME = "bookings";
@@ -658,6 +659,7 @@ function unlockForm() {
 // ================= NEW BOOKING =================
 function newBooking() {
   isNewBooking = true;
+  currentLoadedBookingLrNo = "";
   unlockForm();
   const previousBranchTo = document.getElementById("branchTo")?.value || "";
   const previousPayMode = document.getElementById("payMode")?.value || "";
@@ -735,6 +737,8 @@ function saveData(branch) {
 
   const doSave = receiptNo => {
     const wasNewBooking = isNewBooking;
+    const previousLrNo = currentLoadedBookingLrNo;
+    const isLrEdited = !wasNewBooking && previousLrNo && previousLrNo !== booking.lrNo;
     if (receiptNo !== null) booking.receiptNo = receiptNo;
 
     const tx = db.transaction(STORE_NAME, "readwrite");
@@ -748,8 +752,17 @@ function saveData(branch) {
   if (!data.bookings) data.bookings = {};
 
   if (isNewBooking && data.bookings[booking.lrNo]) {
-  alert("This LR No already exists");
-  return;
+    alert("This LR No already exists");
+    return;
+  }
+
+  if (isLrEdited && data.bookings[booking.lrNo]) {
+    alert("This LR No already exists");
+    return;
+  }
+
+  if (isLrEdited) {
+    delete data.bookings[previousLrNo];
   }
 
   data.bookings[booking.lrNo] = booking;
@@ -761,13 +774,17 @@ function saveData(branch) {
     try {
       if (wasNewBooking) {
         await syncGodownStockOnBookingSave(branch, booking.lrNo);
+      } else if (isLrEdited) {
+        await syncDispatchStateOnLrEdit(branch, previousLrNo, booking.lrNo);
       }
       isNewBooking = false;
+      currentLoadedBookingLrNo = booking.lrNo;
       lockForm();
       alert("Booking saved successfully");
     } catch (error) {
       console.error("Failed to sync godown stock:", error);
       isNewBooking = false;
+      currentLoadedBookingLrNo = booking.lrNo;
       lockForm();
       alert("Booking saved, but failed to sync godown stock.");
     }
@@ -785,6 +802,95 @@ function saveData(branch) {
     // EDIT existing: keep receipt number
     doSave(booking.receiptNo || null);
   }
+}
+
+function syncDispatchStateOnLrEdit(branch, oldLrNo, newLrNo) {
+  return new Promise((resolve, reject) => {
+    if (!branch || !oldLrNo || !newLrNo || oldLrNo === newLrNo) {
+      resolve();
+      return;
+    }
+
+    const request = indexedDB.open(DISPATCH_DB_NAME, 2);
+
+    request.onupgradeneeded = event => {
+      const dispatchDb = event.target.result;
+      if (!dispatchDb.objectStoreNames.contains(DISPATCH_STORE)) {
+        dispatchDb.createObjectStore(DISPATCH_STORE, { keyPath: "branch" });
+      }
+    };
+
+    request.onsuccess = event => {
+      const dispatchDb = event.target.result;
+
+      const replaceInList = list => {
+        if (!Array.isArray(list)) return [];
+        const replaced = list.map(lr => (lr === oldLrNo ? newLrNo : lr));
+        return [...new Set(replaced)];
+      };
+
+      const tx = dispatchDb.transaction(DISPATCH_STORE, "readwrite");
+      const store = tx.objectStore(DISPATCH_STORE);
+      const getReq = store.get(branch);
+
+      getReq.onsuccess = () => {
+        const state = getReq.result;
+        if (!state) {
+          dispatchDb.close();
+          resolve();
+          return;
+        }
+
+        Object.keys(state.dispatchRecords || {}).forEach(dispatchNo => {
+          const record = state.dispatchRecords[dispatchNo] || {};
+          record.godown = replaceInList(record.godown);
+          record.vehicle = replaceInList(record.vehicle);
+
+          if (record.dispatchDetailsByLr?.[oldLrNo]) {
+            const details = record.dispatchDetailsByLr[oldLrNo];
+            record.dispatchDetailsByLr[newLrNo] = {
+              ...details,
+              lrNo: newLrNo
+            };
+            delete record.dispatchDetailsByLr[oldLrNo];
+          }
+
+          state.dispatchRecords[dispatchNo] = record;
+        });
+
+        state.godown = replaceInList(state.godown);
+        state.vehicle = replaceInList(state.vehicle);
+
+        if (state.dispatchDetailsByLr?.[oldLrNo]) {
+          const details = state.dispatchDetailsByLr[oldLrNo];
+          state.dispatchDetailsByLr[newLrNo] = {
+            ...details,
+            lrNo: newLrNo
+          };
+          delete state.dispatchDetailsByLr[oldLrNo];
+        }
+
+        const putReq = store.put(state);
+
+        putReq.onsuccess = () => {
+          dispatchDb.close();
+          resolve();
+        };
+
+        putReq.onerror = () => {
+          dispatchDb.close();
+          reject(new Error("Could not sync dispatch state for LR edit"));
+        };
+      };
+
+      getReq.onerror = () => {
+        dispatchDb.close();
+        reject(new Error("Could not read dispatch state for LR edit"));
+      };
+    };
+
+    request.onerror = () => reject(new Error("Could not open dispatch DB for LR edit sync"));
+  });
 }
 
 function syncGodownStockOnBookingSave(branch, lrNo) {
@@ -947,6 +1053,7 @@ async function loadLatestBooking(branch) {
 
   req.onsuccess = async () => {
     if (!req.result || !req.result.bookings || !Object.keys(req.result.bookings).length) {
+      currentLoadedBookingLrNo = "";
       document
         .querySelectorAll(".booking-body input, .booking-body select")
         .forEach(el => {
@@ -969,6 +1076,7 @@ async function loadLatestBooking(branch) {
     if (el) el.value = data[id];
     });
 
+    currentLoadedBookingLrNo = data.lrNo || "";
     lockForm();
     recalculateBookingFees();
     await syncDispatchSectionForCurrentLr();
@@ -1298,6 +1406,7 @@ function deleteCurrentBooking(branch) {
         const putReq = store.put(branchData);
         putReq.onsuccess = () => {
           alert("Booking deleted successfully.");
+          currentLoadedBookingLrNo = "";
           loadLatestBooking(branch);
         };
         putReq.onerror = () => alert("Failed to delete booking.");
@@ -1476,6 +1585,7 @@ async function loadBookingToForm(data) {
     if (el) el.value = data[id];
   });
 
+  currentLoadedBookingLrNo = data?.lrNo || "";
   lockForm();
   recalculateBookingFees();
   await syncDispatchSectionForCurrentLr();
