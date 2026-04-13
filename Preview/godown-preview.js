@@ -3,6 +3,7 @@ const BOOKING_STORE = "bookings";
 const DISPATCH_DB_NAME = "DispatchDB";
 const DISPATCH_STORE = "dispatchBranchState";
 const MIN_PREVIEW_ROWS = 18;
+const BOOKING_PAGE_BRANCHES = ["JAMNAGAR", "RAJKOT", "DARED", "KOLKATA", "MUMBAI", "DELHI"];
 
 function setPrintTime() {
   const now = new Date();
@@ -25,6 +26,16 @@ function readStoreRecord(db, storeName, key) {
 
     req.onsuccess = () => resolve(req.result || null);
     req.onerror = () => resolve(null);
+  });
+}
+
+function readAllStoreKeys(db, storeName) {
+  return new Promise(resolve => {
+    const tx = db.transaction(storeName, "readonly");
+    const store = tx.objectStore(storeName);
+    const request = store.getAllKeys();
+    request.onsuccess = () => resolve(request.result || []);
+    request.onerror = () => resolve([]);
   });
 }
 
@@ -77,6 +88,13 @@ function addEmptyRow() {
     paid: "",
     toPay: ""
   });
+}
+
+function clearTableBody() {
+  const tbody = document.getElementById("dispatchBody");
+  if (tbody) {
+    tbody.innerHTML = "";
+  }
 }
 
 function ensureMinimumRows(existingRowCount) {
@@ -183,42 +201,110 @@ function resolveGodownRecord(state, dispatchNo) {
   return Object.values(state.dispatchRecords || {})[0] || null;
 }
 
+function getVehicleLrSet(state, dispatchNo) {
+  const vehicleSet = new Set();
+  if (!state?.dispatchRecords) return vehicleSet;
+
+  if (dispatchNo && state.dispatchRecords[dispatchNo]) {
+    (state.dispatchRecords[dispatchNo].vehicle || []).forEach(lrNo => vehicleSet.add(String(lrNo)));
+    return vehicleSet;
+  }
+
+  Object.values(state.dispatchRecords).forEach(record => {
+    (record?.vehicle || []).forEach(lrNo => vehicleSet.add(String(lrNo)));
+  });
+
+  return vehicleSet;
+}
+
 async function loadPreview() {
   setPrintTime();
-  hideNotice();
-
   const { dispatchNo, branchHint } = getPreviewContext();
-  if (!branchHint) {
-    alert("Please select a branch from the home page first.");
-    return;
+  const dispatchDb = await openDb(DISPATCH_DB_NAME, 2);
+  const bookingDb = await openDb(BOOKING_DB_NAME, 3);
+
+  try {
+    const allStates = await new Promise(resolve => {
+      const tx = dispatchDb.transaction(DISPATCH_STORE, "readonly");
+      const store = tx.objectStore(DISPATCH_STORE);
+      const request = store.getAll();
+      request.onsuccess = () => resolve(request.result || []);
+      request.onerror = () => resolve([]);
+    });
+
+    const bookingBranches = await readAllStoreKeys(bookingDb, BOOKING_STORE);
+    const dispatchBranches = allStates.map(state => String(state?.branch || "").trim());
+    const branches = [...BOOKING_PAGE_BRANCHES, ...bookingBranches, ...dispatchBranches]
+      .map(branch => String(branch || "").trim())
+      .filter(Boolean)
+      .filter((branch, index, branchList) => branchList.indexOf(branch) === index)
+      .sort((a, b) => a.localeCompare(b));
+
+    if (!branches.length) {
+      hideNotice();
+      clearTableBody();
+      showNotice("No branch data found in dispatch records.");
+      ensureMinimumRows(0);
+      return;
+    }
+
+    const toolbar = document.getElementById("godownToolbar");
+    const selector = document.getElementById("branchSelector");
+    if (toolbar && selector) {
+      selector.innerHTML = branches
+        .map(branch => `<option value="${branch}">${branch}</option>`)
+        .join("");
+      toolbar.hidden = false;
+    }
+
+    const activeBranch = branches.includes(branchHint) ? branchHint : branches[0];
+    if (selector) {
+      selector.value = activeBranch;
+      selector.addEventListener("change", () => {
+        const selectedBranch = selector.value;
+        localStorage.setItem("selectedBranch", selectedBranch);
+        sessionStorage.setItem("selectedBranch", selectedBranch);
+        const params = new URLSearchParams(window.location.search);
+        params.set("branch", selectedBranch);
+        const nextUrl = `${window.location.pathname}?${params.toString()}`;
+        window.history.replaceState({}, "", nextUrl);
+        renderPreviewForBranch(selectedBranch, dispatchNo).catch(error => {
+          console.error(error);
+          alert("Failed to load selected branch data.");
+        });
+      });
+    }
+
+    await renderPreviewForBranch(activeBranch, dispatchNo);
+  } finally {
+    dispatchDb.close();
+    bookingDb.close();
   }
+}
+
+async function renderPreviewForBranch(branch, dispatchNo) {
+  hideNotice();
+  clearTableBody();
 
   const dispatchDb = await openDb(DISPATCH_DB_NAME, 2);
   const bookingDb = await openDb(BOOKING_DB_NAME, 3);
 
   try {
-    const state = await readStoreRecord(dispatchDb, DISPATCH_STORE, branchHint);
-
-    if (!state) {
-      showNotice(`No dispatch state found for branch <strong>${branchHint}</strong>.`);
-      ensureMinimumRows(0);
-      return;
-    }
-
+    const state = await readStoreRecord(dispatchDb, DISPATCH_STORE, branch);
+    const bookingBranchData = await readStoreRecord(bookingDb, BOOKING_STORE, branch);
+    const bookings = bookingBranchData?.bookings || {};
     const selectedRecord = resolveGodownRecord(state, dispatchNo);
-
-    if (!selectedRecord) {
-      showNotice(`No dispatch record found for branch <strong>${branchHint}</strong>.`);
-      ensureMinimumRows(0);
-      return;
-    }
-
     fillHeader(selectedRecord);
 
-    const bookingBranchData = await readStoreRecord(bookingDb, BOOKING_STORE, branchHint);
-    const bookings = bookingBranchData?.bookings || {};
+    const vehicleSet = getVehicleLrSet(state, dispatchNo);
+    const godownLrs = Object.keys(bookings)
+      .map(lrNo => String(lrNo))
+      .filter(lrNo => !vehicleSet.has(lrNo))
+      .sort((a, b) => a.localeCompare(b, undefined, { numeric: true }));
 
-    const godownLrs = (selectedRecord.godown || []).map(lr => String(lr));
+    if (!state) {
+      showNotice(`No dispatch state found for branch <strong>${branch}</strong>. Showing all booking entries in godown stock.`);
+    }
 
     const rows = godownLrs
       .map(lrNo => {
@@ -245,10 +331,8 @@ async function loadPreview() {
       .filter(Boolean);
 
     rows.forEach(addRow);
-
     const totals = calculateTotals(rows);
     addBranchSummaryRow(rows, totals);
-
     ensureMinimumRows(rows.length + 1);
     addGrandTotalRow(totals);
   } finally {
