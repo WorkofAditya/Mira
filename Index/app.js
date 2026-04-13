@@ -1296,7 +1296,8 @@ function openNameLedgerPopup({ target, selectedName, rows }) {
           <th>LR</th>
           <th>Date</th>
           <th>${counterPartyLabel}</th>
-          <th>Content</th>
+          <th>Packages</th>
+          <th>Weight in KG</th>
           <th>Total</th>
           <th>B-Pay Mode</th>
         </tr>
@@ -1318,7 +1319,8 @@ function openNameLedgerPopup({ target, selectedName, rows }) {
       <td>${booking.lrNo || ""}</td>
       <td>${booking.bookingDate || ""}</td>
       <td>${booking[counterPartyKey] || ""}</td>
-      <td>${booking.content || ""}</td>
+      <td>${booking.packages || ""}</td>
+      <td>${booking.weight || ""}</td>
       <td>${booking.total || ""}</td>
       <td>${booking.payMode || ""}</td>
     `;
