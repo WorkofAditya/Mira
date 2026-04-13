@@ -1,11 +1,16 @@
 body.auth-locked {
   overflow: hidden;
+  background: #fff;
+}
+
+body.auth-locked .app {
+  visibility: hidden;
 }
 
 .auth-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.55);
+  background: #fff;
   display: flex;
   align-items: center;
   justify-content: center;

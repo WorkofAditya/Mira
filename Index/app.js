@@ -1136,7 +1136,6 @@ function filterBookingsByCriteria(bookings, { dateFrom, dateTo, payMode }) {
 async function openNameFilterPopup({ branch, target }) {
   const nameKey = target === "receiver" ? "receiver" : "sender";
   const label = nameKey === "receiver" ? "Receiver" : "Sender";
-  const bookings = await loadBookingsForBranch(branch);
 
   const overlay = document.createElement("div");
   overlay.className = "overlay";
@@ -1209,12 +1208,14 @@ async function openNameFilterPopup({ branch, target }) {
     });
   };
 
-  const applyFilter = (preferredSelection = "") => {
+  const applyFilter = async (preferredSelection = "") => {
     if (dateFromEl.value && dateToEl.value && dateFromEl.value > dateToEl.value) {
       alert("Date from cannot be after Date to.");
       return;
     }
 
+    // Always re-read branch bookings so popup stays synced with latest booking-page saves/edits.
+    const bookings = await loadBookingsForBranch(branch);
     const filteredBookings = filterBookingsByCriteria(bookings, {
       dateFrom: dateFromEl.value,
       dateTo: dateToEl.value,
@@ -1240,10 +1241,12 @@ async function openNameFilterPopup({ branch, target }) {
   };
 
   closeBtn.onclick = closePopup;
-  applyBtn.onclick = () => applyFilter(resultsEl.value || "");
-  openBtn.onclick = () => {
+  applyBtn.onclick = async () => {
+    await applyFilter(resultsEl.value || "");
+  };
+  openBtn.onclick = async () => {
     const selectedBeforeApply = resultsEl.value || "";
-    const filteredBookings = applyFilter(selectedBeforeApply);
+    const filteredBookings = await applyFilter(selectedBeforeApply);
     if (!filteredBookings) return;
 
     const selectedName = resultsEl.value || "";
@@ -1296,7 +1299,8 @@ function openNameLedgerPopup({ target, selectedName, rows }) {
           <th>LR</th>
           <th>Date</th>
           <th>${counterPartyLabel}</th>
-          <th>Content</th>
+          <th>Packages</th>
+          <th>Weight in KG</th>
           <th>Total</th>
           <th>B-Pay Mode</th>
         </tr>
@@ -1318,7 +1322,8 @@ function openNameLedgerPopup({ target, selectedName, rows }) {
       <td>${booking.lrNo || ""}</td>
       <td>${booking.bookingDate || ""}</td>
       <td>${booking[counterPartyKey] || ""}</td>
-      <td>${booking.content || ""}</td>
+      <td>${booking.packages || ""}</td>
+      <td>${booking.weight || ""}</td>
       <td>${booking.total || ""}</td>
       <td>${booking.payMode || ""}</td>
     `;
