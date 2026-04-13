@@ -1136,7 +1136,6 @@ function filterBookingsByCriteria(bookings, { dateFrom, dateTo, payMode }) {
 async function openNameFilterPopup({ branch, target }) {
   const nameKey = target === "receiver" ? "receiver" : "sender";
   const label = nameKey === "receiver" ? "Receiver" : "Sender";
-  const bookings = await loadBookingsForBranch(branch);
 
   const overlay = document.createElement("div");
   overlay.className = "overlay";
@@ -1209,12 +1208,14 @@ async function openNameFilterPopup({ branch, target }) {
     });
   };
 
-  const applyFilter = (preferredSelection = "") => {
+  const applyFilter = async (preferredSelection = "") => {
     if (dateFromEl.value && dateToEl.value && dateFromEl.value > dateToEl.value) {
       alert("Date from cannot be after Date to.");
       return;
     }
 
+    // Always re-read branch bookings so popup stays synced with latest booking-page saves/edits.
+    const bookings = await loadBookingsForBranch(branch);
     const filteredBookings = filterBookingsByCriteria(bookings, {
       dateFrom: dateFromEl.value,
       dateTo: dateToEl.value,
@@ -1240,10 +1241,12 @@ async function openNameFilterPopup({ branch, target }) {
   };
 
   closeBtn.onclick = closePopup;
-  applyBtn.onclick = () => applyFilter(resultsEl.value || "");
-  openBtn.onclick = () => {
+  applyBtn.onclick = async () => {
+    await applyFilter(resultsEl.value || "");
+  };
+  openBtn.onclick = async () => {
     const selectedBeforeApply = resultsEl.value || "";
-    const filteredBookings = applyFilter(selectedBeforeApply);
+    const filteredBookings = await applyFilter(selectedBeforeApply);
     if (!filteredBookings) return;
 
     const selectedName = resultsEl.value || "";
