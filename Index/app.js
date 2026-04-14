@@ -1312,12 +1312,16 @@ function openNameLedgerPopup({ target, selectedName, rows }) {
         </tr>
       </thead>
       <tbody id="nameLedgerBody"></tbody>
+      <tfoot>
+        <tr class="name-ledger-total-row">
+          <td colspan="3">TOTAL</td>
+          <td>${totals.packages}</td>
+          <td>${totals.weight}</td>
+          <td>${totals.total}</td>
+          <td></td>
+        </tr>
+      </tfoot>
     </table>
-    <div class="name-ledger-totals">
-      <p>Packages Total: <span class="name-ledger-total-value">${totals.packages}</span></p>
-      <p>Weight in KG Total: <span class="name-ledger-total-value">${totals.weight}</span></p>
-      <p>Total Amount: <span class="name-ledger-total-value">${totals.total}</span></p>
-    </div>
     <div class="name-filter-actions">
       <button type="button" id="nameLedgerClose">Close</button>
     </div>
