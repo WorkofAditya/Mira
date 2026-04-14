@@ -2,6 +2,7 @@
 ## Unreleased
 | Date | Commit | Change | Files |
 |------|--------|--------|-------|
+| 2026-04-14 | [27529b5](https://github.com/WorkofAditya/Mira/commit/27529b508a59eb41de6d5a8bef3979670b14177c) | Fix Minor bug and make the code more stable | Dispatch/Dispatch.js,Index/app.js employee/employee.js |
 | 2026-04-14 | [5cd530f](https://github.com/WorkofAditya/Mira/commit/5cd530ffad54595608465416920c33cff5c6c616) | Add grand total for sender/receiver filters | Booking/booking.css,Index/app.js Index/index.css |
 | 2026-04-13 | [9555d8c](https://github.com/WorkofAditya/Mira/commit/9555d8cd151337566a9a852c37ac0e6fbee623f3) | Merge branch 'main' of https://github.com/WorkofAditya/Mira |  |
 | 2026-04-13 | [6352178](https://github.com/WorkofAditya/Mira/commit/6352178b8c859ee17bfb80e9fdd904d474355649) | General improvements | Auth/auth.css,Index/app.js |
