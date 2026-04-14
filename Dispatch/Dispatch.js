@@ -11,6 +11,10 @@ let selectedBranch = "";
 let allBranchLRs = [];
 let isDispatchEditable = false;
 
+function compareRecordIds(a, b) {
+  return String(a || "").localeCompare(String(b || ""), undefined, { numeric: true, sensitivity: "base" });
+}
+
 function getSelectedBranch() {
   return localStorage.getItem("selectedBranch") || sessionStorage.getItem("selectedBranch");
 }
@@ -54,7 +58,7 @@ function readBookingLRs(branch) {
 
     req.onsuccess = () => {
       const branchData = req.result;
-      const lrList = Object.keys(branchData?.bookings || {}).sort();
+      const lrList = Object.keys(branchData?.bookings || {}).sort(compareRecordIds);
       resolve(lrList);
     };
 
@@ -251,7 +255,7 @@ function getDispatchDetailsByLrFromForm(form, vehicleLrs) {
 
 function rebuildAggregateDispatchDetails(state) {
   const aggregated = {};
-  const dispatchNumbers = Object.keys(state.dispatchRecords || {}).sort((a, b) => Number(a) - Number(b));
+  const dispatchNumbers = Object.keys(state.dispatchRecords || {}).sort(compareRecordIds);
 
   dispatchNumbers.forEach(dispatchNo => {
     const record = state.dispatchRecords[dispatchNo];
@@ -360,7 +364,7 @@ function createFindPopup(state) {
   const popup = document.createElement("div");
   popup.className = "popup dispatch-find-popup";
 
-  const dispatchNumbers = Object.keys(state.dispatchRecords || {}).sort((a, b) => Number(a) - Number(b));
+  const dispatchNumbers = Object.keys(state.dispatchRecords || {}).sort(compareRecordIds);
 
   popup.innerHTML = `
     <h3>Find Dispatch</h3>
@@ -530,22 +534,6 @@ function openDispatchPrintPreview() {
   const branch = document.getElementById("branchInput").value.trim() || selectedBranch;
   const query = new URLSearchParams({ dispatchNo, branch, autoPrint: "1" }).toString();
   window.location.href = `../Preview/preview.html?${query}`;
-
-  if (!previewWindow) {
-    alert("Popup blocked. Please allow popups to print preview.");
-    return;
-  }
-
-  previewWindow.addEventListener(
-    "load",
-    () => {
-      setTimeout(() => {
-        previewWindow.focus();
-        previewWindow.print();
-      }, 250);
-    },
-    { once: true }
-  );
 }
 
 function createDeleteConfirmPopup({ onDelete }) {
@@ -612,7 +600,7 @@ async function deleteCurrentDispatchEntry() {
     onDelete: async () => {
       try {
         delete state.dispatchRecords[dispatchNo];
-        const remainingNumbers = Object.keys(state.dispatchRecords || {}).sort((a, b) => Number(a) - Number(b));
+        const remainingNumbers = Object.keys(state.dispatchRecords || {}).sort(compareRecordIds);
 
         if (!remainingNumbers.length) {
           const resetDispatchNo = String(DISPATCH_START_NUMBER);

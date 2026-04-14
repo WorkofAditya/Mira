@@ -189,6 +189,12 @@ async function saveEmployee() {
 
   if (!isNewEmployee) {
     const loadedName = document.getElementById("name").defaultValue || "";
+    const normalizedLoadedName = loadedName.toLowerCase();
+    if (matchingName && matchingName.toLowerCase() !== normalizedLoadedName) {
+      alert("Another entry with this name already exists.");
+      return;
+    }
+
     if (loadedName && loadedName !== payload.name && record.employees[loadedName]) {
       delete record.employees[loadedName];
     }

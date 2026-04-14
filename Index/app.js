@@ -8,6 +8,8 @@ const DISPATCH_DB_NAME = "DispatchDB";
 const DISPATCH_STORE = "dispatchBranchState";
 const EMPLOYEE_DB_NAME = "EmployeeDB";
 const EMPLOYEE_STORE = "employees";
+const DRIVER_DB_NAME = "DriverDB";
+const DRIVER_STORE = "drivers";
 const BACKUP_DB_CONFIG = {
   booking: {
     dbName: DB_NAME,
@@ -32,6 +34,14 @@ const BACKUP_DB_CONFIG = {
     stores: [EMPLOYEE_STORE],
     storeOptions: {
       [EMPLOYEE_STORE]: { keyPath: "branch" }
+    }
+  },
+  driver: {
+    dbName: DRIVER_DB_NAME,
+    defaultVersion: 1,
+    stores: [DRIVER_STORE],
+    storeOptions: {
+      [DRIVER_STORE]: { keyPath: "branch" }
     }
   }
 };
@@ -173,6 +183,10 @@ function openDbWithVersion(dbName, version, stores = [], storeOptions = {}) {
 function normalizeDbVersion(value, fallback = 1) {
   const parsed = Number.parseInt(String(value), 10);
   return Number.isFinite(parsed) && parsed > 0 ? parsed : fallback;
+}
+
+function compareRecordIds(a, b) {
+  return String(a || "").localeCompare(String(b || ""), undefined, { numeric: true, sensitivity: "base" });
 }
 
 async function exportDataGroup(groupKey) {
@@ -361,6 +375,7 @@ function openDataToolsPopup() {
           <button type="button" class="data-btn" id="exportBookingBtn">Booking</button>
           <button type="button" class="data-btn" id="exportDispatchBtn">Dispatch</button>
           <button type="button" class="data-btn" id="exportEmployeeBtn">Employee</button>
+          <button type="button" class="data-btn" id="exportDriverBtn">Driver</button>
           <div class="data-hint">Includes LR numbers, dispatch numbers, and all saved entries branch-wise.</div>
         </section>
         <section class="data-card">
@@ -376,6 +391,7 @@ function openDataToolsPopup() {
           <button type="button" class="data-btn danger-outline" id="deleteBookingBtn">Booking</button>
           <button type="button" class="data-btn danger-outline" id="deleteDispatchBtn">Dispatch</button>
           <button type="button" class="data-btn danger-outline" id="deleteEmployeeBtn">Employee</button>
+          <button type="button" class="data-btn danger-outline" id="deleteDriverBtn">Driver</button>
           <div class="data-hint">Deleting is immediate and cannot be undone. Please export a backup first if needed.</div>
         </section>
       </div>
@@ -431,6 +447,16 @@ function openDataToolsPopup() {
     }
   };
 
+  shell.querySelector("#exportDriverBtn").onclick = async () => {
+    try {
+      await exportDataGroup("driver");
+      alert("Driver backup downloaded.");
+    } catch (error) {
+      console.error(error);
+      alert("Could not export driver backup.");
+    }
+  };
+
   shell.querySelector("#importDataBtn").onclick = () => {
     triggerFilePicker(async file => {
       try {
@@ -445,7 +471,7 @@ function openDataToolsPopup() {
   };
 
   shell.querySelector("#deleteAllBtn").onclick = async () => {
-    const shouldDelete = window.confirm("Delete ALL booking, dispatch, and employee data? This cannot be undone.");
+    const shouldDelete = window.confirm("Delete ALL booking, dispatch, employee, and driver data? This cannot be undone.");
     if (!shouldDelete) return;
     try {
       await clearAllDatabases();
@@ -489,6 +515,18 @@ function openDataToolsPopup() {
     } catch (error) {
       console.error(error);
       alert("Could not delete employee data.");
+    }
+  };
+
+  shell.querySelector("#deleteDriverBtn").onclick = async () => {
+    const shouldDelete = window.confirm("Delete all driver data? This cannot be undone.");
+    if (!shouldDelete) return;
+    try {
+      await clearDataGroup("driver");
+      alert("Driver data deleted successfully.");
+    } catch (error) {
+      console.error(error);
+      alert("Could not delete driver data.");
     }
   };
 }
@@ -826,7 +864,7 @@ function syncDispatchStateOnLrEdit(branch, oldLrNo, newLrNo) {
       const replaceInList = list => {
         if (!Array.isArray(list)) return [];
         const replaced = list.map(lr => (lr === oldLrNo ? newLrNo : lr));
-        return [...new Set(replaced)];
+        return [...new Set(replaced)].sort(compareRecordIds);
       };
 
       const tx = dispatchDb.transaction(DISPATCH_STORE, "readwrite");
@@ -924,7 +962,7 @@ function syncGodownStockOnBookingSave(branch, lrNo) {
         }
 
         const state = savedState;
-        const dispatchNumbers = Object.keys(state.dispatchRecords || {}).sort((a, b) => Number(a) - Number(b));
+        const dispatchNumbers = Object.keys(state.dispatchRecords || {}).sort(compareRecordIds);
         const targetDispatchNo = state.currentDispatchNo || state.lastDispatchNo || dispatchNumbers[dispatchNumbers.length - 1];
         const targetRecord = targetDispatchNo ? state.dispatchRecords?.[targetDispatchNo] : null;
 
@@ -946,7 +984,7 @@ function syncGodownStockOnBookingSave(branch, lrNo) {
 
         const godownSet = new Set(targetRecord.godown || []);
         if (!godownSet.has(lrNo)) {
-          targetRecord.godown = [...(targetRecord.godown || []), lrNo].sort();
+          targetRecord.godown = [...(targetRecord.godown || []), lrNo].sort(compareRecordIds);
           state.godown = [...targetRecord.godown];
           state.dispatchRecords[targetDispatchNo] = targetRecord;
         }
@@ -1045,6 +1083,79 @@ function setupDispatchAutoSync() {
   lrInput.addEventListener("blur", sync);
 }
 
+function removeLrFromDispatchState(branch, lrNo) {
+  return new Promise((resolve, reject) => {
+    if (!branch || !lrNo) {
+      resolve();
+      return;
+    }
+
+    const request = indexedDB.open(DISPATCH_DB_NAME, 2);
+
+    request.onupgradeneeded = event => {
+      const dispatchDb = event.target.result;
+      if (!dispatchDb.objectStoreNames.contains(DISPATCH_STORE)) {
+        dispatchDb.createObjectStore(DISPATCH_STORE, { keyPath: "branch" });
+      }
+    };
+
+    request.onsuccess = event => {
+      const dispatchDb = event.target.result;
+      const tx = dispatchDb.transaction(DISPATCH_STORE, "readwrite");
+      const store = tx.objectStore(DISPATCH_STORE);
+      const getReq = store.get(branch);
+
+      getReq.onsuccess = () => {
+        const state = getReq.result;
+        if (!state) {
+          dispatchDb.close();
+          resolve();
+          return;
+        }
+
+        const removeFromList = list =>
+          Array.isArray(list) ? list.filter(item => item !== lrNo).sort(compareRecordIds) : [];
+
+        Object.keys(state.dispatchRecords || {}).forEach(dispatchNo => {
+          const record = state.dispatchRecords[dispatchNo] || {};
+          record.godown = removeFromList(record.godown);
+          record.vehicle = removeFromList(record.vehicle);
+
+          if (record.dispatchDetailsByLr) {
+            delete record.dispatchDetailsByLr[lrNo];
+          }
+
+          state.dispatchRecords[dispatchNo] = record;
+        });
+
+        state.godown = removeFromList(state.godown);
+        state.vehicle = removeFromList(state.vehicle);
+
+        if (state.dispatchDetailsByLr) {
+          delete state.dispatchDetailsByLr[lrNo];
+        }
+
+        const putReq = store.put(state);
+        putReq.onsuccess = () => {
+          dispatchDb.close();
+          resolve();
+        };
+        putReq.onerror = () => {
+          dispatchDb.close();
+          reject(new Error("Could not remove deleted LR from dispatch state"));
+        };
+      };
+
+      getReq.onerror = () => {
+        dispatchDb.close();
+        reject(new Error("Could not read dispatch state for booking deletion"));
+      };
+    };
+
+    request.onerror = () => reject(new Error("Could not open dispatch DB for booking deletion sync"));
+  });
+}
+
 // ================= LOAD LATEST =================
 async function loadLatestBooking(branch) {
   const tx = db.transaction(STORE_NAME, "readonly");
@@ -1068,7 +1179,7 @@ async function loadLatestBooking(branch) {
     }
 
     const bookings = req.result.bookings;
-    const lastLR = Object.keys(bookings).sort().pop();
+    const lastLR = Object.keys(bookings).sort(compareRecordIds).pop();
     const data = bookings[lastLR];
 
     Object.keys(data).forEach(id => {
@@ -1409,7 +1520,7 @@ function deleteCurrentBooking(branch) {
   }
 
   createDeleteConfirmPopup({
-    onDelete: () => {
+    onDelete: async () => {
       const tx = db.transaction(STORE_NAME, "readwrite");
       const store = tx.objectStore(STORE_NAME);
       const req = store.get(branch);
@@ -1424,10 +1535,18 @@ function deleteCurrentBooking(branch) {
         delete branchData.bookings[lrNo];
 
         const putReq = store.put(branchData);
-        putReq.onsuccess = () => {
-          alert("Booking deleted successfully.");
-          currentLoadedBookingLrNo = "";
-          loadLatestBooking(branch);
+        putReq.onsuccess = async () => {
+          try {
+            await removeLrFromDispatchState(branch, lrNo);
+            alert("Booking deleted successfully.");
+            currentLoadedBookingLrNo = "";
+            loadLatestBooking(branch);
+          } catch (error) {
+            console.error(error);
+            alert("Booking deleted, but dispatch data could not be fully cleaned.");
+            currentLoadedBookingLrNo = "";
+            loadLatestBooking(branch);
+          }
         };
         putReq.onerror = () => alert("Failed to delete booking.");
       };
@@ -1578,7 +1697,7 @@ function openFindPopup() {
     const overlay = tpl.querySelector(".overlay");
     const list = tpl.querySelector("#lrList");
 
-    Object.keys(bookings).sort().forEach(lr => {
+    Object.keys(bookings).sort(compareRecordIds).forEach(lr => {
       list.innerHTML += `<option value="${lr}">${lr}</option>`;
     });
 
