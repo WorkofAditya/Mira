@@ -1278,6 +1278,12 @@ async function openNameFilterPopup({ branch, target }) {
 function openNameLedgerPopup({ target, selectedName, rows }) {
   const counterPartyLabel = target === "sender" ? "Receiver" : "Sender";
   const counterPartyKey = target === "sender" ? "receiver" : "sender";
+  const totals = rows.reduce((acc, booking) => {
+    acc.packages += toNumber(booking.packages);
+    acc.weight += toNumber(booking.weight);
+    acc.total += toNumber(booking.total);
+    return acc;
+  }, { packages: 0, weight: 0, total: 0 });
 
   const overlay = document.createElement("div");
   overlay.className = "overlay";
@@ -1307,6 +1313,11 @@ function openNameLedgerPopup({ target, selectedName, rows }) {
       </thead>
       <tbody id="nameLedgerBody"></tbody>
     </table>
+    <div class="name-ledger-totals">
+      <p>Packages Total: <span class="name-ledger-total-value">${totals.packages}</span></p>
+      <p>Weight in KG Total: <span class="name-ledger-total-value">${totals.weight}</span></p>
+      <p>Total Amount: <span class="name-ledger-total-value">${totals.total}</span></p>
+    </div>
     <div class="name-filter-actions">
       <button type="button" id="nameLedgerClose">Close</button>
     </div>

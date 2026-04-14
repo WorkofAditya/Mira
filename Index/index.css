@@ -315,6 +315,19 @@
   background: #eee;
 }
 
+.name-ledger-totals {
+  margin-top: 10px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.name-ledger-total-value {
+  color: #d00000;
+}
+
 .employee-popup-overlay {
   position: fixed;
   inset: 0;
