@@ -315,6 +315,12 @@
   background: #eee;
 }
 
+.name-ledger-total-row td {
+  color: #d00000;
+  font-weight: 700;
+  background: #fff5f5;
+}
+
 .employee-popup-overlay {
   position: fixed;
   inset: 0;
