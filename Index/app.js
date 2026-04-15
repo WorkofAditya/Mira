@@ -564,10 +564,44 @@ function openDataToolsPopup() {
   };
 }
 
-function openEntryPopup({ mode = "employee" } = {}) {
+async function getEntryNamesByMode({ mode = "employee", branch = "" } = {}) {
+  const isDriverMode = mode === "driver";
+  const dbName = isDriverMode ? DRIVER_DB_NAME : EMPLOYEE_DB_NAME;
+  const storeName = isDriverMode ? DRIVER_STORE : EMPLOYEE_STORE;
+  const defaultVersion = isDriverMode
+    ? BACKUP_DB_CONFIG.driver.defaultVersion
+    : BACKUP_DB_CONFIG.employee.defaultVersion;
+
+  if (!branch) return [];
+
+  const idb = await openDbWithVersion(dbName, defaultVersion, [storeName], {
+    [storeName]: { keyPath: "branch" }
+  });
+
+  try {
+    const record = await new Promise((resolve, reject) => {
+      const tx = idb.transaction(storeName, "readonly");
+      const store = tx.objectStore(storeName);
+      const request = store.get(branch);
+      request.onsuccess = () => resolve(request.result || null);
+      request.onerror = () => reject(request.error || new Error(`Failed reading ${storeName}`));
+    });
+
+    const entries = record?.employees || {};
+    return Object.keys(entries).sort((a, b) => a.localeCompare(b, undefined, { sensitivity: "base" }));
+  } finally {
+    idb.close();
+  }
+}
+
+async function openEntryPopup({ mode = "employee" } = {}) {
   const isDriverMode = mode === "driver";
   const popupTitle = isDriverMode ? "Driver Data Entry" : "Employee Data Entry";
   const frameSrc = isDriverMode ? "employee/employee.html?mode=driver" : "employee/employee.html";
+  const listLabel = isDriverMode
+    ? "List of Riya Cargo's drivers"
+    : "List of Riya Cargo's employees";
+  const branch = getSelectedBranch() || "";
   const existingPopup = document.getElementById("employeePopupOverlay");
   if (existingPopup) {
     existingPopup.remove();
@@ -592,8 +626,25 @@ function openEntryPopup({ mode = "employee" } = {}) {
   frame.src = frameSrc;
   frame.title = popupTitle;
 
+  const content = document.createElement("div");
+  content.className = "employee-popup-content";
+
+  const listPanel = document.createElement("aside");
+  listPanel.className = "entry-list-panel";
+  listPanel.innerHTML = `
+    <h4>${isDriverMode ? "Driver Data" : "Employee Data"}</h4>
+    <p class="entry-list-subtitle">${listLabel}</p>
+    <p class="entry-list-branch">${branch ? `Branch: ${branch}` : "No branch selected"}</p>
+    <ul class="entry-list-items" id="entryNameList">
+      <li class="entry-list-empty">Loading names...</li>
+    </ul>
+    <button type="button" class="entry-list-refresh" id="entryListRefreshBtn">Refresh List</button>
+  `;
+
+  content.appendChild(listPanel);
+  content.appendChild(frame);
   shell.appendChild(header);
-  shell.appendChild(frame);
+  shell.appendChild(content);
   overlay.appendChild(shell);
   document.body.appendChild(overlay);
 
@@ -601,10 +652,43 @@ function openEntryPopup({ mode = "employee" } = {}) {
     overlay.remove();
   };
 
+  const listEl = listPanel.querySelector("#entryNameList");
+  const refreshBtn = listPanel.querySelector("#entryListRefreshBtn");
+  const renderNames = async () => {
+    if (!branch) {
+      listEl.innerHTML = `<li class="entry-list-empty">Select a branch to see saved ${isDriverMode ? "driver" : "employee"} names.</li>`;
+      return;
+    }
+
+    listEl.innerHTML = `<li class="entry-list-empty">Loading names...</li>`;
+    try {
+      const names = await getEntryNamesByMode({ mode, branch });
+      if (!names.length) {
+        listEl.innerHTML = `<li class="entry-list-empty">No saved ${isDriverMode ? "drivers" : "employees"} for ${branch}.</li>`;
+        return;
+      }
+      listEl.innerHTML = "";
+      names.forEach(name => {
+        const item = document.createElement("li");
+        item.textContent = name;
+        listEl.appendChild(item);
+      });
+    } catch (error) {
+      console.error(error);
+      listEl.innerHTML = `<li class="entry-list-empty">Could not load names right now.</li>`;
+    }
+  };
+
+  refreshBtn.onclick = () => {
+    renderNames();
+  };
+
   header.querySelector("#employeePopupClose").onclick = closePopup;
   overlay.onclick = event => {
     if (event.target === overlay) closePopup();
   };
+
+  renderNames();
 }
 
 // ================= BOOKING INIT =================
