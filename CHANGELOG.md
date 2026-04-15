@@ -2,6 +2,7 @@
 ## Unreleased
 | Date | Commit | Change | Files |
 |------|--------|--------|-------|
+| 2026-04-15 | [323e307](https://github.com/WorkofAditya/Mira/commit/323e3078ddb9b103d002348a064066fa9123fe41) | Update cache version and add salary slip files | service-worker.js |
 | 2026-04-15 | [99f6191](https://github.com/WorkofAditya/Mira/commit/99f6191e0e2f9ce22c34619a38f12f4c7e8cf1aa) | Merge pull request #49 from WorkofAditya/beta |  |
 | 2026-04-15 | [ec88644](https://github.com/WorkofAditya/Mira/commit/ec88644441020d2ef085c7e3381578f170bf2ae8) | Merge pull request #48 from WorkofAditya/codex/add-salary-slip-popup-for-employees-and-drivers |  |
 | 2026-04-15 | [ae45dd8](https://github.com/WorkofAditya/Mira/commit/ae45dd8f6f3753df837b3cdd3c2bd31f8e2dda4c) | Tighten Date To spacing to prevent overlap with photo panel | Salary slip/salary-slip.css |
