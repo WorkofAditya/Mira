@@ -2,6 +2,7 @@
 ## Unreleased
 | Date | Commit | Change | Files |
 |------|--------|--------|-------|
+| 2026-04-15 | [99ee819](https://github.com/WorkofAditya/Mira/commit/99ee81944020e7b23cc2fbe6be4d4320c9b22d0a) | Remove Summary button from navigation | index.html |
 | 2026-04-15 | [96f88cf](https://github.com/WorkofAditya/Mira/commit/96f88cfe0253117d91aa69a0a66215bc68e804a2) | Add employ and driver data popups | Index/app.js,Index/index.css index.html |
 | 2026-04-15 | [b43204c](https://github.com/WorkofAditya/Mira/commit/b43204c2aaef7787707a8506f0e4fb3e6d86a6db) | Fix dropdown menu to include 'Employ Data' item | index.html |
 | 2026-04-15 | [323e307](https://github.com/WorkofAditya/Mira/commit/323e3078ddb9b103d002348a064066fa9123fe41) | Update cache version and add salary slip files | service-worker.js |
