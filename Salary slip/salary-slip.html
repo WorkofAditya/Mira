@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Salary Slip</title>
+  <link rel="stylesheet" href="salary-slip.css">
+</head>
+<body>
+  <div class="salary-app">
+    <header class="salary-header">
+      <h3 id="salaryTitle">Salary Slip</h3>
+      <div class="salary-branch" id="salaryBranchLabel"></div>
+    </header>
+
+    <main class="salary-main">
+      <section class="salary-form-grid">
+        <div class="salary-date-row">
+          <label for="salaryDateFrom">Date From</label>
+          <input type="date" id="salaryDateFrom">
+          <label for="salaryDateTo">Date To</label>
+          <input type="date" id="salaryDateTo">
+        </div>
+
+        <label for="salaryName">Name</label>
+        <select id="salaryName"></select>
+
+        <label for="salaryTotalDays">Total Days</label>
+        <input type="number" id="salaryTotalDays" min="0">
+
+        <label for="salaryPerDay">Per Day Salary</label>
+        <input type="number" id="salaryPerDay" readonly>
+
+        <label for="salaryBase">Salary</label>
+        <input type="number" id="salaryBase" readonly>
+
+        <label for="salaryCurrentWithdrawal">Current Withdrawal</label>
+        <input type="number" id="salaryCurrentWithdrawal" min="0">
+
+        <label for="salaryOldWithdrawal">Old Withdrawal</label>
+        <input type="number" id="salaryOldWithdrawal" min="0">
+
+        <label for="salaryTotalWithdrawal">Total Withdrawal</label>
+        <input type="number" id="salaryTotalWithdrawal" readonly>
+
+        <label for="salaryTotalSalary">Total Salary</label>
+        <input type="number" id="salaryTotalSalary" readonly>
+
+        <label for="salaryPaidSalary">Paid Salary</label>
+        <input type="number" id="salaryPaidSalary" min="0">
+      </section>
+
+      <aside class="salary-photo-panel">
+        <h4>Photo</h4>
+        <div class="salary-photo-box">
+          <img id="salaryPhotoPreview" alt="Salary photo">
+          <span id="salaryPhotoPlaceholder">No Photo</span>
+        </div>
+      </aside>
+    </main>
+
+    <footer class="salary-actions">
+      <button type="button" id="salaryBtnNew">New</button>
+      <button type="button" id="salaryBtnEdit">Edit</button>
+      <button type="button" id="salaryBtnSave">Save</button>
+      <button type="button" id="salaryBtnDelete">Delete</button>
+      <button type="button" id="salaryBtnFind">Find</button>
+      <button type="button" id="salaryBtnPreview">Preview</button>
+      <button type="button" id="salaryBtnPrint">Print</button>
+    </footer>
+  </div>
+
+  <script src="salary-slip.js"></script>
+</body>
+</html>
