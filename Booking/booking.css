@@ -544,3 +544,13 @@ select {
     font-weight: 700;
     background: #fff5f5;
 }
+
+.logo {
+  display: flex;
+  align-items: center;
+}
+
+.logo img {
+  height: 35px;
+  width: auto;
+}

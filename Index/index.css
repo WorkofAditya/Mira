@@ -507,3 +507,13 @@
     grid-template-columns: 1fr;
   }
 }
+
+.logo {
+  display: flex;
+  align-items: center;
+}
+
+.logo img {
+  height: 32px;
+  width: auto;
+}

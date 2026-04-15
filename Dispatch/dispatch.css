@@ -309,3 +309,13 @@ body {
     background: #ececec;
     cursor: pointer;
 }
+
+.logo {
+  display: flex;
+  align-items: center;
+}
+
+.logo img {
+  height: 35px;
+  width: auto;
+}
