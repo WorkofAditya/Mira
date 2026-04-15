@@ -2,6 +2,12 @@
 ## Unreleased
 | Date | Commit | Change | Files |
 |------|--------|--------|-------|
+| 2026-04-15 | [99f6191](https://github.com/WorkofAditya/Mira/commit/99f6191e0e2f9ce22c34619a38f12f4c7e8cf1aa) | Merge pull request #49 from WorkofAditya/beta |  |
+| 2026-04-15 | [ec88644](https://github.com/WorkofAditya/Mira/commit/ec88644441020d2ef085c7e3381578f170bf2ae8) | Merge pull request #48 from WorkofAditya/codex/add-salary-slip-popup-for-employees-and-drivers |  |
+| 2026-04-15 | [ae45dd8](https://github.com/WorkofAditya/Mira/commit/ae45dd8f6f3753df837b3cdd3c2bd31f8e2dda4c) | Tighten Date To spacing to prevent overlap with photo panel | Salary slip/salary-slip.css |
+| 2026-04-15 | [6259a33](https://github.com/WorkofAditya/Mira/commit/6259a33213f6ca9d44c29feaf77c7eace4d7a204) | Lock salary form editing and polish slip preview layout | Index/app.js,Salary slip/salary-popup.js Salary slip/salary-slip.css,Salary slip/salary-slip.js |
+| 2026-04-15 | [f01ac6d](https://github.com/WorkofAditya/Mira/commit/f01ac6d539762c8f56563dc440426b85cf438ec7) | Move salary slip UI into dedicated module and fix save/find UX | Index/app.js,Index/index.css Salary slip/salary-popup.js,Salary slip/salary-slip.css Salary slip/salary-slip.html,Salary slip/salary-slip.js index.html |
+| 2026-04-15 | [ff24fff](https://github.com/WorkofAditya/Mira/commit/ff24fff283b635be4a76f2521f04b6d377810e00) | Add employee and driver salary slip popup workflow | Index/app.js,Index/index.css index.html |
 | 2026-04-15 | [89f754e](https://github.com/WorkofAditya/Mira/commit/89f754e678e1d0551dbba6ace1a46760053d5c26) | Merge pull request #47 from WorkofAditya/codex/fix-dispatch-loading-issue-and-console-error |  |
 | 2026-04-15 | [6eb8fb4](https://github.com/WorkofAditya/Mira/commit/6eb8fb494b1daff47bcb3c2bc8bd139592ae275c) | Harden dispatch IndexedDB store recovery and backup restore handling | Dispatch/Dispatch.js,Index/app.js Preview/godown-preview.js,Preview/preview.js |
 | 2026-04-15 | [fd04331](https://github.com/WorkofAditya/Mira/commit/fd043312c577fe3cefe57266ccde87331bb7ee3e) | Update cache version to rc-transport-cache-v8 | service-worker.js |
