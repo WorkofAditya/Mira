@@ -52,8 +52,8 @@ html, body {
 .salary-date-row {
   grid-column: 1 / -1;
   display: grid;
-  grid-template-columns: 160px 1fr 160px 1fr;
-  gap: 8px 10px;
+  grid-template-columns: 100px 170px 90px 170px;
+  gap: 8px 6px;
   align-items: center;
 }
 
@@ -66,7 +66,7 @@ html, body {
 }
 
 .salary-date-row input {
-  width: 200px;
+  width: 170px;
 }
 
 .salary-photo-panel h4 {
