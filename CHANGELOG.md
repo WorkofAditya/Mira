@@ -2,6 +2,8 @@
 ## Unreleased
 | Date | Commit | Change | Files |
 |------|--------|--------|-------|
+| 2026-04-15 | [89f754e](https://github.com/WorkofAditya/Mira/commit/89f754e678e1d0551dbba6ace1a46760053d5c26) | Merge pull request #47 from WorkofAditya/codex/fix-dispatch-loading-issue-and-console-error |  |
+| 2026-04-15 | [6eb8fb4](https://github.com/WorkofAditya/Mira/commit/6eb8fb494b1daff47bcb3c2bc8bd139592ae275c) | Harden dispatch IndexedDB store recovery and backup restore handling | Dispatch/Dispatch.js,Index/app.js Preview/godown-preview.js,Preview/preview.js |
 | 2026-04-15 | [fd04331](https://github.com/WorkofAditya/Mira/commit/fd043312c577fe3cefe57266ccde87331bb7ee3e) | Update cache version to rc-transport-cache-v8 | service-worker.js |
 | 2026-04-15 | [806f9bf](https://github.com/WorkofAditya/Mira/commit/806f9bf58371be298b6c11721a79540ffcd6c4e9) | Fix homepage's topbar and add logo | Index/index.css,icons/RC.png index.html |
 | 2026-04-15 | [e6b0a7d](https://github.com/WorkofAditya/Mira/commit/e6b0a7dd0eb9045764a8204717c550bff7276688) | Added Real RC logos | Booking/booking.css,Booking/booking.html Dispatch/Dispatch.html,Dispatch/dispatch.css |
