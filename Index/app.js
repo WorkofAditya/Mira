@@ -110,9 +110,27 @@ function initHomePage() {
     };
   }
 
+  const employDataBtn = document.getElementById("employDataBtn");
+  if (employDataBtn) {
+    employDataBtn.onclick = event => {
+      event.stopPropagation();
+      openEntryPopup({ mode: "employee" });
+      closeAllMenus();
+    };
+  }
+
   const driverDataEntryBtn = document.getElementById("driverDataEntryBtn");
   if (driverDataEntryBtn) {
     driverDataEntryBtn.onclick = event => {
+      event.stopPropagation();
+      openEntryPopup({ mode: "driver" });
+      closeAllMenus();
+    };
+  }
+
+  const driverDataBtn = document.getElementById("driverDataBtn");
+  if (driverDataBtn) {
+    driverDataBtn.onclick = event => {
       event.stopPropagation();
       openEntryPopup({ mode: "driver" });
       closeAllMenus();
