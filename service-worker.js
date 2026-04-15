@@ -1,4 +1,4 @@
-const CACHE_NAME = "rc-transport-cache-v7";
+const CACHE_NAME = "rc-transport-cache-v8";
 const APP_SHELL = [
   "./",
   "./index.html",
@@ -20,6 +20,7 @@ const APP_SHELL = [
   "./employee/employee.css",
   "./employee/employee.js",
   "./manifest.json",
+  "./RC.png",
   "./icons/icon-192.png",
   "./icons/icon-512.png",
   "./icons/apple-touch-icon.png",
