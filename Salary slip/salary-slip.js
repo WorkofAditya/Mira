@@ -178,6 +178,7 @@ function resetForm() {
   loadedSlipId = "";
   editMode = false;
   refreshFromName();
+  setEditMode(false);
 }
 
 function payloadFromForm() {
@@ -219,6 +220,28 @@ function loadSlip(payload) {
   updatePhoto(payload.photo || memberMap.get(payload.name)?.photo || "");
   loadedSlipId = payload.id;
   editMode = false;
+  setEditMode(false);
+}
+
+function setEditMode(enabled) {
+  const editableInputs = [
+    els.dateFrom,
+    els.dateTo,
+    els.name,
+    els.totalDays,
+    els.currentWithdrawal,
+    els.oldWithdrawal,
+    els.paidSalary
+  ];
+
+  editableInputs.forEach(input => {
+    if (!input) return;
+    if (input.tagName === "SELECT") {
+      input.disabled = !enabled;
+      return;
+    }
+    input.readOnly = !enabled;
+  });
 }
 
 function openFindPopup() {
@@ -306,21 +329,62 @@ function openPreview(shouldPrint = false) {
   }
 
   previewWindow.document.write(`
-    <html><head><title>${label} Salary Slip</title></head>
-    <body style="font-family:Arial,sans-serif;padding:20px;">
-      <h2>${label} Salary Slip</h2>
-      <p><strong>Branch:</strong> ${payload.branch}</p>
-      <p><strong>Date From:</strong> ${payload.dateFrom} <strong>Date To:</strong> ${payload.dateTo}</p>
-      <p><strong>Name:</strong> ${payload.name}</p>
-      <p><strong>Total Days:</strong> ${payload.totalDays}</p>
-      <p><strong>Per Day Salary:</strong> ${payload.perDaySalary}</p>
-      <p><strong>Salary:</strong> ${payload.salary}</p>
-      <p><strong>Current Withdrawal:</strong> ${payload.currentWithdrawal}</p>
-      <p><strong>Old Withdrawal:</strong> ${payload.oldWithdrawal}</p>
-      <p><strong>Total Withdrawal:</strong> ${payload.totalWithdrawal}</p>
-      <p><strong>Total Salary:</strong> ${payload.totalSalary}</p>
-      <p><strong>Paid Salary:</strong> ${payload.paidSalary}</p>
-    </body></html>
+    <html>
+      <head>
+        <title>${label} Salary Slip</title>
+        <style>
+          body { font-family: Arial, sans-serif; background: #f4f4f5; padding: 18px; }
+          .slip { max-width: 760px; margin: 0 auto; background: #fff; border: 2px solid #111; }
+          .slip-head { padding: 14px 16px; border-bottom: 2px solid #111; display: flex; justify-content: space-between; align-items: center; }
+          .slip-title { font-size: 22px; font-weight: 700; margin: 0; letter-spacing: .5px; }
+          .slip-sub { margin: 2px 0 0; color: #374151; font-size: 13px; }
+          .slip-body { padding: 14px 16px; }
+          .meta { display: grid; grid-template-columns: 140px 1fr; gap: 8px 10px; margin-bottom: 14px; }
+          .meta .k { font-weight: 700; }
+          table { width: 100%; border-collapse: collapse; }
+          th, td { border: 1px solid #111; padding: 8px; font-size: 14px; }
+          th { background: #f3f4f6; text-align: left; width: 62%; }
+          .total-row th, .total-row td { font-weight: 700; background: #eef2ff; }
+          .sign { display: flex; justify-content: space-between; margin-top: 36px; font-size: 13px; }
+          .line { border-top: 1px solid #111; width: 180px; padding-top: 6px; text-align: center; }
+          @media print {
+            body { background: #fff; padding: 0; }
+            .slip { border: 1px solid #111; box-shadow: none; }
+          }
+        </style>
+      </head>
+      <body>
+        <section class="slip">
+          <div class="slip-head">
+            <div>
+              <h2 class="slip-title">${label.toUpperCase()} SALARY SLIP</h2>
+              <p class="slip-sub">Mira Transport</p>
+            </div>
+            <div><strong>Branch:</strong> ${payload.branch}</div>
+          </div>
+          <div class="slip-body">
+            <div class="meta">
+              <div class="k">Name</div><div>${payload.name}</div>
+              <div class="k">Period</div><div>${payload.dateFrom} to ${payload.dateTo}</div>
+            </div>
+            <table>
+              <tr><th>Total Days</th><td>${payload.totalDays}</td></tr>
+              <tr><th>Per Day Salary</th><td>${payload.perDaySalary}</td></tr>
+              <tr><th>Salary</th><td>${payload.salary}</td></tr>
+              <tr><th>Current Withdrawal</th><td>${payload.currentWithdrawal}</td></tr>
+              <tr><th>Old Withdrawal</th><td>${payload.oldWithdrawal}</td></tr>
+              <tr><th>Total Withdrawal</th><td>${payload.totalWithdrawal}</td></tr>
+              <tr class="total-row"><th>Total Salary</th><td>${payload.totalSalary}</td></tr>
+              <tr><th>Paid Salary</th><td>${payload.paidSalary}</td></tr>
+            </table>
+            <div class="sign">
+              <div class="line">Authorized Sign</div>
+              <div class="line">${label} Sign</div>
+            </div>
+          </div>
+        </section>
+      </body>
+    </html>
   `);
   previewWindow.document.close();
 
@@ -336,14 +400,17 @@ function setupEvents() {
   });
   els.name.addEventListener("change", refreshFromName);
 
-  document.getElementById("salaryBtnNew").onclick = resetForm;
+  document.getElementById("salaryBtnNew").onclick = () => {
+    resetForm();
+    setEditMode(true);
+  };
   document.getElementById("salaryBtnEdit").onclick = () => {
-    if (!loadedSlipId) {
+    if (!loadedSlipId && !els.name.value.trim()) {
       alert("Load a saved salary slip first.");
       return;
     }
     editMode = true;
-    alert("Edit mode enabled.");
+    setEditMode(true);
   };
   document.getElementById("salaryBtnSave").onclick = async () => {
     try {
@@ -365,6 +432,7 @@ function setupEvents() {
       await saveSlip(payload);
       loadedSlipId = payload.id;
       editMode = false;
+      setEditMode(false);
       alert("Salary slip saved successfully.");
     } catch (error) {
       console.error(error);
@@ -408,6 +476,7 @@ async function init() {
     await loadMembers();
     setupEvents();
     resetForm();
+    setEditMode(false);
   } catch (error) {
     console.error(error);
     alert("Could not open salary slip page.");

@@ -59,9 +59,14 @@ html, body {
 
 .salary-form-grid input,
 .salary-form-grid select {
-  width: 100%;
+  width: 240px;
+  max-width: 100%;
   border: 1px solid #000;
   padding: 6px;
+}
+
+.salary-date-row input {
+  width: 200px;
 }
 
 .salary-photo-panel h4 {
@@ -163,5 +168,11 @@ html, body {
 
   .salary-date-row {
     grid-template-columns: 130px 1fr;
+  }
+
+  .salary-form-grid input,
+  .salary-form-grid select,
+  .salary-date-row input {
+    width: 100%;
   }
 }

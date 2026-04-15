@@ -47,4 +47,34 @@
   }
 
   window.openSalarySlipPopup = openSalarySlipPopup;
+
+  function attachSalaryMenuHandlers() {
+    const employSalarySlipBtn = document.getElementById("employSalarySlipBtn");
+    if (employSalarySlipBtn) {
+      employSalarySlipBtn.onclick = event => {
+        event.stopPropagation();
+        openSalarySlipPopup({ mode: "employee" });
+        document.querySelectorAll(".drop-menu").forEach(menu => {
+          menu.style.display = "none";
+        });
+      };
+    }
+
+    const driverSalarySlipBtn = document.getElementById("driverSalarySlipBtn");
+    if (driverSalarySlipBtn) {
+      driverSalarySlipBtn.onclick = event => {
+        event.stopPropagation();
+        openSalarySlipPopup({ mode: "driver" });
+        document.querySelectorAll(".drop-menu").forEach(menu => {
+          menu.style.display = "none";
+        });
+      };
+    }
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", attachSalaryMenuHandlers);
+  } else {
+    attachSalaryMenuHandlers();
+  }
 })();

@@ -119,24 +119,6 @@ function initHomePage() {
     };
   }
 
-  const employSalarySlipBtn = document.getElementById("employSalarySlipBtn");
-  if (employSalarySlipBtn) {
-    employSalarySlipBtn.onclick = event => {
-      event.stopPropagation();
-      openSalarySlipPopup({ mode: "employee" });
-      closeAllMenus();
-    };
-  }
-
-  const driverSalarySlipBtn = document.getElementById("driverSalarySlipBtn");
-  if (driverSalarySlipBtn) {
-    driverSalarySlipBtn.onclick = event => {
-      event.stopPropagation();
-      openSalarySlipPopup({ mode: "driver" });
-      closeAllMenus();
-    };
-  }
-
   const openMenuNameData = target => {
     const branch = getSelectedBranch() || "";
     if (!branch) {
