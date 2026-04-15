@@ -2,6 +2,7 @@
 ## Unreleased
 | Date | Commit | Change | Files |
 |------|--------|--------|-------|
+| 2026-04-15 | [fd04331](https://github.com/WorkofAditya/Mira/commit/fd043312c577fe3cefe57266ccde87331bb7ee3e) | Update cache version to rc-transport-cache-v8 | service-worker.js |
 | 2026-04-15 | [806f9bf](https://github.com/WorkofAditya/Mira/commit/806f9bf58371be298b6c11721a79540ffcd6c4e9) | Fix homepage's topbar and add logo | Index/index.css,icons/RC.png index.html |
 | 2026-04-15 | [e6b0a7d](https://github.com/WorkofAditya/Mira/commit/e6b0a7dd0eb9045764a8204717c550bff7276688) | Added Real RC logos | Booking/booking.css,Booking/booking.html Dispatch/Dispatch.html,Dispatch/dispatch.css |
 | 2026-04-14 | [27529b5](https://github.com/WorkofAditya/Mira/commit/27529b508a59eb41de6d5a8bef3979670b14177c) | Fix Minor bug and make the code more stable | Dispatch/Dispatch.js,Index/app.js employee/employee.js |
