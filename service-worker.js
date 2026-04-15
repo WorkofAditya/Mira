@@ -1,4 +1,4 @@
-const CACHE_NAME = "rc-transport-cache-v7";
+const CACHE_NAME = "rc-transport-cache-v8";
 const APP_SHELL = [
   "./",
   "./index.html",
@@ -24,7 +24,8 @@ const APP_SHELL = [
   "./icons/icon-512.png",
   "./icons/apple-touch-icon.png",
   "./icons/favicon-16x16.png",
-  "./icons/favicon-32x32.png"
+  "./icons/favicon-32x32.png",
+  "./icons/RC.png"
 ];
 
 self.addEventListener("install", event => {

@@ -79,6 +79,22 @@ function setSelectedBranch(branch) {
   sessionStorage.setItem("selectedBranch", branch);
 }
 
+function getBrandInfoCardMarkup() {
+  const logoPath = window.location.pathname.includes("/Booking/") ? "../icons/RC.png" : "icons/RC.png";
+  return `
+    <div class="brand-contact-card">
+      <div class="brand-contact-logo">
+        <img src="${logoPath}" alt="Riya Cargo logo">
+      </div>
+      <div class="brand-contact-text">
+        <h4>Riya Cargo</h4>
+        <p><strong>H.O. :</strong> 54, Digvijay Plot, Near Kamlesh Dairy, Jamnagar-361005</p>
+        <p><strong>Mobile :</strong> 97251 64765 &nbsp;&nbsp; <strong>E-mail :</strong> babariyaranjit69@gmail.com</p>
+      </div>
+    </div>
+  `;
+}
+
 // ================= HOMEPAGE =================
 function initHomePage() {
   const selectBtn = document.querySelector(".select-btn");
@@ -1254,6 +1270,7 @@ async function openNameFilterPopup({ branch, target }) {
   const popup = document.createElement("div");
   popup.className = "popup name-filter-popup";
   popup.innerHTML = `
+    ${getBrandInfoCardMarkup()}
     <h3>${label} Filter</h3>
     <div class="name-filter-fields">
       <label for="filterDateFrom">Date from</label>
@@ -1402,6 +1419,7 @@ function openNameLedgerPopup({ target, selectedName, rows }) {
   const popup = document.createElement("div");
   popup.className = "popup name-ledger-popup";
   popup.innerHTML = `
+    ${getBrandInfoCardMarkup()}
     <div class="name-ledger-header">
       <div class="name-ledger-logo">RC</div>
       <div class="name-ledger-title">

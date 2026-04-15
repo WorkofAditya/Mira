@@ -13,32 +13,49 @@ margin:auto;
 
 .header{
 display:flex;
-justify-content:space-between;
-align-items:flex-start;
+flex-direction:column;
+gap:10px;
 }
 
-.logo{
-font-size:48px;
-font-weight:bold;
+.brand-contact-card{
+border:2px solid #000;
+padding:8px 10px;
+display:grid;
+grid-template-columns:150px 1fr;
+gap:12px;
+align-items:center;
 }
 
-.title{
-text-align:center;
+.brand-contact-logo img{
+width:100%;
+height:auto;
+display:block;
 }
 
-.title h1{
+.brand-contact-text h1{
 margin:0;
 color:#8b0000;
+letter-spacing:1px;
+text-transform:uppercase;
 }
 
-.title h2{
-margin:0;
+.brand-contact-text p{
+margin:2px 0;
+font-size:19px;
+}
+
+.preview-title{
+text-align:center;
+font-weight:700;
+font-size:24px;
 color:#003399;
+letter-spacing:0.8px;
 }
 
 .info{
 font-size:14px;
 line-height:22px;
+align-self:flex-end;
 }
 
 .dispatch-table{

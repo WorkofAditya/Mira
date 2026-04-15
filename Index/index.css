@@ -24,24 +24,34 @@
 
     /* Topbar */
     .topbar {
-      display: grid;
-      grid-template-columns: auto 1fr auto;
+      display: flex;
       align-items: center;
+      justify-content: center;
+      height: 52px;
       border-bottom: 3px solid #000;
-      padding: 10px 15px;
       position: sticky;
       top: 0;
-      background: white;
+      background: #fff;
       z-index: 1000;
     }
 
-    .logo {
+    .topbar .logo {
+      position: absolute;
+      left: 16px;
       font-weight: bold;
+      font-size: 20px;
+    }
+
+    .topbar .logo img {
+      height: 36px;
+      width: auto;
+      display: block;
     }
 
     .nav {
       display: flex;
       justify-content: center;
+      align-items: center;
       gap: 20px;
     }
 
@@ -121,7 +131,7 @@
     }
 
     .spacer {
-      width: 60px;
+      display: none;
     }
 
     /* Filters section - perfectly centered */
@@ -516,4 +526,34 @@
 .logo img {
   height: 32px;
   width: auto;
+}
+
+.brand-contact-card {
+  border: 2px solid #000;
+  padding: 8px 10px;
+  display: grid;
+  grid-template-columns: 92px 1fr;
+  gap: 10px;
+  margin-bottom: 12px;
+  background: #fff;
+}
+
+.brand-contact-logo img {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.brand-contact-text h4 {
+  margin: 0 0 4px;
+  font-size: 22px;
+  color: #8b0000;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+}
+
+.brand-contact-text p {
+  margin: 2px 0;
+  font-size: 12px;
+  line-height: 1.35;
 }
