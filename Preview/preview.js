@@ -9,10 +9,38 @@ function setPrintTime() {
   document.getElementById("printTime").textContent = now.toLocaleString();
 }
 
-function openDb(name, version) {
+function openDb(name, version, stores = [], storeOptions = {}) {
   return new Promise((resolve, reject) => {
     const request = indexedDB.open(name, version);
-    request.onsuccess = event => resolve(event.target.result);
+    request.onupgradeneeded = event => {
+      const db = event.target.result;
+      stores.forEach(storeName => {
+        if (!db.objectStoreNames.contains(storeName)) {
+          db.createObjectStore(storeName, storeOptions[storeName] || { keyPath: "branch" });
+        }
+      });
+    };
+    request.onsuccess = event => {
+      const db = event.target.result;
+      const missingStores = stores.filter(storeName => !db.objectStoreNames.contains(storeName));
+      if (!missingStores.length) {
+        resolve(db);
+        return;
+      }
+
+      const repairRequest = indexedDB.open(name, db.version + 1);
+      db.close();
+      repairRequest.onupgradeneeded = repairEvent => {
+        const repairDb = repairEvent.target.result;
+        stores.forEach(storeName => {
+          if (!repairDb.objectStoreNames.contains(storeName)) {
+            repairDb.createObjectStore(storeName, storeOptions[storeName] || { keyPath: "branch" });
+          }
+        });
+      };
+      repairRequest.onsuccess = repairEvent => resolve(repairEvent.target.result);
+      repairRequest.onerror = () => reject(new Error(`Could not repair ${name}`));
+    };
     request.onerror = () => reject(new Error(`Could not open ${name}`));
   });
 }
@@ -230,8 +258,8 @@ async function loadPreview() {
     return;
   }
 
-  const dispatchDb = await openDb(DISPATCH_DB_NAME, 2);
-  const bookingDb = await openDb(BOOKING_DB_NAME, 3);
+  const dispatchDb = await openDb(DISPATCH_DB_NAME, 2, [DISPATCH_STORE], { [DISPATCH_STORE]: { keyPath: "branch" } });
+  const bookingDb = await openDb(BOOKING_DB_NAME, 3, [BOOKING_STORE], { [BOOKING_STORE]: { keyPath: "branch" } });
 
   try {
     const dispatchTx = dispatchDb.transaction(DISPATCH_STORE, "readonly");
