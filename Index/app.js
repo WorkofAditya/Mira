@@ -175,9 +175,42 @@ function openDbWithVersion(dbName, version, stores = [], storeOptions = {}) {
       });
     };
 
-    request.onsuccess = event => resolve(event.target.result);
+    request.onsuccess = event => {
+      const idb = event.target.result;
+      const missingStores = stores.filter(storeName => !idb.objectStoreNames.contains(storeName));
+
+      if (!missingStores.length) {
+        resolve(idb);
+        return;
+      }
+
+      const nextVersion = idb.version + 1;
+      idb.close();
+      const repairRequest = indexedDB.open(dbName, nextVersion);
+
+      repairRequest.onupgradeneeded = repairEvent => {
+        const repairDb = repairEvent.target.result;
+        stores.forEach(storeName => {
+          if (!repairDb.objectStoreNames.contains(storeName)) {
+            repairDb.createObjectStore(storeName, storeOptions[storeName] || { keyPath: "branch" });
+          }
+        });
+      };
+
+      repairRequest.onsuccess = repairEvent => resolve(repairEvent.target.result);
+      repairRequest.onerror = () => reject(repairRequest.error || new Error(`Failed repairing ${dbName}`));
+    };
     request.onerror = () => reject(request.error || new Error(`Failed opening ${dbName}`));
   });
+}
+
+function openDispatchDbWithStore() {
+  return openDbWithVersion(
+    DISPATCH_DB_NAME,
+    BACKUP_DB_CONFIG.dispatch.defaultVersion,
+    [DISPATCH_STORE],
+    BACKUP_DB_CONFIG.dispatch.storeOptions
+  );
 }
 
 function normalizeDbVersion(value, fallback = 1) {
@@ -849,17 +882,8 @@ function syncDispatchStateOnLrEdit(branch, oldLrNo, newLrNo) {
       return;
     }
 
-    const request = indexedDB.open(DISPATCH_DB_NAME, 2);
-
-    request.onupgradeneeded = event => {
-      const dispatchDb = event.target.result;
-      if (!dispatchDb.objectStoreNames.contains(DISPATCH_STORE)) {
-        dispatchDb.createObjectStore(DISPATCH_STORE, { keyPath: "branch" });
-      }
-    };
-
-    request.onsuccess = event => {
-      const dispatchDb = event.target.result;
+    openDispatchDbWithStore()
+      .then(dispatchDb => {
 
       const replaceInList = list => {
         if (!Array.isArray(list)) return [];
@@ -925,9 +949,8 @@ function syncDispatchStateOnLrEdit(branch, oldLrNo, newLrNo) {
         dispatchDb.close();
         reject(new Error("Could not read dispatch state for LR edit"));
       };
-    };
-
-    request.onerror = () => reject(new Error("Could not open dispatch DB for LR edit sync"));
+    })
+      .catch(() => reject(new Error("Could not open dispatch DB for LR edit sync")));
   });
 }
 
@@ -938,17 +961,8 @@ function syncGodownStockOnBookingSave(branch, lrNo) {
       return;
     }
 
-    const request = indexedDB.open(DISPATCH_DB_NAME, 2);
-
-    request.onupgradeneeded = event => {
-      const dispatchDb = event.target.result;
-      if (!dispatchDb.objectStoreNames.contains(DISPATCH_STORE)) {
-        dispatchDb.createObjectStore(DISPATCH_STORE, { keyPath: "branch" });
-      }
-    };
-
-    request.onsuccess = event => {
-      const dispatchDb = event.target.result;
+    openDispatchDbWithStore()
+      .then(dispatchDb => {
       const tx = dispatchDb.transaction(DISPATCH_STORE, "readwrite");
       const store = tx.objectStore(DISPATCH_STORE);
       const getReq = store.get(branch);
@@ -1005,9 +1019,8 @@ function syncGodownStockOnBookingSave(branch, lrNo) {
         dispatchDb.close();
         reject(new Error("Could not read dispatch state for godown sync"));
       };
-    };
-
-    request.onerror = () => reject(new Error("Could not open dispatch DB for godown sync"));
+    })
+      .catch(() => reject(new Error("Could not open dispatch DB for godown sync")));
   });
 }
 
@@ -1019,36 +1032,26 @@ function getDispatchDetailsForLr(branch, lrNo) {
       return;
     }
 
-    const request = indexedDB.open(DISPATCH_DB_NAME);
+    openDispatchDbWithStore()
+      .then(dispatchDb => {
+        try {
+          const tx = dispatchDb.transaction(DISPATCH_STORE, "readonly");
+          const store = tx.objectStore(DISPATCH_STORE);
+          const req = store.get(branch);
 
-    request.onsuccess = e => {
-      const dispatchDb = e.target.result;
+          req.onsuccess = () => {
+            const details = req.result?.dispatchDetailsByLr?.[lrNo] || null;
+            resolve(details);
+          };
 
-      if (!dispatchDb.objectStoreNames.contains(DISPATCH_STORE)) {
-        dispatchDb.close();
-        resolve(null);
-        return;
-      }
-
-      try {
-        const tx = dispatchDb.transaction(DISPATCH_STORE, "readonly");
-        const store = tx.objectStore(DISPATCH_STORE);
-        const req = store.get(branch);
-
-        req.onsuccess = () => {
-          const details = req.result?.dispatchDetailsByLr?.[lrNo] || null;
-          resolve(details);
-        };
-
-        req.onerror = () => resolve(null);
-        tx.oncomplete = () => dispatchDb.close();
-      } catch (error) {
-        dispatchDb.close();
-        resolve(null);
-      }
-    };
-
-    request.onerror = () => resolve(null);
+          req.onerror = () => resolve(null);
+          tx.oncomplete = () => dispatchDb.close();
+        } catch (error) {
+          dispatchDb.close();
+          resolve(null);
+        }
+      })
+      .catch(() => resolve(null));
   });
 }
 
@@ -1090,17 +1093,8 @@ function removeLrFromDispatchState(branch, lrNo) {
       return;
     }
 
-    const request = indexedDB.open(DISPATCH_DB_NAME, 2);
-
-    request.onupgradeneeded = event => {
-      const dispatchDb = event.target.result;
-      if (!dispatchDb.objectStoreNames.contains(DISPATCH_STORE)) {
-        dispatchDb.createObjectStore(DISPATCH_STORE, { keyPath: "branch" });
-      }
-    };
-
-    request.onsuccess = event => {
-      const dispatchDb = event.target.result;
+    openDispatchDbWithStore()
+      .then(dispatchDb => {
       const tx = dispatchDb.transaction(DISPATCH_STORE, "readwrite");
       const store = tx.objectStore(DISPATCH_STORE);
       const getReq = store.get(branch);
@@ -1150,9 +1144,8 @@ function removeLrFromDispatchState(branch, lrNo) {
         dispatchDb.close();
         reject(new Error("Could not read dispatch state for booking deletion"));
       };
-    };
-
-    request.onerror = () => reject(new Error("Could not open dispatch DB for booking deletion sync"));
+    })
+      .catch(() => reject(new Error("Could not open dispatch DB for booking deletion sync")));
   });
 }
 

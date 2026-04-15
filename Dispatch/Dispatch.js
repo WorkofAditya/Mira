@@ -42,8 +42,30 @@ function openDispatchDb() {
     };
 
     request.onsuccess = e => {
-      dispatchDb = e.target.result;
-      resolve();
+      const db = e.target.result;
+      if (db.objectStoreNames.contains(DISPATCH_STORE)) {
+        dispatchDb = db;
+        resolve();
+        return;
+      }
+
+      const nextVersion = db.version + 1;
+      db.close();
+      const repairRequest = indexedDB.open(DISPATCH_DB_NAME, nextVersion);
+
+      repairRequest.onupgradeneeded = event => {
+        const upgradeDb = event.target.result;
+        if (!upgradeDb.objectStoreNames.contains(DISPATCH_STORE)) {
+          upgradeDb.createObjectStore(DISPATCH_STORE, { keyPath: "branch" });
+        }
+      };
+
+      repairRequest.onsuccess = event => {
+        dispatchDb = event.target.result;
+        resolve();
+      };
+
+      repairRequest.onerror = () => reject(new Error("Could not repair dispatch database"));
     };
 
     request.onerror = () => reject(new Error("Could not open dispatch database"));
@@ -68,27 +90,36 @@ function readBookingLRs(branch) {
 
 function readDispatchState(branch) {
   return new Promise(resolve => {
-    const tx = dispatchDb.transaction(DISPATCH_STORE, "readonly");
-    const store = tx.objectStore(DISPATCH_STORE);
-    const req = store.get(branch);
+    try {
+      const tx = dispatchDb.transaction(DISPATCH_STORE, "readonly");
+      const store = tx.objectStore(DISPATCH_STORE);
+      const req = store.get(branch);
 
-    req.onsuccess = () => {
-      const saved = req.result;
-      resolve(saved || null);
-    };
+      req.onsuccess = () => {
+        const saved = req.result;
+        resolve(saved || null);
+      };
 
-    req.onerror = () => resolve(null);
+      req.onerror = () => resolve(null);
+    } catch (error) {
+      console.warn("Dispatch store is unavailable while reading state.", error);
+      resolve(null);
+    }
   });
 }
 
 function writeDispatchState(state) {
   return new Promise((resolve, reject) => {
-    const tx = dispatchDb.transaction(DISPATCH_STORE, "readwrite");
-    const store = tx.objectStore(DISPATCH_STORE);
-    const req = store.put(state);
+    try {
+      const tx = dispatchDb.transaction(DISPATCH_STORE, "readwrite");
+      const store = tx.objectStore(DISPATCH_STORE);
+      const req = store.put(state);
 
-    req.onsuccess = () => resolve();
-    req.onerror = () => reject(new Error("Failed to write dispatch state"));
+      req.onsuccess = () => resolve();
+      req.onerror = () => reject(new Error("Failed to write dispatch state"));
+    } catch (error) {
+      reject(new Error("Dispatch database is not ready for writing"));
+    }
   });
 }
 
