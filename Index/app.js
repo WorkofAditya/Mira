@@ -110,11 +110,29 @@ function initHomePage() {
     };
   }
 
+  const employDataBtn = document.getElementById("employDataBtn");
+  if (employDataBtn) {
+    employDataBtn.onclick = event => {
+      event.stopPropagation();
+      openEntryListPopup({ mode: "employee" });
+      closeAllMenus();
+    };
+  }
+
   const driverDataEntryBtn = document.getElementById("driverDataEntryBtn");
   if (driverDataEntryBtn) {
     driverDataEntryBtn.onclick = event => {
       event.stopPropagation();
       openEntryPopup({ mode: "driver" });
+      closeAllMenus();
+    };
+  }
+
+  const driverDataBtn = document.getElementById("driverDataBtn");
+  if (driverDataBtn) {
+    driverDataBtn.onclick = event => {
+      event.stopPropagation();
+      openEntryListPopup({ mode: "driver" });
       closeAllMenus();
     };
   }
@@ -564,7 +582,37 @@ function openDataToolsPopup() {
   };
 }
 
-function openEntryPopup({ mode = "employee" } = {}) {
+async function getEntryNamesByMode({ mode = "employee", branch = "" } = {}) {
+  const isDriverMode = mode === "driver";
+  const dbName = isDriverMode ? DRIVER_DB_NAME : EMPLOYEE_DB_NAME;
+  const storeName = isDriverMode ? DRIVER_STORE : EMPLOYEE_STORE;
+  const defaultVersion = isDriverMode
+    ? BACKUP_DB_CONFIG.driver.defaultVersion
+    : BACKUP_DB_CONFIG.employee.defaultVersion;
+
+  if (!branch) return [];
+
+  const idb = await openDbWithVersion(dbName, defaultVersion, [storeName], {
+    [storeName]: { keyPath: "branch" }
+  });
+
+  try {
+    const record = await new Promise((resolve, reject) => {
+      const tx = idb.transaction(storeName, "readonly");
+      const store = tx.objectStore(storeName);
+      const request = store.get(branch);
+      request.onsuccess = () => resolve(request.result || null);
+      request.onerror = () => reject(request.error || new Error(`Failed reading ${storeName}`));
+    });
+
+    const entries = record?.employees || {};
+    return Object.keys(entries).sort((a, b) => a.localeCompare(b, undefined, { sensitivity: "base" }));
+  } finally {
+    idb.close();
+  }
+}
+
+async function openEntryPopup({ mode = "employee" } = {}) {
   const isDriverMode = mode === "driver";
   const popupTitle = isDriverMode ? "Driver Data Entry" : "Employee Data Entry";
   const frameSrc = isDriverMode ? "employee/employee.html?mode=driver" : "employee/employee.html";
@@ -605,6 +653,77 @@ function openEntryPopup({ mode = "employee" } = {}) {
   overlay.onclick = event => {
     if (event.target === overlay) closePopup();
   };
+}
+
+async function openEntryListPopup({ mode = "employee" } = {}) {
+  const isDriverMode = mode === "driver";
+  const branch = getSelectedBranch() || "";
+  const popupTitle = isDriverMode ? "Driver Data" : "Employ Data";
+  const listLabel = isDriverMode
+    ? "List of Riya Cargo's drivers"
+    : "List of Riya Cargo's employees";
+  const existingPopup = document.getElementById("entryListPopupOverlay");
+  if (existingPopup) existingPopup.remove();
+
+  const overlay = document.createElement("div");
+  overlay.className = "entry-data-popup-overlay";
+  overlay.id = "entryListPopupOverlay";
+
+  const shell = document.createElement("div");
+  shell.className = "entry-data-popup-shell";
+  shell.innerHTML = `
+    <div class="entry-data-popup-header">
+      <h3>${popupTitle}</h3>
+      <button type="button" class="entry-data-popup-close" id="entryDataPopupClose">Close</button>
+    </div>
+    <div class="entry-data-popup-body">
+      <p class="entry-data-popup-title">${listLabel}</p>
+      <ul class="entry-data-popup-list" id="entryDataPopupList">
+        <li class="entry-data-popup-empty">Loading names...</li>
+      </ul>
+    </div>
+  `;
+
+  overlay.appendChild(shell);
+  document.body.appendChild(overlay);
+
+  const closePopup = () => {
+    overlay.remove();
+  };
+  shell.querySelector("#entryDataPopupClose").onclick = closePopup;
+  overlay.onclick = event => {
+    if (event.target === overlay) closePopup();
+  };
+
+  const listEl = shell.querySelector("#entryDataPopupList");
+  if (!branch) {
+    listEl.innerHTML = `<li class="entry-data-popup-empty">Please select a branch first.</li>`;
+    return;
+  }
+
+  try {
+    const names = await getEntryNamesByMode({ mode, branch });
+    if (!names.length) {
+      listEl.innerHTML = `<li class="entry-data-popup-empty">No saved names found for ${branch}.</li>`;
+      return;
+    }
+    listEl.innerHTML = "";
+    names.forEach((name, index) => {
+      const item = document.createElement("li");
+      item.className = "entry-data-popup-item";
+      const indexSpan = document.createElement("span");
+      indexSpan.className = "entry-data-popup-index";
+      indexSpan.textContent = `${index + 1}.`;
+      const nameSpan = document.createElement("span");
+      nameSpan.textContent = name;
+      item.appendChild(indexSpan);
+      item.appendChild(nameSpan);
+      listEl.appendChild(item);
+    });
+  } catch (error) {
+    console.error(error);
+    listEl.innerHTML = `<li class="entry-data-popup-empty">Could not load names right now.</li>`;
+  }
 }
 
 // ================= BOOKING INIT =================
