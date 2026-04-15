@@ -1,0 +1,167 @@
+html, body {
+  margin: 0;
+  height: 100%;
+  font-family: Arial, sans-serif;
+  background: #f3f4f6;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+.salary-app {
+  width: min(900px, 96vw);
+  margin: 14px auto;
+  background: #fff;
+  border: 2px solid #111;
+  border-radius: 6px;
+  padding: 12px;
+}
+
+.salary-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #d1d5db;
+  padding-bottom: 8px;
+  margin-bottom: 12px;
+}
+
+.salary-header h3 {
+  margin: 0;
+}
+
+.salary-branch {
+  font-weight: 700;
+  color: #1f2937;
+}
+
+.salary-main {
+  display: grid;
+  grid-template-columns: 1fr 190px;
+  gap: 14px;
+}
+
+.salary-form-grid {
+  display: grid;
+  grid-template-columns: 160px 1fr;
+  gap: 8px 10px;
+  align-items: center;
+}
+
+.salary-date-row {
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: 160px 1fr 160px 1fr;
+  gap: 8px 10px;
+  align-items: center;
+}
+
+.salary-form-grid input,
+.salary-form-grid select {
+  width: 100%;
+  border: 1px solid #000;
+  padding: 6px;
+}
+
+.salary-photo-panel h4 {
+  margin: 0 0 8px;
+}
+
+.salary-photo-box {
+  height: 220px;
+  border: 1px solid #000;
+  background: #f9fafb;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 8px;
+}
+
+.salary-photo-box img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: cover;
+  display: none;
+}
+
+.salary-actions {
+  margin-top: 14px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: flex-end;
+}
+
+.salary-actions button {
+  min-width: 84px;
+  height: 33px;
+  border: 1px solid #000;
+  background: #ececec;
+  cursor: pointer;
+}
+
+.overlay.dispatch-find-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+}
+
+.popup.dispatch-find-popup {
+  width: min(460px, 92vw);
+  background: #fff;
+  border: 2px solid #000;
+  padding: 16px;
+  border-radius: 0;
+  box-shadow: none;
+}
+
+.dispatch-find-popup h3 {
+  margin: 0 0 14px;
+}
+
+.find-row {
+  display: grid;
+  grid-template-columns: 150px 1fr;
+  gap: 10px;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.find-row input,
+.find-row select {
+  width: 100%;
+  border: 1px solid #000;
+  padding: 6px;
+  margin-bottom: 0;
+}
+
+.find-actions {
+  margin-top: 12px;
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.find-actions button {
+  min-width: 90px;
+  height: 34px;
+  border: 1px solid #000;
+  background: #ececec;
+  cursor: pointer;
+}
+
+@media (max-width: 760px) {
+  .salary-main {
+    grid-template-columns: 1fr;
+  }
+
+  .salary-date-row {
+    grid-template-columns: 130px 1fr;
+  }
+}
