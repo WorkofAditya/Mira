@@ -10,6 +10,8 @@ const EMPLOYEE_DB_NAME = "EmployeeDB";
 const EMPLOYEE_STORE = "employees";
 const DRIVER_DB_NAME = "DriverDB";
 const DRIVER_STORE = "drivers";
+const SALARY_DB_NAME = "SalarySlipDB";
+const SALARY_STORE = "salarySlips";
 const BACKUP_DB_CONFIG = {
   booking: {
     dbName: DB_NAME,
@@ -42,6 +44,14 @@ const BACKUP_DB_CONFIG = {
     stores: [DRIVER_STORE],
     storeOptions: {
       [DRIVER_STORE]: { keyPath: "branch" }
+    }
+  },
+  salary: {
+    dbName: SALARY_DB_NAME,
+    defaultVersion: 1,
+    stores: [SALARY_STORE],
+    storeOptions: {
+      [SALARY_STORE]: { keyPath: "id" }
     }
   }
 };
@@ -115,6 +125,24 @@ function initHomePage() {
     driverDataEntryBtn.onclick = event => {
       event.stopPropagation();
       openEntryPopup({ mode: "driver" });
+      closeAllMenus();
+    };
+  }
+
+  const employSalarySlipBtn = document.getElementById("employSalarySlipBtn");
+  if (employSalarySlipBtn) {
+    employSalarySlipBtn.onclick = event => {
+      event.stopPropagation();
+      openSalarySlipPopup({ mode: "employee" });
+      closeAllMenus();
+    };
+  }
+
+  const driverSalarySlipBtn = document.getElementById("driverSalarySlipBtn");
+  if (driverSalarySlipBtn) {
+    driverSalarySlipBtn.onclick = event => {
+      event.stopPropagation();
+      openSalarySlipPopup({ mode: "driver" });
       closeAllMenus();
     };
   }
@@ -605,6 +633,478 @@ function openEntryPopup({ mode = "employee" } = {}) {
   overlay.onclick = event => {
     if (event.target === overlay) closePopup();
   };
+}
+
+function openSalaryDb() {
+  return openDbWithVersion(
+    SALARY_DB_NAME,
+    BACKUP_DB_CONFIG.salary.defaultVersion,
+    [SALARY_STORE],
+    BACKUP_DB_CONFIG.salary.storeOptions
+  );
+}
+
+function formatDateInputValue(year, month, day) {
+  return `${year}-${String(month).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
+}
+
+function getSalaryDefaultDates() {
+  const now = new Date();
+  const year = now.getFullYear();
+  const month = now.getMonth() + 1;
+  const lastDate = new Date(year, month, 0).getDate();
+  return {
+    from: formatDateInputValue(year, month, 1),
+    to: formatDateInputValue(year, month, Math.min(30, lastDate))
+  };
+}
+
+function salaryToNumber(value) {
+  const parsed = Number.parseFloat(value);
+  return Number.isFinite(parsed) ? parsed : 0;
+}
+
+function salaryInputValue(value) {
+  return Number.isFinite(value) ? String(value) : "";
+}
+
+function getSalarySlipId({ branch, mode, dateFrom, dateTo, name }) {
+  return [branch, mode, dateFrom, dateTo, name].join("|").toLowerCase();
+}
+
+function readSalarySlipsByBranchMode(idb, branch, mode) {
+  return new Promise((resolve, reject) => {
+    const tx = idb.transaction(SALARY_STORE, "readonly");
+    const store = tx.objectStore(SALARY_STORE);
+    const request = store.getAll();
+
+    request.onsuccess = () => {
+      const rows = (request.result || []).filter(row => row.branch === branch && row.mode === mode);
+      rows.sort((a, b) => {
+        const byName = String(a.name || "").localeCompare(String(b.name || ""));
+        if (byName !== 0) return byName;
+        return String(a.dateFrom || "").localeCompare(String(b.dateFrom || ""));
+      });
+      resolve(rows);
+    };
+    request.onerror = () => reject(request.error);
+  });
+}
+
+function upsertSalarySlip(idb, payload) {
+  return new Promise((resolve, reject) => {
+    const tx = idb.transaction(SALARY_STORE, "readwrite");
+    const store = tx.objectStore(SALARY_STORE);
+    const request = store.put(payload);
+    request.onsuccess = () => resolve();
+    request.onerror = () => reject(request.error);
+  });
+}
+
+function deleteSalarySlip(idb, id) {
+  return new Promise((resolve, reject) => {
+    const tx = idb.transaction(SALARY_STORE, "readwrite");
+    const store = tx.objectStore(SALARY_STORE);
+    const request = store.delete(id);
+    request.onsuccess = () => resolve();
+    request.onerror = () => reject(request.error);
+  });
+}
+
+async function readNameAndSalaryList({ branch, mode }) {
+  const dbName = mode === "driver" ? DRIVER_DB_NAME : EMPLOYEE_DB_NAME;
+  const storeName = mode === "driver" ? DRIVER_STORE : EMPLOYEE_STORE;
+  const idb = await openDbWithVersion(dbName, 1, [storeName], {
+    [storeName]: { keyPath: "branch" }
+  });
+  try {
+    const record = await new Promise((resolve, reject) => {
+      const tx = idb.transaction(storeName, "readonly");
+      const store = tx.objectStore(storeName);
+      const request = store.get(branch);
+      request.onsuccess = () => resolve(request.result || { employees: {} });
+      request.onerror = () => reject(request.error);
+    });
+
+    const employees = record.employees || {};
+    return Object.keys(employees)
+      .sort((a, b) => a.localeCompare(b))
+      .map(name => ({
+        name,
+        perDaySalary: salaryToNumber(employees[name]?.perDaySalary),
+        photo: employees[name]?.employeePhoto || ""
+      }));
+  } finally {
+    idb.close();
+  }
+}
+
+function openSalarySlipPopup({ mode = "employee" } = {}) {
+  const branch = getSelectedBranch();
+  if (!branch) {
+    alert("Please select a branch first.");
+    return;
+  }
+
+  const isDriverMode = mode === "driver";
+  const label = isDriverMode ? "Driver" : "Employee";
+  const defaults = getSalaryDefaultDates();
+  const existing = document.getElementById("salarySlipOverlay");
+  if (existing) existing.remove();
+
+  const overlay = document.createElement("div");
+  overlay.id = "salarySlipOverlay";
+  overlay.className = "salary-popup-overlay";
+  overlay.innerHTML = `
+    <div class="salary-popup-shell">
+      <h3>${label} Salary Slip (${branch})</h3>
+      <div class="salary-form-wrap">
+        <div class="salary-form-grid">
+          <div class="salary-date-row">
+            <label for="salaryDateFrom">Date From</label>
+            <input type="date" id="salaryDateFrom" value="${defaults.from}">
+            <label for="salaryDateTo">Date To</label>
+            <input type="date" id="salaryDateTo" value="${defaults.to}">
+          </div>
+
+          <label for="salaryName">Name</label>
+          <select id="salaryName"></select>
+
+          <label for="salaryTotalDays">Total Days</label>
+          <input type="number" id="salaryTotalDays" min="0">
+
+          <label for="salaryPerDay">Per Day Salary</label>
+          <input type="number" id="salaryPerDay" min="0" readonly>
+
+          <label for="salaryBase">Salary</label>
+          <input type="number" id="salaryBase" readonly>
+
+          <label for="salaryCurrentWithdrawal">Current Withdrawal</label>
+          <input type="number" id="salaryCurrentWithdrawal" min="0">
+
+          <label for="salaryOldWithdrawal">Old Withdrawal</label>
+          <input type="number" id="salaryOldWithdrawal" min="0">
+
+          <label for="salaryTotalWithdrawal">Total Withdrawal</label>
+          <input type="number" id="salaryTotalWithdrawal" readonly>
+
+          <label for="salaryTotalSalary">Total Salary</label>
+          <input type="number" id="salaryTotalSalary" readonly>
+
+          <label for="salaryPaidSalary">Paid Salary</label>
+          <input type="number" id="salaryPaidSalary" min="0">
+        </div>
+
+        <aside class="salary-photo-panel">
+          <h4>Photo</h4>
+          <div class="salary-photo-box">
+            <img id="salaryPhotoPreview" alt="${label} photo">
+            <span id="salaryPhotoPlaceholder">No Photo</span>
+          </div>
+        </aside>
+      </div>
+
+      <div class="salary-actions">
+        <button type="button" id="salaryBtnNew">New</button>
+        <button type="button" id="salaryBtnEdit">Edit</button>
+        <button type="button" id="salaryBtnSave">Save</button>
+        <button type="button" id="salaryBtnDelete">Delete</button>
+        <button type="button" id="salaryBtnFind">Find</button>
+        <button type="button" id="salaryBtnPreview">Preview</button>
+        <button type="button" id="salaryBtnPrint">Print</button>
+        <button type="button" id="salaryBtnClose">Close</button>
+      </div>
+    </div>
+  `;
+  document.body.appendChild(overlay);
+
+  const nameEl = overlay.querySelector("#salaryName");
+  const dateFromEl = overlay.querySelector("#salaryDateFrom");
+  const dateToEl = overlay.querySelector("#salaryDateTo");
+  const totalDaysEl = overlay.querySelector("#salaryTotalDays");
+  const perDayEl = overlay.querySelector("#salaryPerDay");
+  const salaryBaseEl = overlay.querySelector("#salaryBase");
+  const currentWithdrawalEl = overlay.querySelector("#salaryCurrentWithdrawal");
+  const oldWithdrawalEl = overlay.querySelector("#salaryOldWithdrawal");
+  const totalWithdrawalEl = overlay.querySelector("#salaryTotalWithdrawal");
+  const totalSalaryEl = overlay.querySelector("#salaryTotalSalary");
+  const paidSalaryEl = overlay.querySelector("#salaryPaidSalary");
+  const photoEl = overlay.querySelector("#salaryPhotoPreview");
+  const photoPlaceholderEl = overlay.querySelector("#salaryPhotoPlaceholder");
+
+  let memberMap = new Map();
+  let salaryDb = null;
+  let isEditMode = false;
+  let loadedSlipId = "";
+  const closeSalaryPopup = () => {
+    if (salaryDb) {
+      salaryDb.close();
+      salaryDb = null;
+    }
+    overlay.remove();
+  };
+
+  const updatePhoto = src => {
+    if (!src) {
+      photoEl.style.display = "none";
+      photoEl.src = "";
+      photoPlaceholderEl.style.display = "block";
+      return;
+    }
+    photoEl.src = src;
+    photoEl.style.display = "block";
+    photoPlaceholderEl.style.display = "none";
+  };
+
+  const recalculate = () => {
+    const totalDays = salaryToNumber(totalDaysEl.value);
+    const perDay = salaryToNumber(perDayEl.value);
+    const salary = totalDays * perDay;
+    salaryBaseEl.value = salaryInputValue(salary);
+
+    const totalWithdrawal = salaryToNumber(currentWithdrawalEl.value) + salaryToNumber(oldWithdrawalEl.value);
+    totalWithdrawalEl.value = salaryInputValue(totalWithdrawal);
+    totalSalaryEl.value = salaryInputValue(salary - totalWithdrawal);
+  };
+
+  const populateNames = async () => {
+    const members = await readNameAndSalaryList({ branch, mode });
+    memberMap = new Map(members.map(item => [item.name, item]));
+
+    nameEl.innerHTML = "";
+    const placeholderOption = document.createElement("option");
+    placeholderOption.value = "";
+    placeholderOption.textContent = `Select ${label} name`;
+    nameEl.appendChild(placeholderOption);
+
+    members.forEach(item => {
+      const option = document.createElement("option");
+      option.value = item.name;
+      option.textContent = item.name;
+      nameEl.appendChild(option);
+    });
+  };
+
+  const refreshPerDayByName = () => {
+    const selectedName = nameEl.value;
+    const selected = memberMap.get(selectedName);
+    perDayEl.value = selected ? salaryInputValue(selected.perDaySalary) : "";
+    updatePhoto(selected?.photo || "");
+    recalculate();
+  };
+
+  const resetForm = () => {
+    const salaryDefaults = getSalaryDefaultDates();
+    dateFromEl.value = salaryDefaults.from;
+    dateToEl.value = salaryDefaults.to;
+    totalDaysEl.value = "";
+    currentWithdrawalEl.value = "";
+    oldWithdrawalEl.value = "";
+    paidSalaryEl.value = "";
+    salaryBaseEl.value = "";
+    totalWithdrawalEl.value = "";
+    totalSalaryEl.value = "";
+    loadedSlipId = "";
+    isEditMode = false;
+    if (nameEl.options.length > 0) nameEl.value = "";
+    refreshPerDayByName();
+  };
+
+  const getPayload = () => {
+    const name = nameEl.value.trim();
+    const dateFrom = dateFromEl.value;
+    const dateTo = dateToEl.value;
+    return {
+      id: getSalarySlipId({ branch, mode, dateFrom, dateTo, name }),
+      branch,
+      mode,
+      dateFrom,
+      dateTo,
+      name,
+      totalDays: salaryToNumber(totalDaysEl.value),
+      perDaySalary: salaryToNumber(perDayEl.value),
+      salary: salaryToNumber(salaryBaseEl.value),
+      currentWithdrawal: salaryToNumber(currentWithdrawalEl.value),
+      oldWithdrawal: salaryToNumber(oldWithdrawalEl.value),
+      totalWithdrawal: salaryToNumber(totalWithdrawalEl.value),
+      totalSalary: salaryToNumber(totalSalaryEl.value),
+      paidSalary: salaryToNumber(paidSalaryEl.value),
+      photo: photoEl.src || "",
+      updatedAt: new Date().toISOString()
+    };
+  };
+
+  const loadPayloadToForm = payload => {
+    nameEl.value = payload.name || "";
+    dateFromEl.value = payload.dateFrom || "";
+    dateToEl.value = payload.dateTo || "";
+    totalDaysEl.value = salaryInputValue(payload.totalDays);
+    perDayEl.value = salaryInputValue(payload.perDaySalary);
+    salaryBaseEl.value = salaryInputValue(payload.salary);
+    currentWithdrawalEl.value = salaryInputValue(payload.currentWithdrawal);
+    oldWithdrawalEl.value = salaryInputValue(payload.oldWithdrawal);
+    totalWithdrawalEl.value = salaryInputValue(payload.totalWithdrawal);
+    totalSalaryEl.value = salaryInputValue(payload.totalSalary);
+    paidSalaryEl.value = salaryInputValue(payload.paidSalary);
+    updatePhoto(payload.photo || memberMap.get(payload.name)?.photo || "");
+    loadedSlipId = payload.id || "";
+  };
+
+  const renderPreview = (payload, shouldPrint = false) => {
+    const previewWindow = window.open("", "_blank", "width=780,height=900");
+    if (!previewWindow) {
+      alert("Unable to open preview window.");
+      return;
+    }
+
+    previewWindow.document.write(`
+      <html>
+      <head><title>${label} Salary Slip</title></head>
+      <body style="font-family:Arial,sans-serif;padding:22px;">
+        <h2 style="margin:0 0 12px;">${label} Salary Slip</h2>
+        <p><strong>Branch:</strong> ${payload.branch}</p>
+        <p><strong>Date From:</strong> ${payload.dateFrom} &nbsp; <strong>Date To:</strong> ${payload.dateTo}</p>
+        <p><strong>Name:</strong> ${payload.name}</p>
+        <p><strong>Total Days:</strong> ${payload.totalDays}</p>
+        <p><strong>Per Day Salary:</strong> ${payload.perDaySalary}</p>
+        <p><strong>Salary:</strong> ${payload.salary}</p>
+        <p><strong>Current Withdrawal:</strong> ${payload.currentWithdrawal}</p>
+        <p><strong>Old Withdrawal:</strong> ${payload.oldWithdrawal}</p>
+        <p><strong>Total Withdrawal:</strong> ${payload.totalWithdrawal}</p>
+        <p><strong>Total Salary:</strong> ${payload.totalSalary}</p>
+        <p><strong>Paid Salary:</strong> ${payload.paidSalary}</p>
+      </body></html>
+    `);
+    previewWindow.document.close();
+
+    if (shouldPrint) {
+      previewWindow.focus();
+      previewWindow.print();
+    }
+  };
+
+  const openFindPopup = async () => {
+    const rows = await readSalarySlipsByBranchMode(salaryDb, branch, mode);
+    if (!rows.length) {
+      alert("No salary slips saved yet.");
+      return;
+    }
+
+    const findOverlay = document.createElement("div");
+    findOverlay.className = "overlay";
+    findOverlay.innerHTML = `
+      <div class="popup" style="max-width:560px;">
+        <h3>Find ${label} Salary Slip</h3>
+        <select id="salaryFindList" size="10" style="width:100%;margin-top:8px;"></select>
+        <div style="margin-top:12px;display:flex;justify-content:flex-end;gap:8px;">
+          <button type="button" id="salaryFindLoad">Load</button>
+          <button type="button" id="salaryFindClose">Close</button>
+        </div>
+      </div>
+    `;
+    document.body.appendChild(findOverlay);
+    const list = findOverlay.querySelector("#salaryFindList");
+    rows.forEach(row => {
+      const option = document.createElement("option");
+      option.value = row.id;
+      option.textContent = `${row.name} (${row.dateFrom} to ${row.dateTo})`;
+      list.appendChild(option);
+    });
+
+    const closeFind = () => findOverlay.remove();
+    findOverlay.querySelector("#salaryFindClose").onclick = closeFind;
+    findOverlay.querySelector("#salaryFindLoad").onclick = () => {
+      const selected = rows.find(row => row.id === list.value);
+      if (!selected) {
+        alert("Select a slip first.");
+        return;
+      }
+      loadPayloadToForm(selected);
+      closeFind();
+    };
+    findOverlay.onclick = event => {
+      if (event.target === findOverlay) closeFind();
+    };
+  };
+
+  overlay.querySelector("#salaryBtnNew").onclick = resetForm;
+  overlay.querySelector("#salaryBtnEdit").onclick = () => {
+    if (!loadedSlipId) {
+      alert("Load a saved salary slip first.");
+      return;
+    }
+    isEditMode = true;
+    alert("Edit mode enabled.");
+  };
+  overlay.querySelector("#salaryBtnSave").onclick = async () => {
+    const payload = getPayload();
+    if (!payload.name) {
+      alert("Please select a name.");
+      return;
+    }
+    if (!payload.dateFrom || !payload.dateTo) {
+      alert("Date From and Date To are required.");
+      return;
+    }
+    if (loadedSlipId && !isEditMode && loadedSlipId !== payload.id) {
+      alert("Use New for creating another salary slip or Edit for updating this one.");
+      return;
+    }
+
+    await upsertSalarySlip(salaryDb, payload);
+    loadedSlipId = payload.id;
+    isEditMode = false;
+    alert("Salary slip saved.");
+  };
+  overlay.querySelector("#salaryBtnDelete").onclick = async () => {
+    if (!loadedSlipId) {
+      alert("Load a salary slip to delete.");
+      return;
+    }
+    const shouldDelete = window.confirm("Delete this salary slip?");
+    if (!shouldDelete) return;
+    await deleteSalarySlip(salaryDb, loadedSlipId);
+    alert("Salary slip deleted.");
+    resetForm();
+  };
+  overlay.querySelector("#salaryBtnFind").onclick = openFindPopup;
+  overlay.querySelector("#salaryBtnPreview").onclick = () => {
+    const payload = getPayload();
+    if (!payload.name) {
+      alert("Please select a name first.");
+      return;
+    }
+    renderPreview(payload, false);
+  };
+  overlay.querySelector("#salaryBtnPrint").onclick = () => {
+    const payload = getPayload();
+    if (!payload.name) {
+      alert("Please select a name first.");
+      return;
+    }
+    renderPreview(payload, true);
+  };
+  overlay.querySelector("#salaryBtnClose").onclick = closeSalaryPopup;
+  overlay.onclick = event => {
+    if (event.target === overlay) closeSalaryPopup();
+  };
+
+  [totalDaysEl, currentWithdrawalEl, oldWithdrawalEl].forEach(input => {
+    input.addEventListener("input", recalculate);
+  });
+  nameEl.addEventListener("change", refreshPerDayByName);
+
+  (async () => {
+    try {
+      salaryDb = await openSalaryDb();
+      await populateNames();
+      resetForm();
+    } catch (error) {
+      console.error(error);
+      alert("Could not open salary slip data.");
+      closeSalaryPopup();
+    }
+  })();
 }
 
 // ================= BOOKING INIT =================
