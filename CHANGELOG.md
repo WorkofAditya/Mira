@@ -2,6 +2,8 @@
 ## Unreleased
 | Date | Commit | Change | Files |
 |------|--------|--------|-------|
+| 2026-04-27 | [2cf77e2](https://github.com/WorkofAditya/Mira/commit/2cf77e21700cdf473ef045238cf9ba230f81c5c4) | Merge pull request #52 from WorkofAditya/codex/fix-url-redirection-issue |  |
+| 2026-04-27 | [0e06f88](https://github.com/WorkofAditya/Mira/commit/0e06f88b322025cf4749451e3ea56da35b2f7f45) | Fix auth redirects for new root domain | Auth/auth.js,README.md service-worker.js |
 | 2026-04-15 | [99ee819](https://github.com/WorkofAditya/Mira/commit/99ee81944020e7b23cc2fbe6be4d4320c9b22d0a) | Remove Summary button from navigation | index.html |
 | 2026-04-15 | [96f88cf](https://github.com/WorkofAditya/Mira/commit/96f88cfe0253117d91aa69a0a66215bc68e804a2) | Add employ and driver data popups | Index/app.js,Index/index.css index.html |
 | 2026-04-15 | [b43204c](https://github.com/WorkofAditya/Mira/commit/b43204c2aaef7787707a8506f0e4fb3e6d86a6db) | Fix dropdown menu to include 'Employ Data' item | index.html |
