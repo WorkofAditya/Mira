@@ -3,7 +3,7 @@
     <img src="https://github.com/user-attachments/assets/c66f6949-1a22-4242-92ed-67f0753c1a61" alt="Logo"  width="250" height="250">
   </a>
  
-  # _Manage it_, with [Mira    ](https://workofaditya.github.io/Mira/)
+  # _Manage it_, with [Mira](https://mira-4fe.pages.dev/)
   
 <p>
   Developed for <strong><i>Riya Cargo</i></strong>
