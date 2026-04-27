@@ -4,7 +4,7 @@
   const AUTH_SESSION_KEY = "miraAuthSession";
   const AUTH_EXPIRY_KEY = "miraAuthExpiry";
   const AUTH_DURATION_MS = 60 * 60 * 1000;
-  const INDEX_URL = "https://workofaditya.github.io/Mira/";
+  const INDEX_URL = `${window.location.origin}/`;
   const INDEX_PATH = new URL(INDEX_URL).pathname;
   let expiryTimer = null;
 
