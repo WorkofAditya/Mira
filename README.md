@@ -18,7 +18,6 @@
   <br>
   <a href="https://github.com/WorkofAditya/Mira/issues">Request a Feature</a>
 </p>
-<i>Still in development</i>
 </div>
 <br>
  
