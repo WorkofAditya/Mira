@@ -2,6 +2,7 @@
 ## Unreleased
 | Date | Commit | Change | Files |
 |------|--------|--------|-------|
+| 2026-05-15 | [fd00d57](https://github.com/WorkofAditya/Mira/commit/fd00d57a123820844ba5123b7007587c4d739a93) | Update cache name to rc-transport-cache-v11 | service-worker.js |
 | 2026-05-15 | [5197d3d](https://github.com/WorkofAditya/Mira/commit/5197d3d79dbdcb500e8d4fb9dba497ec8deefa77) | Change INDEX_URL to point to GitHub Pages | Auth/auth.js |
 
 ## V2.0.0
