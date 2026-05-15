@@ -2,6 +2,11 @@
 ## Unreleased
 | Date | Commit | Change | Files |
 |------|--------|--------|-------|
+| 2026-05-15 | [5197d3d](https://github.com/WorkofAditya/Mira/commit/5197d3d79dbdcb500e8d4fb9dba497ec8deefa77) | Change INDEX_URL to point to GitHub Pages | Auth/auth.js |
+
+## V2.0.0
+| Date | Commit | Change | Files |
+|------|--------|--------|-------|
 | 2026-05-02 | [fca6250](https://github.com/WorkofAditya/Mira/commit/fca6250f9f18ec029d912f3e649b91adb5916eaf) | Update README.md | README.md |
 | 2026-04-27 | [2cf77e2](https://github.com/WorkofAditya/Mira/commit/2cf77e21700cdf473ef045238cf9ba230f81c5c4) | Merge pull request #52 from WorkofAditya/codex/fix-url-redirection-issue |  |
 | 2026-04-27 | [0e06f88](https://github.com/WorkofAditya/Mira/commit/0e06f88b322025cf4749451e3ea56da35b2f7f45) | Fix auth redirects for new root domain | Auth/auth.js,README.md service-worker.js |
@@ -64,10 +69,6 @@
 | 2026-03-24 | [636ae14](https://github.com/WorkofAditya/Mira/commit/636ae146c5916f55da9bfa1a1a07e9b267307d77) | Use latest dispatch state for persisted "vehicle LRs" | Dispatch/Dispatch.js |
 | 2026-03-23 | [06fcd00](https://github.com/WorkofAditya/Mira/commit/06fcd004c8605ebf17e19423f1174f55c68f4b83) | Merge pull request #23 from WorkofAditya/codex/add-godown-stock-preview-page |  |
 | 2026-03-23 | [9c1c4f9](https://github.com/WorkofAditya/Mira/commit/9c1c4f9634c9149aaef3d5849c8ca1776a28a028) | Add godown stock preview page and homepage menu link | Index/index.css,Preview/godown-preview.html Preview/godown-preview.js,index.html |
-
-## V1.0.0
-| Date | Commit | Change | Files |
-|------|--------|--------|-------|
 | 2026-03-17 | [39bc1ff](https://github.com/WorkofAditya/Mira/commit/39bc1ff838c04e86c8d6a7925c1c529ca1758d3b) | Merge pull request #21 from WorkofAditya/codex/update-preview-page-with-pre-filled-rows |  |
 | 2026-03-17 | [eab3ac3](https://github.com/WorkofAditya/Mira/commit/eab3ac3a4608347126b0995aa1dcf1aaf86ce329) | Place grand total as final preview row | Preview/preview.html,Preview/preview.js |
 | 2026-03-17 | [6a99107](https://github.com/WorkofAditya/Mira/commit/6a991070694a8a93ad223e746a27312326cb0144) | Merge pull request #19 from WorkofAditya/codex/refactor-folder-structure-for-project |  |
@@ -177,3 +178,7 @@
 | 2025-12-31 | [83c6a80](https://github.com/WorkofAditya/Mira/commit/83c6a8079cb1461b537e3e1c0d5b26769566a071) | Refactor index.html with embedded styles and layout | index.html |
 | 2025-12-31 | [c65d0f2](https://github.com/WorkofAditya/Mira/commit/c65d0f28dc0e0170f95656803e868d1862d91cc4) | Delete style.css | style.css |
 | 2025-12-31 | [246bd77](https://github.com/WorkofAditya/Mira/commit/246bd770c7579b6fdb72d9b3858451b9053a9419) | Add files via upload | app.js,booking.html index.html,style.css |
+
+## V1.0.0
+| Date | Commit | Change | Files |
+|------|--------|--------|-------|
