@@ -241,6 +241,82 @@
     }
   }
 
+  const nativeIndexedDB = window.indexedDB;
+
+  async function migrateLegacyIndexedDB() {
+    const markerKey = "mira-mongodb-migrated-v1";
+    if (localStorage.getItem(markerKey) === "done") return;
+    if (!nativeIndexedDB || typeof nativeIndexedDB.databases !== "function") return;
+
+    let databases = [];
+    try {
+      databases = await nativeIndexedDB.databases();
+    } catch {
+      return;
+    }
+
+    const known = {
+      TransportDB: ["bookings", "counters"],
+      DispatchDB: ["dispatchBranchState"],
+      EmployeeDB: ["employees"],
+      DriverDB: ["drivers"],
+      SalarySlipDB: ["salarySlips"]
+    };
+
+    for (const [dbName, stores] of Object.entries(known)) {
+      if (!databases.some(db => db.name === dbName)) continue;
+
+      const versionMap = {
+        TransportDB: 3,
+        DispatchDB: 2,
+        EmployeeDB: 1,
+        DriverDB: 1,
+        SalarySlipDB: 1
+      };
+
+      const idb = await new Promise((resolve, reject) => {
+        const req = nativeIndexedDB.open(dbName, versionMap[dbName]);
+        req.onsuccess = event => resolve(event.target.result);
+        req.onerror = () => reject(req.error || new Error("Legacy IndexedDB open failed"));
+      }).catch(() => null);
+
+      if (!idb) continue;
+
+      try {
+        for (const storeName of stores) {
+          if (!idb.objectStoreNames.contains(storeName)) continue;
+          const records = await new Promise((resolve, reject) => {
+            const tx = idb.transaction(storeName, "readonly");
+            const req = tx.objectStore(storeName).getAll();
+            req.onsuccess = () => resolve(req.result || []);
+            req.onerror = () => reject(req.error || new Error("Legacy IndexedDB read failed"));
+          });
+
+          const keyPath = defaultKeyPaths[storeName] || "id";
+          for (const value of records) {
+            const key = value?.[keyPath];
+            if (key === undefined || key === null) continue;
+            const response = await fetch(`${API_BASE}/${encode(dbName)}/${encode(storeName)}`, {
+              method: "PUT",
+              credentials: "same-origin",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ key, value })
+            });
+            if (!response.ok) throw new Error("Legacy data migration failed");
+          }
+        }
+      } finally {
+        idb.close();
+      }
+    }
+
+    localStorage.setItem(markerKey, "done");
+  }
+
+  const legacyMigrationPromise = migrateLegacyIndexedDB().catch(error => {
+    console.warn("Mira could not migrate legacy IndexedDB data yet:", error);
+  });
+
   window.indexedDB = {
     open(name, version) {
       const request = makeRequest();
@@ -248,7 +324,8 @@
       const db = new FakeDatabase(name, version || 1);
       dbRegistry.set(name, db);
 
-      setTimeout(() => {
+      setTimeout(async () => {
+        await legacyMigrationPromise;
         if (firstOpen && typeof request.onupgradeneeded === "function") {
           request.onupgradeneeded({ target: { result: db } });
         }
