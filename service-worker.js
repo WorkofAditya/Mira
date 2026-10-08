@@ -1,4 +1,4 @@
-const CACHE_NAME = "rc-transport-cache-v11";
+const CACHE_NAME = "rc-transport-cache-v12";
 const APP_SHELL = [
   "./",
   "./index.html",
@@ -54,6 +54,7 @@ self.addEventListener("activate", event => {
 
 self.addEventListener("fetch", event => {
   if (event.request.method !== "GET") return;
+  if (new URL(event.request.url).pathname.startsWith("/api/")) return;
 
   event.respondWith(
     caches.match(event.request).then(cachedResponse => {
