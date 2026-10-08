@@ -12,7 +12,7 @@ The `Dynamic` branch runs the existing frontend through a Node.js server and sto
 - A MongoDB Atlas cluster
 - A MongoDB connection string with permission to read/write the application's database
 
-The project uses Express 5.2.1 and the official MongoDB Node.js driver 7.7.0. citeturn0search0turn0search2
+The project uses Express 5.2.1 and the official MongoDB Node.js driver 7.7.0.
 
 ### Setup
 
