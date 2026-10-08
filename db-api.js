@@ -81,13 +81,11 @@
   function finishRequest(request, result, error) {
     request.result = result;
     request.error = error || null;
-    setTimeout(() => {
-      if (error) {
-        if (typeof request.onerror === "function") request.onerror({ target: request });
-      } else if (typeof request.onsuccess === "function") {
-        request.onsuccess({ target: request });
-      }
-    }, 0);
+    if (error) {
+      if (typeof request.onerror === "function") request.onerror({ target: request });
+    } else if (typeof request.onsuccess === "function") {
+      request.onsuccess({ target: request });
+    }
   }
 
   class FakeTransaction {
